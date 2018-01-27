@@ -1,0 +1,11 @@
+udo: false
+
+language: java
+jdk: oraclejdk8
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+
+script:
+- mvn clean install
