@@ -1,5 +1,6 @@
 package com.r4g3baby.simplescore
 
+import com.r4g3baby.simplescore.configs.MainConfig
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bstats.bukkit.MetricsLite
 import org.bukkit.plugin.java.JavaPlugin
@@ -9,6 +10,8 @@ class SimpleScore : JavaPlugin() {
 
     override fun onEnable() {
         println("Enabling")
+
+        MainConfig(this)
 
         MetricsLite(this)
         UpdateChecker(this, 23243, Consumer {
