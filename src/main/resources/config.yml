@@ -1,1 +1,36 @@
-test: "Hello"
+# Scoreboard update time in ticks (20 ticks = 1 second)
+UpdateTime: 30
+
+# Per world scoreboards
+Worlds:
+  world:
+    Titles:
+    - "&9%server%"
+    - "&b%server%"
+    Scores:
+      2:
+      - "&aSupports"
+      - "&bOn your World:"
+      - "&cOnline:"
+      1:
+      - "&aPlaceholderAPI"
+      - "&b%onworld% players"
+      - "&c%online%&8/&c%maxplayers%"
+  world_the_end:
+    Titles:
+    - "&9Title"
+    - "&bTitle"
+    Scores:
+      2:
+      - "&aCurrent world"
+      - "&bLorem"
+      - "Hello c;"
+      1:
+      - "&a%world%"
+      - "&bIpsum"
+      - "Hi"
+
+# Shared scoreboards
+Shared:
+  world_the_end:
+  - "world_nether"
