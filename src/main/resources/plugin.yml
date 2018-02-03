@@ -5,3 +5,9 @@ softdepend: [PlaceholderAPI]
 authors: [R4G3_BABY]
 description: "${project.description}"
 website: ${project.url}
+
+commands:
+  SimpleScore:
+    description: Manage plugin functionalities
+    aliases: [ss]
+    usage: /<command> <args>

@@ -1,5 +1,6 @@
 package com.r4g3baby.simplescore
 
+import com.r4g3baby.simplescore.commands.MainCmd
 import com.r4g3baby.simplescore.configs.MainConfig
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.scoreboard.listeners.ScoreboardListener
@@ -41,6 +42,7 @@ class SimpleScore : JavaPlugin() {
         scoreboardManager = ScoreboardManager(this)
 
         if (firstLoad) {
+            getCommand(name).executor = MainCmd(this)
             server.pluginManager.registerEvents(ScoreboardListener(this), this)
             server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config!!.updateTime.toLong())
         }
