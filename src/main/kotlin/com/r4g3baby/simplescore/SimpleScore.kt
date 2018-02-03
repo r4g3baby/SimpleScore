@@ -16,6 +16,8 @@ class SimpleScore : JavaPlugin() {
     private set
     var scoreboardManager: ScoreboardManager? = null
     private set
+    var placeholderAPI: Boolean = false
+    private set
 
     override fun onEnable() {
         load()
@@ -40,12 +42,17 @@ class SimpleScore : JavaPlugin() {
 
         config = MainConfig(this)
         scoreboardManager = ScoreboardManager(this)
+        placeholderAPI = server.pluginManager.isPluginEnabled("PlaceholderAPI")
 
         if (firstLoad) {
             getCommand(name).executor = MainCmd(this)
             server.pluginManager.registerEvents(ScoreboardListener(this), this)
             server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config!!.updateTime.toLong())
         }
+
+        server.onlinePlayers
+                .filter { scoreboardManager!!.hasScoreboard(it.world) }
+                .forEach { scoreboardManager!!.createObjective(it) }
 
         runnable?.run()
     }

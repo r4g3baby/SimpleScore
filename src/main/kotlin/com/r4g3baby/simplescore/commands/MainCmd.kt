@@ -19,7 +19,7 @@ class MainCmd(plugin: SimpleScore) : CommandExecutor, TabExecutor {
             for (subSmd in subCmds) {
                 if (subSmd.name.equals(args[0], true)) {
                     if (sender.hasPermission(subSmd.permission)) {
-                        subSmd.run(sender, args.slice(IntRange(1, args.size - 1)))
+                        subSmd.run(sender, args.slice(IntRange(1, args.lastIndex)))
                         return true
                     }
                     break
