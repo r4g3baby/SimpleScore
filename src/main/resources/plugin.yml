@@ -1,7 +1,7 @@
 name: ${project.name}
 version: ${project.version}
 main: com.r4g3baby.simplescore.SimpleScore
-softdepend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI, Multiverse-Core, MultiWorld]
 authors: [R4G3_BABY]
 description: "${project.description}"
 website: ${project.url}
