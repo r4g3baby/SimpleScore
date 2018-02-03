@@ -1,7 +1,9 @@
 package com.r4g3baby.simplescore.scoreboard.tasks
 
 import com.r4g3baby.simplescore.SimpleScore
+import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.ChatColor
+import org.bukkit.entity.Player
 
 class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
     override fun run() {
@@ -23,14 +25,14 @@ class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
 
                     val toDisplayScores = HashMap<Int, String>()
                     for (score in scores.keys) {
-                        var value = preventDuplicate(scores[score]!!/*TODO replace placeholders*/, toDisplayScores.values)
+                        var value = preventDuplicate(replaceVariables(scores[score]!!, player), toDisplayScores.values)
                         if (value.length > 40) {
                             value = value.substring(IntRange(0, 40))
                         }
                         toDisplayScores[score] = value
                     }
 
-                    var toDisplayTitle = title // TODO replace placeholders
+                    var toDisplayTitle = replaceVariables(title, player)
                     if (toDisplayTitle.length > 32) {
                         toDisplayTitle = toDisplayTitle.substring(IntRange(0, 32))
                     }
@@ -50,6 +52,14 @@ class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
                 }
             }
         }
+    }
+
+    private fun replaceVariables(text: String, player: Player): String {
+        var replacedText = ChatColor.translateAlternateColorCodes('&', text)
+        if (plugin.placeholderAPI) {
+            replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
+        }
+        return replacedText
     }
 
     private fun preventDuplicate(text: String, values: Collection<String>): String {
