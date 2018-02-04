@@ -2,6 +2,7 @@ package com.r4g3baby.simplescore
 
 import com.r4g3baby.simplescore.commands.MainCmd
 import com.r4g3baby.simplescore.configs.MainConfig
+import com.r4g3baby.simplescore.configs.MessagesConfig
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.scoreboard.listeners.ScoreboardListener
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardTask
@@ -13,6 +14,8 @@ import java.util.function.Consumer
 
 class SimpleScore : JavaPlugin() {
     var config: MainConfig? = null
+    private set
+    var messagesConfig: MessagesConfig? = null
     private set
     var scoreboardManager: ScoreboardManager? = null
     private set
@@ -41,6 +44,7 @@ class SimpleScore : JavaPlugin() {
         }
 
         config = MainConfig(this)
+        messagesConfig = MessagesConfig(this)
         scoreboardManager = ScoreboardManager(this)
         placeholderAPI = server.pluginManager.isPluginEnabled("PlaceholderAPI")
 
