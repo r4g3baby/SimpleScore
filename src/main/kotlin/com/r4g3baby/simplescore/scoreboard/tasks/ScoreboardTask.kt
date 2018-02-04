@@ -4,6 +4,7 @@ import com.r4g3baby.simplescore.SimpleScore
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
+import kotlin.math.roundToLong
 
 class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
     override fun run() {
@@ -59,6 +60,18 @@ class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
         if (plugin.placeholderAPI) {
             replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
         }
+        replacedText = replacedText
+                .replace("%online%", plugin.server.onlinePlayers.count().toString())
+                .replace("%onworld%", player.world.players.count().toString())
+                .replace("%world%", player.world.name)
+                .replace("%maxplayers%", plugin.server.maxPlayers.toString())
+                .replace("%server%", plugin.server.serverName)
+                .replace("%player%", player.name)
+                .replace("%playerdisplayname%", player.displayName)
+                .replace("%health%", player.health.roundToLong().toString())
+                .replace("%maxhealth%", player.maxHealth.roundToLong().toString())
+                .replace("%level%", player.level.toString())
+                .replace("%gamemode%", player.gameMode.name.toLowerCase().capitalize())
         return replacedText
     }
 
