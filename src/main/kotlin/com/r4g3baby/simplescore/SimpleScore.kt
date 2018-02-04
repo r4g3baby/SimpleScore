@@ -37,7 +37,7 @@ class SimpleScore : JavaPlugin() {
         HandlerList.unregisterAll(this)
     }
 
-    fun load(runnable: Runnable? = null) {
+    fun load() {
         var firstLoad = false
         if (config == null) {
             firstLoad = true
@@ -57,7 +57,5 @@ class SimpleScore : JavaPlugin() {
         server.onlinePlayers
                 .filter { scoreboardManager!!.hasScoreboard(it.world) }
                 .forEach { scoreboardManager!!.createObjective(it) }
-
-        runnable?.run()
     }
 }
