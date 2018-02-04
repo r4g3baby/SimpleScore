@@ -28,14 +28,14 @@ class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
                     for (score in scores.keys) {
                         var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
                         if (value.length > 40) {
-                            value = value.substring(IntRange(0, 40))
+                            value = value.substring(IntRange(0, 39))
                         }
                         toDisplayScores[score] = value
                     }
 
                     var toDisplayTitle = replaceVariables(title, player)
                     if (toDisplayTitle.length > 32) {
-                        toDisplayTitle = toDisplayTitle.substring(IntRange(0, 32))
+                        toDisplayTitle = toDisplayTitle.substring(IntRange(0, 31))
                     }
 
                     objective.displayName = toDisplayTitle
