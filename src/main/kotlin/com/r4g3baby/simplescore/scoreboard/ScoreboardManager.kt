@@ -6,12 +6,30 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ScoreboardManager(private val plugin: SimpleScore) {
+    private val disabledScoreboards = ArrayList<UUID>()
+
+    fun toggleScoreboard(player: Player): Boolean {
+        return if (disabledScoreboards.contains(player.uniqueId)) {
+            disabledScoreboards.remove(player.uniqueId)
+            createObjective(player)
+            false
+        } else {
+            disabledScoreboards.add(player.uniqueId)
+            removeObjective(player)
+            true
+        }
+    }
+
     fun createObjective(player: Player) {
-        player.scoreboard = plugin.server.scoreboardManager.newScoreboard
-        val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
-        objective.displaySlot = DisplaySlot.SIDEBAR
+        if (!disabledScoreboards.contains(player.uniqueId)) {
+            player.scoreboard = plugin.server.scoreboardManager.newScoreboard
+            val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
+            objective.displaySlot = DisplaySlot.SIDEBAR
+        }
     }
 
     fun removeObjective(player: Player) {

@@ -3,5 +3,8 @@ Help: |
   &8/SS reload &7to reload the plugin
   &8/SS toggle &7to toggle the scoreboard
 Permission: "&cYou don't have permission to execute this command."
+OnlyPlayers: "&cOnly players can execute this command."
 Reloading: "&6Reloading plugin..."
 Reloaded: "&aPlugin reloaded."
+Enabled: "&aScoreboard enabled."
+Disabled: "&cScoreboard disabled."
