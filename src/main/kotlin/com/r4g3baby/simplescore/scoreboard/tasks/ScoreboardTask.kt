@@ -25,7 +25,7 @@ class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
 
                     val toDisplayScores = HashMap<Int, String>()
                     for (score in scores.keys) {
-                        var value = preventDuplicate(replaceVariables(scores[score]!!, player), toDisplayScores.values)
+                        var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
                         if (value.length > 40) {
                             value = value.substring(IntRange(0, 40))
                         }
@@ -62,9 +62,9 @@ class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
         return replacedText
     }
 
-    private fun preventDuplicate(text: String, values: Collection<String>): String {
+    private fun preventDuplicates(text: String, values: Collection<String>): String {
         if (values.contains(text)) {
-            return preventDuplicate(text + ChatColor.RESET, values)
+            return preventDuplicates(text + ChatColor.RESET, values)
         }
         return text
     }
