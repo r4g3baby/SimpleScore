@@ -1,34 +1,40 @@
 # Scoreboard update time in ticks (20 ticks = 1 second)
-UpdateTime: 30
+UpdateTime: 20
 
 # Per world scoreboards
 Worlds:
   world:
     Titles:
-    - "&9%server%"
-    - "&b%server%"
+    - "&cSimpleScore"
+    - "&eSimpleScore"
+    - "&aSimpleScore"
+    - "&bSimpleScore"
+    - "&5SimpleScore"
     Scores:
+      6:
+      - "&a&lOnline&8:"
+      5:
+      - "&7%online%&8/&7%maxplayers%"
+      4:
+      - ""
+      3:
+      - "&9&lSupports&8:"
       2:
-      - "&aSupports"
-      - "&bOn your World:"
-      - "&cOnline:"
+      - "&bPlaceholderAPI"
       1:
-      - "&aPlaceholderAPI"
-      - "&b%onworld% players"
-      - "&c%online%&8/&c%maxplayers%"
+      - "----------------"
   world_the_end:
     Titles:
-    - "&9Title"
-    - "&bTitle"
+    - "&cSimpleScore"
+    - "&eSimpleScore"
+    - "&aSimpleScore"
+    - "&bSimpleScore"
+    - "&5SimpleScore"
     Scores:
       2:
-      - "&aCurrent world"
-      - "&bLorem"
-      - "Hello c;"
+      - "&a&lWorld&8:"
       1:
-      - "&a%world%"
-      - "&bIpsum"
-      - "Hi"
+      - "&7%world%"
 
 # Shared scoreboards
 Shared:
