@@ -9,5 +9,5 @@ website: ${project.url}
 commands:
   SimpleScore:
     description: Manage plugin functionalities
-    aliases: [ss]
+    aliases: [sb]
     usage: /<command> <args>
