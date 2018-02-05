@@ -51,8 +51,9 @@ class SimpleScore : JavaPlugin() {
         if (firstLoad) {
             getCommand(name).executor = MainCmd(this)
             server.pluginManager.registerEvents(ScoreboardListener(this), this)
-            server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config!!.updateTime.toLong())
-        }
+        } else server.scheduler.cancelTasks(this)
+
+        server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config!!.updateTime.toLong())
 
         server.onlinePlayers
                 .filter { scoreboardManager!!.hasScoreboard(it.world) }
