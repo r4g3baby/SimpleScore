@@ -23,7 +23,7 @@ class UpdateChecker(plugin: JavaPlugin, pluginID: Int, consumer: Consumer<String
                 conn.connectTimeout = 3000
                 conn.readTimeout = 3000
                 conn.setRequestProperty("Accept", "application/json")
-                conn.setRequestProperty("User-Agent", plugin.name)
+                conn.setRequestProperty("User-Agent", "${plugin.name}/${plugin.description.version}")
 
                 val versions = JSONValue.parseWithException(BufferedReader(InputStreamReader(conn.inputStream))) as JSONArray
                 val latestVersion = ((versions[0] as JSONObject)["name"] as String).replace(".", "")
