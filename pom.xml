@@ -14,7 +14,7 @@
     <url>https://r4g3baby.com</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.2.21</kotlin.version>
+        <kotlin.version>1.2.31</kotlin.version>
     </properties>
 
     <repositories>

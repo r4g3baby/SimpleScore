@@ -22,7 +22,8 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                     if (worldSec.isConfigurationSection("Scores")) {
                         val scoresSec = worldSec.getConfigurationSection("Scores")
                         for (score in scoresSec.getKeys(false).filter { !scores.containsKey(it.toInt()) }) {
-                            scores[score.toInt()] = LinkedList(scoresSec.getStringList(score))
+                            val scoreInt = score.toInt()
+                            scores[scoreInt] = LinkedList(scoresSec.getStringList(score))
                         }
                     }
                     worlds[world] = ScoreboardWorld(titles, scores)
