@@ -7,7 +7,8 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
 
 class ScoreboardListener(private val plugin: SimpleScore) : Listener {
-    @EventHandler fun onPlayerJoin(e: PlayerJoinEvent) {
+    @EventHandler
+    fun onPlayerJoin(e: PlayerJoinEvent) {
         if (plugin.scoreboardManager != null) {
             if (!plugin.scoreboardManager!!.hasObjective(e.player)) {
                 plugin.scoreboardManager!!.createObjective(e.player)
@@ -15,7 +16,8 @@ class ScoreboardListener(private val plugin: SimpleScore) : Listener {
         }
     }
 
-    @EventHandler fun onPlayerChangedWorld(e: PlayerChangedWorldEvent) {
+    @EventHandler
+    fun onPlayerChangedWorld(e: PlayerChangedWorldEvent) {
         if (plugin.scoreboardManager != null) {
             if (plugin.scoreboardManager!!.hasObjective(e.player)) {
                 if (!plugin.scoreboardManager!!.hasScoreboard(e.player.world)) {

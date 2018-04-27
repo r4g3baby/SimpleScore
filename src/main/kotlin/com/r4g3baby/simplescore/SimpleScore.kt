@@ -14,13 +14,13 @@ import java.util.function.Consumer
 
 class SimpleScore : JavaPlugin() {
     var config: MainConfig? = null
-    private set
+        private set
     var messagesConfig: MessagesConfig? = null
-    private set
+        private set
     var scoreboardManager: ScoreboardManager? = null
-    private set
+        private set
     var placeholderAPI: Boolean = false
-    private set
+        private set
 
     override fun onEnable() {
         load()
