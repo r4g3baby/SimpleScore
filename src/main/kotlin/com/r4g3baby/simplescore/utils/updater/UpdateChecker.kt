@@ -12,7 +12,7 @@ class UpdateChecker(plugin: JavaPlugin, pluginID: Int, consumer: Consumer<String
     private val _spigotUrl = "https://www.spigotmc.org/resources/%s"
 
     init {
-        plugin.server.scheduler.runTaskAsynchronously(plugin, {
+        plugin.server.scheduler.runTaskAsynchronously(plugin) {
             try {
                 val conn = URL(_spigotApi.format(pluginID)).openConnection() as HttpURLConnection
                 conn.requestMethod = "GET"
@@ -34,6 +34,6 @@ class UpdateChecker(plugin: JavaPlugin, pluginID: Int, consumer: Consumer<String
                 conn.disconnect()
             } catch (ignored: Exception) {
             }
-        })
+        }
     }
 }

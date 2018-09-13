@@ -49,29 +49,24 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun hasScoreboard(world: World): Boolean {
-        if (plugin.config != null) {
-            if (plugin.config!!.worlds.containsKey(world.name) || plugin.config!!.shared.any { it.value.contains(world.name) }) {
-                return true
-            }
+        if (plugin.config.worlds.containsKey(world.name) || plugin.config.shared.any { it.value.contains(world.name) }) {
+            return true
         }
         return false
     }
 
     fun getScoreboard(world: World): ScoreboardWorld? {
-        if (plugin.config != null) {
-            val worlds = plugin.config!!.worlds
-            return if (!worlds.containsKey(world.name)) {
-                val shared = plugin.config!!.shared.filter { it.value.contains(world.name) }
-                if (!shared.isEmpty()) {
-                    worlds[shared.keys.first()]
-                } else {
-                    null
-                }
+        val worlds = plugin.config.worlds
+        return if (!worlds.containsKey(world.name)) {
+            val shared = plugin.config.shared.filter { it.value.contains(world.name) }
+            if (!shared.isEmpty()) {
+                worlds[shared.keys.first()]
             } else {
-                worlds[world.name]
+                null
             }
+        } else {
+            worlds[world.name]
         }
-        return null
     }
 
     private fun getPlayerIdentifier(player: Player): String {

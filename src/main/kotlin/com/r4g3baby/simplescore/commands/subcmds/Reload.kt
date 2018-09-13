@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender
 
 class Reload(private val plugin: SimpleScore) : SubCmd("reload", "simplescore.reload") {
     override fun run(sender: CommandSender, args: List<String>) {
-        sender.sendMessage(plugin.messagesConfig?.reloading)
+        sender.sendMessage(plugin.messagesConfig.reloading)
         plugin.load()
-        sender.sendMessage(plugin.messagesConfig?.reloaded)
+        sender.sendMessage(plugin.messagesConfig.reloaded)
     }
 }

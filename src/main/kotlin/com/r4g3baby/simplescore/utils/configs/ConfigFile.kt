@@ -24,6 +24,4 @@ open class ConfigFile(plugin: JavaPlugin, name: String) : File(plugin.dataFolder
 
         config = YamlConfiguration.loadConfiguration(this)
     }
-
-    protected fun saveConfig() = config.save(this)
 }

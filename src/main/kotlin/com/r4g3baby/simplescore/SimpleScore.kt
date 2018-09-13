@@ -13,11 +13,11 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.util.function.Consumer
 
 class SimpleScore : JavaPlugin() {
-    var config: MainConfig? = null
+    lateinit var config: MainConfig
         private set
-    var messagesConfig: MessagesConfig? = null
+    lateinit var messagesConfig: MessagesConfig
         private set
-    var scoreboardManager: ScoreboardManager? = null
+    lateinit var scoreboardManager: ScoreboardManager
         private set
     var placeholderAPI: Boolean = false
         private set
@@ -37,12 +37,8 @@ class SimpleScore : JavaPlugin() {
         HandlerList.unregisterAll(this)
     }
 
+    private var firstLoad = true
     fun load() {
-        var firstLoad = false
-        if (config == null) {
-            firstLoad = true
-        }
-
         config = MainConfig(this)
         messagesConfig = MessagesConfig(this)
         scoreboardManager = ScoreboardManager(this)
@@ -51,12 +47,13 @@ class SimpleScore : JavaPlugin() {
         if (firstLoad) {
             getCommand(name).executor = MainCmd(this)
             server.pluginManager.registerEvents(ScoreboardListener(this), this)
+            firstLoad = false
         } else server.scheduler.cancelTasks(this)
 
-        server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config!!.updateTime.toLong())
+        server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config.updateTime.toLong())
 
         server.onlinePlayers
-                .filter { scoreboardManager!!.hasScoreboard(it.world) }
-                .forEach { scoreboardManager!!.createObjective(it) }
+                .filter { scoreboardManager.hasScoreboard(it.world) }
+                .forEach { scoreboardManager.createObjective(it) }
     }
 }
