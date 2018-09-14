@@ -2,6 +2,8 @@ Help: |
   &6SimpleScore &7plugin made by &cR4G3_BABY
   &8/SB reload &7to reload the plugin
   &8/SB toggle &7to toggle the scoreboard
+
+Prefix: "&8[&bSimpleScore&8] "
 Permission: "&cYou don't have permission to execute this command."
 OnlyPlayers: "&cOnly players can execute this command."
 Reloading: "&6Reloading plugin..."
