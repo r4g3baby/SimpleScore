@@ -23,7 +23,7 @@ class SimpleScore : JavaPlugin() {
         private set
 
     override fun onEnable() {
-        load()
+        load(true)
 
         MetricsLite(this)
         UpdateChecker(this, 23243, Consumer {
@@ -37,8 +37,7 @@ class SimpleScore : JavaPlugin() {
         HandlerList.unregisterAll(this)
     }
 
-    private var firstLoad = true
-    fun load() {
+    fun load(firstLoad: Boolean = false) {
         config = MainConfig(this)
         messagesConfig = MessagesConfig(this)
         scoreboardManager = ScoreboardManager(this)
@@ -47,7 +46,6 @@ class SimpleScore : JavaPlugin() {
         if (firstLoad) {
             getCommand(name).executor = MainCmd(this)
             server.pluginManager.registerEvents(ScoreboardListener(this), this)
-            firstLoad = false
         } else server.scheduler.cancelTasks(this)
 
         server.scheduler.runTaskTimerAsynchronously(this, ScoreboardTask(this), 20L, config.updateTime.toLong())
