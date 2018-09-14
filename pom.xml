@@ -6,7 +6,7 @@
 
     <groupId>com.r4g3baby</groupId>
     <artifactId>SimpleScore</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <packaging>jar</packaging>
 
     <name>SimpleScore</name>
