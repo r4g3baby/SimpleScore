@@ -5,6 +5,7 @@ softdepend: [PlaceholderAPI, Multiverse-Core, MultiWorld]
 authors: [R4G3_BABY]
 description: "${project.description}"
 website: ${project.url}
+api-version: 1.13
 
 commands:
   SimpleScore:
