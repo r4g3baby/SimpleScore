@@ -1,6 +1,9 @@
 # Scoreboard update time in ticks (20 ticks = 1 second)
 UpdateTime: 20
 
+# Save which players have the scoreboard disabled
+SavePlayers: true
+
 # Per world scoreboards
 Worlds:
   world:

@@ -6,7 +6,7 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import kotlin.math.roundToLong
 
-class ScoreboardTask(private val plugin: SimpleScore) : Runnable {
+class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
     override fun run() {
         for (world in plugin.server.worlds.filter { plugin.scoreboardManager.hasScoreboard(it) }) {
             val scoreboard = plugin.scoreboardManager.getScoreboard(world)!!

@@ -1,16 +1,87 @@
 package com.r4g3baby.simplescore.scoreboard
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.ScoreboardWorld
+import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
+import java.io.*
 import java.util.*
+import java.util.logging.Level
 import kotlin.collections.ArrayList
 
+
 class ScoreboardManager(private val plugin: SimpleScore) {
-    private val disabledScoreboards = ArrayList<UUID>()
+    private val _disabledDataFile = File(plugin.dataFolder, "data" + File.separator + "scoreboards")
+    private var disabledScoreboards: MutableList<UUID> = ArrayList()
+    private val scoreboardRunnable: ScoreboardRunnable
+    private var scoreboardTask: BukkitTask
+
+    init {
+        plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
+
+        if (plugin.config.savePlayers) {
+            plugin.logger.info("Loading disabled scoreboards...")
+
+            try {
+                if (_disabledDataFile.exists()) {
+                    FileInputStream(_disabledDataFile).use { fis ->
+                        ObjectInputStream(fis).use { ois ->
+                            val content = ois.readObject()
+                            if (content is ArrayList<*>) {
+                                disabledScoreboards = content.filterIsInstance<UUID>() as MutableList<UUID>
+                            }
+                        }
+                    }
+                }
+
+                plugin.logger.info("Disabled scoreboards loaded.")
+            } catch (e: IOException) {
+                plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", e)
+            }
+        }
+
+        scoreboardRunnable = ScoreboardRunnable(plugin)
+        scoreboardTask = plugin.server.scheduler.runTaskTimerAsynchronously(plugin, scoreboardRunnable, 20L, plugin.config.updateTime)
+    }
+
+    fun reload() {
+        if (!plugin.config.savePlayers) {
+            disabledScoreboards.clear()
+        }
+
+        scoreboardTask.cancel()
+        scoreboardTask = plugin.server.scheduler.runTaskTimerAsynchronously(plugin, scoreboardRunnable, 20L, plugin.config.updateTime)
+    }
+
+    fun disable() {
+        if (plugin.config.savePlayers) {
+            plugin.logger.info("Saving disabled scoreboards...")
+
+            try {
+                if (!_disabledDataFile.parentFile.exists()) {
+                    _disabledDataFile.parentFile.mkdirs()
+                }
+                if (!_disabledDataFile.exists()) {
+                    _disabledDataFile.createNewFile()
+                }
+
+                FileOutputStream(_disabledDataFile).use { fos ->
+                    ObjectOutputStream(fos).use { oos ->
+                        oos.writeObject(disabledScoreboards)
+                    }
+                }
+
+                plugin.logger.info("Disabled scoreboards saved.")
+            } catch (e: IOException) {
+                plugin.logger.log(Level.WARNING, "Error while saving disabled scoreboards", e)
+            }
+        }
+    }
 
     fun toggleScoreboard(player: Player): Boolean {
         return if (disabledScoreboards.contains(player.uniqueId)) {

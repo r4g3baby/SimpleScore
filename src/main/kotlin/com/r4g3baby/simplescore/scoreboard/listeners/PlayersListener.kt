@@ -5,12 +5,20 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
-class ScoreboardListener(private val plugin: SimpleScore) : Listener {
+class PlayersListener(private val plugin: SimpleScore) : Listener {
     @EventHandler
     fun onPlayerJoin(e: PlayerJoinEvent) {
         if (!plugin.scoreboardManager.hasObjective(e.player)) {
             plugin.scoreboardManager.createObjective(e.player)
+        }
+    }
+
+    @EventHandler
+    fun onPlayerQuit(e: PlayerQuitEvent) {
+        if (plugin.scoreboardManager.hasObjective(e.player)) {
+            plugin.scoreboardManager.removeObjective(e.player)
         }
     }
 
