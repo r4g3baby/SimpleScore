@@ -24,7 +24,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     init {
         plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
 
-        if (plugin.config.savePlayers) {
+        if (plugin.config.saveScoreboards) {
             plugin.logger.info("Loading disabled scoreboards...")
 
             try {
@@ -50,7 +50,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun reload() {
-        if (!plugin.config.savePlayers) {
+        if (!plugin.config.saveScoreboards) {
             disabledScoreboards.clear()
         }
 
@@ -59,7 +59,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun disable() {
-        if (plugin.config.savePlayers) {
+        if (plugin.config.saveScoreboards) {
             plugin.logger.info("Saving disabled scoreboards...")
 
             try {
@@ -108,8 +108,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun hasObjective(player: Player): Boolean {
-        return player.scoreboard != null &&
-                player.scoreboard.getObjective(getPlayerIdentifier(player)) != null
+        return player.scoreboard != null && player.scoreboard.getObjective(getPlayerIdentifier(player)) != null
     }
 
     fun getObjective(player: Player): Objective? {

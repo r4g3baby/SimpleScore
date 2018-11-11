@@ -8,7 +8,7 @@ import kotlin.collections.HashMap
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val updateTime = config.getLong("UpdateTime", 20L)
-    val savePlayers = config.getBoolean("SavePlayers", true)
+    val saveScoreboards = config.getBoolean("SaveScoreboards", true)
     val worlds: MutableMap<String, ScoreboardWorld> = HashMap()
     val shared: MutableMap<String, List<String>> = HashMap()
 

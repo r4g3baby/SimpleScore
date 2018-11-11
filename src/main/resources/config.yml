@@ -2,7 +2,7 @@
 UpdateTime: 20
 
 # Save which players have the scoreboard disabled
-SavePlayers: true
+SaveScoreboards: true
 
 # Per world scoreboards
 Worlds:
