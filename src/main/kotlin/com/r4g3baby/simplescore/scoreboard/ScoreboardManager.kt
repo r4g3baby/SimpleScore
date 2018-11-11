@@ -17,7 +17,7 @@ import kotlin.collections.ArrayList
 
 class ScoreboardManager(private val plugin: SimpleScore) {
     private val _disabledDataFile = File(plugin.dataFolder, "data" + File.separator + "scoreboards")
-    private var disabledScoreboards: MutableList<UUID> = ArrayList()
+    private val disabledScoreboards: MutableList<UUID> = ArrayList()
     private val scoreboardRunnable: ScoreboardRunnable
     private var scoreboardTask: BukkitTask
 
@@ -33,7 +33,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
                         ObjectInputStream(fis).use { ois ->
                             val content = ois.readObject()
                             if (content is ArrayList<*>) {
-                                disabledScoreboards = content.filterIsInstance<UUID>() as MutableList<UUID>
+                                disabledScoreboards.addAll(content.filterIsInstance<UUID>())
                             }
                         }
                     }
