@@ -4,7 +4,7 @@ import com.r4g3baby.simplescore.SimpleScore
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
-import kotlin.math.roundToLong
+import kotlin.math.roundToInt
 
 class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
     override fun run() {
@@ -58,6 +58,8 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
         if (plugin.placeholderAPI) {
             replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
         }
+
+        val hearts = getHearts(player)
         replacedText = replacedText
                 .replace("%online%", plugin.server.onlinePlayers.count().toString())
                 .replace("%onworld%", player.world.players.count().toString())
@@ -66,10 +68,12 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
                 .replace("%server%", plugin.server.serverName)
                 .replace("%player%", player.name)
                 .replace("%playerdisplayname%", player.displayName)
-                .replace("%health%", player.health.roundToLong().toString())
-                .replace("%maxhealth%", player.maxHealth.roundToLong().toString())
+                .replace("%health%", player.health.roundToInt().toString())
+                .replace("%maxhealth%", player.maxHealth.roundToInt().toString())
+                .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
                 .replace("%level%", player.level.toString())
                 .replace("%gamemode%", player.gameMode.name.toLowerCase().capitalize())
+
         return replacedText
     }
 
@@ -79,4 +83,6 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
         }
         return text
     }
+
+    private fun getHearts(player: Player) = ((player.health / player.maxHealth) * 10).roundToInt()
 }

@@ -14,7 +14,6 @@ import java.util.*
 import java.util.logging.Level
 import kotlin.collections.ArrayList
 
-
 class ScoreboardManager(private val plugin: SimpleScore) {
     private val _disabledDataFile = File(plugin.dataFolder, "data" + File.separator + "scoreboards")
     private val disabledScoreboards: MutableList<UUID> = ArrayList()
