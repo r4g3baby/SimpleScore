@@ -35,7 +35,9 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
 
     override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): MutableList<String> {
         if (args.size == 1) {
-            return subCmds.asSequence().filter { it.name.startsWith(args[0], true) }.map { it.name }.toCollection(ArrayList())
+            return subCmds.asSequence()
+                    .filter { it.name.startsWith(args[0], true) && sender.hasPermission(it.permission) }
+                    .map { it.name }.toCollection(ArrayList())
         }
         return arrayListOf()
     }
