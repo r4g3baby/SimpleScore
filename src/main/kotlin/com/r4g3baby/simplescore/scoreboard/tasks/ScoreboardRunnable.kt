@@ -4,21 +4,19 @@ import com.r4g3baby.simplescore.SimpleScore
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.roundToInt
 
-class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
+class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     override fun run() {
         for (world in plugin.server.worlds.filter { plugin.scoreboardManager.hasScoreboard(it) }) {
             val scoreboard = plugin.scoreboardManager.getScoreboard(world)!!
 
-            val title = scoreboard.titles.poll()
+            val title = scoreboard.titles.nextFrame()
             val scores = HashMap<Int, String>()
             for (score in scoreboard.scores.keys) {
-                val text = scoreboard.scores[score]!!.poll()
-                scores[score] = text
-                scoreboard.scores[score]!!.offer(text)
+                scores[score] = scoreboard.scores.getValue(score).nextFrame()
             }
-            scoreboard.titles.offer(title)
 
             for (player in world.players.filter { plugin.scoreboardManager.hasObjective(it) }) {
                 val objective = plugin.scoreboardManager.getObjective(player)!!
@@ -59,7 +57,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
             replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
         }
 
-        val hearts = getHearts(player)
+        val hearts = ((player.health / player.maxHealth) * 10).roundToInt()
         replacedText = replacedText
                 .replace("%online%", plugin.server.onlinePlayers.count().toString())
                 .replace("%onworld%", player.world.players.count().toString())
@@ -83,6 +81,4 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : Runnable {
         }
         return text
     }
-
-    private fun getHearts(player: Player) = ((player.health / player.maxHealth) * 10).roundToInt()
 }

@@ -6,7 +6,6 @@ import com.r4g3baby.simplescore.scoreboard.models.ScoreboardWorld
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 import java.io.*
@@ -17,8 +16,6 @@ import kotlin.collections.ArrayList
 class ScoreboardManager(private val plugin: SimpleScore) {
     private val _disabledDataFile = File(plugin.dataFolder, "data" + File.separator + "scoreboards")
     private val disabledScoreboards: MutableList<UUID> = ArrayList()
-    private val scoreboardRunnable: ScoreboardRunnable
-    private var scoreboardTask: BukkitTask
 
     init {
         plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
@@ -44,17 +41,13 @@ class ScoreboardManager(private val plugin: SimpleScore) {
             }
         }
 
-        scoreboardRunnable = ScoreboardRunnable(plugin)
-        scoreboardTask = plugin.server.scheduler.runTaskTimerAsynchronously(plugin, scoreboardRunnable, 20L, plugin.config.updateTime)
+        ScoreboardRunnable(plugin).runTaskTimerAsynchronously(plugin, 20L, 1L)
     }
 
     fun reload() {
         if (!plugin.config.saveScoreboards) {
             disabledScoreboards.clear()
         }
-
-        scoreboardTask.cancel()
-        scoreboardTask = plugin.server.scheduler.runTaskTimerAsynchronously(plugin, scoreboardRunnable, 20L, plugin.config.updateTime)
     }
 
     fun disable() {
@@ -118,24 +111,14 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun hasScoreboard(world: World): Boolean {
-        if (plugin.config.worlds.containsKey(world.name) || plugin.config.shared.any { it.value.contains(world.name) }) {
+        if (plugin.config.worlds.containsKey(world.name)) {
             return true
         }
         return false
     }
 
     fun getScoreboard(world: World): ScoreboardWorld? {
-        val worlds = plugin.config.worlds
-        return if (!worlds.containsKey(world.name)) {
-            val shared = plugin.config.shared.filter { it.value.contains(world.name) }
-            if (!shared.isEmpty()) {
-                worlds[shared.keys.first()]
-            } else {
-                null
-            }
-        } else {
-            worlds[world.name]
-        }
+        return plugin.config.worlds[world.name]
     }
 
     private fun getPlayerIdentifier(player: Player): String {

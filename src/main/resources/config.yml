@@ -1,5 +1,5 @@
-# Scoreboard update time in ticks (20 ticks = 1 second)
-UpdateTime: 20
+# Default time in ticks for a score to stay on the scoreboard (20 ticks = 1 second)
+DefaultUpdateTime: 20
 
 # Save which players have the scoreboard disabled
 SaveScoreboards: true
@@ -8,38 +8,60 @@ SaveScoreboards: true
 Worlds:
   world:
     Titles:
-    - "&cSimpleScore"
-    - "&eSimpleScore"
-    - "&aSimpleScore"
-    - "&bSimpleScore"
-    - "&5SimpleScore"
+      - "&7&LYour&6&lServer"
     Scores:
+      13:
+        - "&7&m+----------------+"
+        - "&7&m------------------"
+      12:
+        - "&7» &6&lPlayer"
+      11:
+        - "    &7%player%"
+      10:
+        - ""
+      9:
+        - "&7» &6&lHealth"
+      8:
+        - "    %hearts%"
+      7:
+        - ""
       6:
-      - "&a&lOnline&8:"
+        - "&7» &6&lServer"
       5:
-      - "&7%online%&8/&7%maxplayers%"
+        - "    &7%server%"
       4:
-      - ""
+        - ""
       3:
-      - "&9&lSupports&8:"
+        - "&7» &6&lOnline Players"
       2:
-      - "&bPlaceholderAPI"
+        - "    &7%online% &6players"
       1:
-      - "----------------"
+        - "&7&m+----------------+"
+        - "&7&m------------------"
   world_the_end:
     Titles:
-    - "&cSimpleScore"
-    - "&eSimpleScore"
-    - "&aSimpleScore"
-    - "&bSimpleScore"
-    - "&5SimpleScore"
+      - text: "&c100 ticks title"
+        time: 100
+      - text: "&a50 ticks title"
+        time: 50
     Scores:
+      6:
+        - "&7You can set a per score or title time"
+      5:
+        - "&7instead of using the default value"
+      4:
+        - ""
+      3:
+        - text: "&7This will last for &810 seconds"
+          time: 200
+        - text: "&7while this only lasts for &85 seconds"
+          time: 100
       2:
-      - "&a&lWorld&8:"
+        - ""
       1:
-      - "&7%world%"
+        - "&aYour current world: &6%world%"
 
 # Shared scoreboards
 Shared:
   world_the_end:
-  - "world_nether"
+    - "world_nether"

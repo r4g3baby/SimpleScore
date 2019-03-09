@@ -11,4 +11,4 @@ commands:
   SimpleScore:
     description: Manage plugin functionalities
     aliases: [sb]
-    usage: /<command> <args>
+    usage: /<command> [args]
