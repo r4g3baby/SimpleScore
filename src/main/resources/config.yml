@@ -1,5 +1,5 @@
-# Default time in ticks for a score to stay on the scoreboard (20 ticks = 1 second)
-DefaultUpdateTime: 20
+# Time in ticks for a score to stay on the scoreboard (20 ticks = 1 second)
+UpdateTime: 20
 
 # Save which players have the scoreboard disabled
 SaveScoreboards: true
