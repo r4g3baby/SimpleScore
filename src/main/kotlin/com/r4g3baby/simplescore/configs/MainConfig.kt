@@ -13,7 +13,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     init {
         if (config.isConfigurationSection("Worlds")) {
             val worldsSec = config.getConfigurationSection("Worlds")
-            for (world in worldsSec.getKeys(false).filter { plugin.server.getWorld(it) != null && !worlds.containsKey(it) }) {
+            for (world in worldsSec.getKeys(false).filter { !worlds.containsKey(it) }) {
                 if (worldsSec.isConfigurationSection(world)) {
                     val worldSec = worldsSec.getConfigurationSection(world)
 
@@ -53,7 +53,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
         if (config.isConfigurationSection("Shared")) {
             val sharedWorlds = config.getConfigurationSection("Shared")
             for (shared in sharedWorlds.getKeys(false).filter { worlds.containsKey(it) }) {
-                for (world in sharedWorlds.getStringList(shared).filter { plugin.server.getWorld(it) != null }) {
+                for (world in sharedWorlds.getStringList(shared).filter { !worlds.containsKey(it) }) {
                     val original = worlds.getValue(shared)
                     worlds[world] = ScoreboardWorld(original.titles.clone(), original.scores.mapValues { entry -> entry.value.clone() })
                 }

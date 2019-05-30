@@ -1,11 +1,11 @@
 name: ${project.name}
 version: ${project.version}
 main: ${project.groupId}.${project.artifactId}.${project.name}
-softdepend: [PlaceholderAPI, Multiverse-Core, MultiWorld, ReWorld]
+softdepend: [PlaceholderAPI]
 authors: [R4G3_BABY]
 description: "${project.description}"
 website: ${project.url}
-api-version: 1.13
+api-version: "1.13"
 
 commands:
   SimpleScore:
