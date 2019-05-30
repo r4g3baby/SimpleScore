@@ -9,12 +9,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 
 class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
-    private val subCmds = ArrayList<SubCmd>()
-
-    init {
-        subCmds.add(Reload(plugin))
-        subCmds.add(Toggle(plugin))
-    }
+    private val subCmds = listOf(
+            Reload(plugin), Toggle(plugin)
+    )
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
         if (args.isNotEmpty()) {
@@ -30,15 +27,15 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
         } else {
             sender.sendMessage(plugin.messagesConfig.help)
         }
+
         return true
     }
 
     override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): MutableList<String> {
-        if (args.size == 1) {
-            return subCmds.asSequence()
-                    .filter { it.name.startsWith(args[0], true) && sender.hasPermission(it.permission) }
-                    .map { it.name }.toCollection(ArrayList())
-        }
-        return arrayListOf()
+        return if (args.size == 1) {
+            subCmds.filter {
+                it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
+            }.map { it.name }.toCollection(ArrayList())
+        } else arrayListOf()
     }
 }

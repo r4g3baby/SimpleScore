@@ -7,7 +7,7 @@ import com.r4g3baby.simplescore.utils.configs.ConfigFile
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val saveScoreboards = config.getBoolean("SaveScoreboards", true)
-    val worlds: MutableMap<String, ScoreboardWorld> = HashMap()
+    val worlds = HashMap<String, ScoreboardWorld>()
 
     private val updateTime = config.getInt("UpdateTime", 20)
     init {

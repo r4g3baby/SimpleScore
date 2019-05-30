@@ -11,11 +11,11 @@ import org.bukkit.scoreboard.Objective
 import java.io.*
 import java.util.*
 import java.util.logging.Level
-import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class ScoreboardManager(private val plugin: SimpleScore) {
-    private val _disabledDataFile = File(plugin.dataFolder, "data" + File.separator + "scoreboards")
-    private val disabledScoreboards: MutableList<UUID> = ArrayList()
+    private val _disabledDataFile = File(plugin.dataFolder, "data${File.separator}scoreboards")
+    private val disabledScoreboards = HashSet<UUID>()
 
     init {
         plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
@@ -104,17 +104,13 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun getObjective(player: Player): Objective? {
-        if (hasObjective(player)) {
-            return player.scoreboard.getObjective(getPlayerIdentifier(player))
-        }
-        return null
+        return if (hasObjective(player)) {
+            player.scoreboard.getObjective(getPlayerIdentifier(player))
+        } else null
     }
 
     fun hasScoreboard(world: World): Boolean {
-        if (plugin.config.worlds.containsKey(world.name)) {
-            return true
-        }
-        return false
+        return plugin.config.worlds.containsKey(world.name)
     }
 
     fun getScoreboard(world: World): ScoreboardWorld? {

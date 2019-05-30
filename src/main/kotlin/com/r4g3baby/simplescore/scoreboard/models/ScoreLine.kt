@@ -1,8 +1,8 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
 class ScoreLine {
-    private var lines: MutableList<String> = ArrayList()
-    private var timings: MutableList<Int> = ArrayList()
+    private var lines = ArrayList<String>()
+    private var timings = ArrayList<Int>()
 
     fun add(text: String, time: Int) {
         lines.add(text)
