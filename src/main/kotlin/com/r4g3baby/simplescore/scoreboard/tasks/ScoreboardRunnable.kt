@@ -63,7 +63,6 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 .replace("%onworld%", player.world.players.count().toString())
                 .replace("%world%", player.world.name)
                 .replace("%maxplayers%", plugin.server.maxPlayers.toString())
-                .replace("%server%", plugin.server.serverName)
                 .replace("%player%", player.name)
                 .replace("%playerdisplayname%", player.displayName)
                 .replace("%health%", player.health.roundToInt().toString())
