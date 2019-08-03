@@ -18,35 +18,36 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 scores[score] = scoreboard.scores.getValue(score).nextFrame()
             }
 
-            for (player in world.players.filter { plugin.scoreboardManager.hasObjective(it) }) {
-                val objective = plugin.scoreboardManager.getObjective(player)!!
-
-                val toDisplayScores = HashMap<Int, String>()
-                for (score in scores.keys) {
-                    var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
-                    if (value.length > 40) {
-                        value = value.substring(IntRange(0, 39))
+            world.players.forEach { player ->
+                val objective = plugin.scoreboardManager.getObjective(player)
+                if (objective != null) {
+                    val toDisplayScores = HashMap<Int, String>()
+                    for (score in scores.keys) {
+                        var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
+                        if (value.length > 40) {
+                            value = value.substring(IntRange(0, 39))
+                        }
+                        toDisplayScores[score] = value
                     }
-                    toDisplayScores[score] = value
-                }
 
-                var toDisplayTitle = replaceVariables(title, player)
-                if (toDisplayTitle.length > 32) {
-                    toDisplayTitle = toDisplayTitle.substring(IntRange(0, 31))
-                }
-
-                objective.displayName = toDisplayTitle
-
-                for (score in toDisplayScores.keys) {
-                    val value = toDisplayScores[score]!!
-                    if (objective.getScore(value).score != score) {
-                        objective.getScore(value).score = score
+                    var toDisplayTitle = replaceVariables(title, player)
+                    if (toDisplayTitle.length > 32) {
+                        toDisplayTitle = toDisplayTitle.substring(IntRange(0, 31))
                     }
-                }
 
-                objective.scoreboard.entries
-                        .filter { !toDisplayScores.values.contains(it) }
-                        .forEach { objective.scoreboard.resetScores(it) }
+                    objective.displayName = toDisplayTitle
+
+                    for (score in toDisplayScores.keys) {
+                        val value = toDisplayScores[score]!!
+                        if (objective.getScore(value).score != score) {
+                            objective.getScore(value).score = score
+                        }
+                    }
+
+                    objective.scoreboard.entries
+                            .filter { !toDisplayScores.values.contains(it) }
+                            .forEach { objective.scoreboard.resetScores(it) }
+                }
             }
         }
     }
@@ -58,7 +59,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
         }
 
         val hearts = ((player.health / player.maxHealth) * 10).roundToInt()
-        replacedText = replacedText
+        return replacedText
                 .replace("%online%", plugin.server.onlinePlayers.count().toString())
                 .replace("%onworld%", player.world.players.count().toString())
                 .replace("%world%", player.world.name)
@@ -70,14 +71,11 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
                 .replace("%level%", player.level.toString())
                 .replace("%gamemode%", player.gameMode.name.toLowerCase().capitalize())
-
-        return replacedText
     }
 
     private fun preventDuplicates(text: String, values: Collection<String>): String {
-        if (values.contains(text)) {
-            return preventDuplicates(text + ChatColor.RESET, values)
-        }
-        return text
+        return if (values.contains(text)) {
+            preventDuplicates(text + ChatColor.RESET, values)
+        } else text
     }
 }

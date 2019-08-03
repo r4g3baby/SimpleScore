@@ -100,13 +100,11 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun hasObjective(player: Player): Boolean {
-        return player.scoreboard != null && player.scoreboard.getObjective(getPlayerIdentifier(player)) != null
+        return getObjective(player) != null
     }
 
     fun getObjective(player: Player): Objective? {
-        return if (hasObjective(player)) {
-            player.scoreboard.getObjective(getPlayerIdentifier(player))
-        } else null
+        return player.scoreboard?.getObjective(getPlayerIdentifier(player))
     }
 
     fun hasScoreboard(world: World): Boolean {

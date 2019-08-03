@@ -36,6 +36,6 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
             subCmds.filter {
                 it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
             }.map { it.name }.toCollection(ArrayList())
-        } else arrayListOf()
+        } else mutableListOf()
     }
 }
