@@ -1,42 +1,46 @@
-image: maven:3.6.0-jdk-8
+image: gradle:6.3-jdk8
 
 variables:
-  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
-cache:
-  key: $CI_JOB_NAME
-  paths:
-  - .m2/repository
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
 
 stages:
-- test
-- deploy
+  - build
+  - test
 
-.test: &test
-  stage: test
-  script:
-  - mvn $MAVEN_CLI_OPTS test-compile
-
-test:jdk8:
-  <<: *test
-  image: maven:3.6.0-jdk-8
-
-test:jdk10:
-  <<: *test
-  image: maven:3.6.0-jdk-10
-
-test:jdk11:
-  <<: *test
-  image: maven:3.6.0-jdk-11
-
-deploy:
-  stage: deploy
-  script:
-  - mvn $MAVEN_CLI_OPTS clean install
-  - for i in $(ls target | egrep -e '^[a-zA-Z]+-([0-9]|\.)+\.jar$'); do mkdir -p plugin; mv target/$(echo $i) -t $_; done
+build:
+  stage: build
+  script: gradle --build-cache shadowJar
   artifacts:
     paths:
-    - plugin
-  only:
-  - tags
+      - build/libs/*.jar
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+
+.tests:
+  stage: test
+  script: gradle check
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+      - .gradle
+
+test:jdk8:
+  image: gradle:6.3-jdk8
+  extends: .tests
+
+test:jdk11:
+  image: gradle:6.3-jdk11
+  extends: .tests
+
+test:jdk14:
+  image: gradle:6.3-jdk14
+  extends: .tests

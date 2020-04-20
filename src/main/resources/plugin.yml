@@ -1,10 +1,10 @@
-name: ${project.name}
-version: ${project.version}
-main: ${project.groupId}.${project.artifactId}.${project.name}
+name: @name@
+version: @version@
+main: @package@.@name@
 softdepend: [PlaceholderAPI]
 authors: [R4G3_BABY]
-description: "${project.description}"
-website: ${project.url}
+description: "@description@"
+website: @url@
 api-version: "1.13"
 
 commands:
