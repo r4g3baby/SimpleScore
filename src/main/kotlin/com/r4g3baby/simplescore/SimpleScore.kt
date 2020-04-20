@@ -22,7 +22,7 @@ class SimpleScore : JavaPlugin() {
     override fun onEnable() {
         reload(true)
 
-        MetricsLite(this)
+        MetricsLite(this, 644)
         UpdateChecker(this, 23243, Consumer {
             logger.warning("New version available download at:")
             logger.warning(it)
