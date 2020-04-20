@@ -1,13 +1,13 @@
 package com.r4g3baby.simplescore.utils.updater
 
-import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.Plugin
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.function.Consumer
 
-class UpdateChecker(plugin: JavaPlugin, pluginID: Int, consumer: Consumer<String?>) {
+class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: Consumer<String?>) {
     private val _spigotApi = "https://api.spigotmc.org/legacy/update.php?resource=%s"
     private val _spigotUrl = "https://www.spigotmc.org/resources/%s"
 

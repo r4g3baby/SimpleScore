@@ -41,7 +41,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
             }
         }
 
-        ScoreboardRunnable(plugin).runTaskTimerAsynchronously(plugin, 20L, 1L)
+        ScoreboardRunnable(plugin).runTaskTimer(plugin, 20L, 1L)
     }
 
     fun reload() {
@@ -108,14 +108,14 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun hasScoreboard(world: World): Boolean {
-        return plugin.config.worlds.containsKey(world.name)
+        return plugin.config.worlds.containsKey(world.name.toLowerCase())
     }
 
     fun getScoreboard(world: World): ScoreboardWorld? {
-        return plugin.config.worlds[world.name]
+        return plugin.config.worlds[world.name.toLowerCase()]
     }
 
     private fun getPlayerIdentifier(player: Player): String {
-        return player.uniqueId.toString().substring(0, 16)
+        return "sb${player.uniqueId.toString().replace("-", "").substring(0..13)}"
     }
 }

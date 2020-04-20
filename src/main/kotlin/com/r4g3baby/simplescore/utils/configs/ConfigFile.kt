@@ -2,13 +2,13 @@ package com.r4g3baby.simplescore.utils.configs
 
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
 
 @Suppress("LeakingThis")
-open class ConfigFile(plugin: JavaPlugin, name: String) : File(plugin.dataFolder, "$name.yml") {
+open class ConfigFile(plugin: Plugin, name: String) : File(plugin.dataFolder, "$name.yml") {
     protected val config: FileConfiguration
 
     init {

@@ -45,7 +45,7 @@ class SimpleScore : JavaPlugin() {
         } else scoreboardManager.reload()
 
         server.onlinePlayers
-                .filter { scoreboardManager.hasScoreboard(it.world) }
-                .forEach { scoreboardManager.createObjective(it) }
+            .filter { scoreboardManager.hasScoreboard(it.world) }
+            .forEach { scoreboardManager.createObjective(it) }
     }
 }

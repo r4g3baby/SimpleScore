@@ -20,23 +20,24 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
 
             world.players.forEach { player ->
                 val objective = plugin.scoreboardManager.getObjective(player)
-                if (objective != null) {
+                if (objective != null && objective.isModifiable) {
+                    var toDisplayTitle: String
                     val toDisplayScores = HashMap<Int, String>()
+
+                    toDisplayTitle = replaceVariables(title, player)
+                    if (toDisplayTitle.length > 32) {
+                        toDisplayTitle = toDisplayTitle.substring(0..31)
+                    }
+
                     for (score in scores.keys) {
                         var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
                         if (value.length > 40) {
-                            value = value.substring(IntRange(0, 39))
+                            value = value.substring(0..39)
                         }
                         toDisplayScores[score] = value
                     }
 
-                    var toDisplayTitle = replaceVariables(title, player)
-                    if (toDisplayTitle.length > 32) {
-                        toDisplayTitle = toDisplayTitle.substring(IntRange(0, 31))
-                    }
-
                     objective.displayName = toDisplayTitle
-
                     for (score in toDisplayScores.keys) {
                         val value = toDisplayScores[score]!!
                         if (objective.getScore(value).score != score) {
@@ -45,8 +46,8 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                     }
 
                     objective.scoreboard.entries
-                            .filter { !toDisplayScores.values.contains(it) }
-                            .forEach { objective.scoreboard.resetScores(it) }
+                        .filter { !toDisplayScores.values.contains(it) }
+                        .forEach { objective.scoreboard.resetScores(it) }
                 }
             }
         }
@@ -60,17 +61,17 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
 
         val hearts = ((player.health / player.maxHealth) * 10).roundToInt()
         return replacedText
-                .replace("%online%", plugin.server.onlinePlayers.count().toString())
-                .replace("%onworld%", player.world.players.count().toString())
-                .replace("%world%", player.world.name)
-                .replace("%maxplayers%", plugin.server.maxPlayers.toString())
-                .replace("%player%", player.name)
-                .replace("%playerdisplayname%", player.displayName)
-                .replace("%health%", player.health.roundToInt().toString())
-                .replace("%maxhealth%", player.maxHealth.roundToInt().toString())
-                .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
-                .replace("%level%", player.level.toString())
-                .replace("%gamemode%", player.gameMode.name.toLowerCase().capitalize())
+            .replace("%online%", plugin.server.onlinePlayers.count().toString())
+            .replace("%onworld%", player.world.players.count().toString())
+            .replace("%world%", player.world.name)
+            .replace("%maxplayers%", plugin.server.maxPlayers.toString())
+            .replace("%player%", player.name)
+            .replace("%playerdisplayname%", player.displayName)
+            .replace("%health%", player.health.roundToInt().toString())
+            .replace("%maxhealth%", player.maxHealth.roundToInt().toString())
+            .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
+            .replace("%level%", player.level.toString())
+            .replace("%gamemode%", player.gameMode.name.toLowerCase().capitalize())
     }
 
     private fun preventDuplicates(text: String, values: Collection<String>): String {

@@ -1,6 +1,6 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
-class ScoreLine {
+class ScoreLine : Cloneable {
     private var lines = ArrayList<String>()
     private var timings = ArrayList<Int>()
 
@@ -23,8 +23,8 @@ class ScoreLine {
         return lines[current]
     }
 
-    fun clone(): ScoreLine {
-        val clone = ScoreLine()
+    public override fun clone(): ScoreLine {
+        val clone = super.clone() as ScoreLine
         clone.lines = ArrayList(lines)
         clone.timings = ArrayList(timings)
         clone.current = current
