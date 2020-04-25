@@ -14,7 +14,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     init {
         if (config.isConfigurationSection("Worlds")) {
             val worldsSec = config.getConfigurationSection("Worlds")
-            for (world in worldsSec.getKeys(false).map { it.toLowerCase() }.filter { !worlds.containsKey(it) }) {
+            for (world in worldsSec.getKeys(false).filter { !worlds.containsKey(it.toLowerCase()) }) {
                 if (worldsSec.isConfigurationSection(world)) {
                     val worldSec = worldsSec.getConfigurationSection(world)
 
@@ -46,17 +46,17 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                             scores[score.toInt()] = scoreLine
                         }
                     }
-                    worlds[world] = ScoreboardWorld(titles, scores)
+                    worlds[world.toLowerCase()] = ScoreboardWorld(titles, scores)
                 }
             }
         }
 
         if (config.isConfigurationSection("Shared")) {
             val sharedWorlds = config.getConfigurationSection("Shared")
-            for (shared in sharedWorlds.getKeys(false).map { it.toLowerCase() }.filter { worlds.containsKey(it) }) {
-                for (world in sharedWorlds.getStringList(shared).map { it.toLowerCase() }.filter { !worlds.containsKey(it) }) {
-                    val original = worlds.getValue(shared)
-                    worlds[world] = ScoreboardWorld(original.titles.clone(), original.scores.mapValues { entry -> entry.value.clone() })
+            for (shared in sharedWorlds.getKeys(false).filter { worlds.containsKey(it.toLowerCase()) }) {
+                for (world in sharedWorlds.getStringList(shared).filter { !worlds.containsKey(it.toLowerCase()) }) {
+                    val original = worlds.getValue(shared.toLowerCase())
+                    worlds[world.toLowerCase()] = ScoreboardWorld(original.titles.clone(), original.scores.mapValues { entry -> entry.value.clone() })
                 }
             }
         }
