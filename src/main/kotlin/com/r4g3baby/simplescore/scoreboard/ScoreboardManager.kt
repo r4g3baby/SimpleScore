@@ -89,7 +89,11 @@ class ScoreboardManager(private val plugin: SimpleScore) {
 
     fun createObjective(player: Player) {
         if (!disabledScoreboards.contains(player.uniqueId)) {
-            player.scoreboard = plugin.server.scoreboardManager.newScoreboard
+            if (player.scoreboard != null && player.scoreboard != plugin.server.scoreboardManager.mainScoreboard) {
+                player.scoreboard.getObjective(getPlayerIdentifier(player))?.unregister()
+            } else {
+                player.scoreboard = plugin.server.scoreboardManager.newScoreboard
+            }
             val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
             objective.displaySlot = DisplaySlot.SIDEBAR
         }
