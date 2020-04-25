@@ -50,5 +50,8 @@ tasks {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
         relocate("org.bstats", "com.r4g3baby.simplescore.shaded.bstats")
+        relocate("org.jetbrains", "com.r4g3baby.simplescore.shaded.jetbrains")
+        relocate("org.intellij", "com.r4g3baby.simplescore.shaded.intellij")
+        relocate("kotlin", "com.r4g3baby.simplescore.shaded.kotlin")
     }
 }
