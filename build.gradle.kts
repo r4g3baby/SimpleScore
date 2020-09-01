@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.3.72"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    kotlin("jvm") version "1.4.0"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 group = "com.r4g3baby"
@@ -23,12 +23,17 @@ dependencies {
     implementation("org.bstats:bstats-bukkit-lite:1.7")
 }
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 tasks {
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     processResources {
         filteringCharset = "UTF-8"
         filter<org.apache.tools.ant.filters.ReplaceTokens>(
@@ -40,10 +45,6 @@ tasks {
                 Pair("version", project.version)
             )
         )
-    }
-
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
     }
 
     shadowJar {
