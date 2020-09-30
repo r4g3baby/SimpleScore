@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew shadowJar
+
+      - name: Generate Changelog
+        id: generate_changelog
+        run: |
+          git fetch --unshallow --tags
+          tag=$(git tag --sort version:refname | tail -n 2 | head -n 1)
+          if [ "$tag" ]; then
+            changelog=$(git log --oneline --no-decorate $tag..HEAD)
+          else
+            changelog=$(git log --oneline --no-decorate)
+          fi
+          changelog="${changelog//'%'/'%25'}"
+          changelog="${changelog//$'\n'/'%0A' - }"
+          changelog=" - ${changelog//$'\r'/'%0D'}"
+          echo "::set-output name=changelog::$changelog"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            ${{ steps.generate_changelog.outputs.changelog }}
+          draft: true
+
+      - name: Get Asset Name
+        id: get_asset_name
+        run: |
+          ASSET_PATH=$(ls build/libs/*.jar | head -n 1)
+          ASSET_NAME=$(basename $ASSET_PATH)
+          echo "::set-output name=asset_path::$ASSET_PATH"
+          echo "::set-output name=asset_name::$ASSET_NAME"
+
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.get_asset_name.outputs.asset_path }}
+          asset_name: ${{ steps.get_asset_name.outputs.asset_name }}
+          asset_content_type: application/java-archive
