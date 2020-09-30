@@ -10,6 +10,7 @@ repositories {
     jcenter()
 
     maven(uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots"))
+    maven(uri("https://repo.dmulloy2.net/nexus/repository/public/"))
     maven(uri("https://repo.extendedclip.com/content/repositories/placeholderapi/"))
     maven(uri("https://repo.codemc.org/repository/maven-public/"))
 }
@@ -18,6 +19,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.5.1")
     compileOnly("me.clip:placeholderapi:2.8.2")
 
     implementation("org.bstats:bstats-bukkit-lite:1.7")

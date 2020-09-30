@@ -7,7 +7,6 @@ import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bstats.bukkit.MetricsLite
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.function.Consumer
 
 class SimpleScore : JavaPlugin() {
     lateinit var config: MainConfig
@@ -23,10 +22,10 @@ class SimpleScore : JavaPlugin() {
         reload(true)
 
         MetricsLite(this, 644)
-        UpdateChecker(this, 23243, Consumer {
+        UpdateChecker(this, 23243) {
             logger.warning("New version available download at:")
             logger.warning(it)
-        })
+        }
     }
 
     override fun onDisable() {
@@ -46,6 +45,6 @@ class SimpleScore : JavaPlugin() {
 
         server.onlinePlayers
             .filter { scoreboardManager.hasScoreboard(it.world) }
-            .forEach { scoreboardManager.createObjective(it) }
+            .forEach { scoreboardManager.scoreboardHandler.createScoreboard(it) }
     }
 }

@@ -5,6 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
@@ -19,36 +20,23 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             }
 
             world.players.forEach { player ->
-                val objective = plugin.scoreboardManager.getObjective(player)
-                if (objective != null && objective.isModifiable) {
-                    var toDisplayTitle: String
-                    val toDisplayScores = HashMap<Int, String>()
+                var toDisplayTitle: String
+                val toDisplayScores = HashMap<Int, String>()
 
-                    toDisplayTitle = replaceVariables(title, player)
-                    if (toDisplayTitle.length > 32) {
-                        toDisplayTitle = toDisplayTitle.substring(0..31)
-                    }
-
-                    for (score in scores.keys) {
-                        var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
-                        if (value.length > 40) {
-                            value = value.substring(0..39)
-                        }
-                        toDisplayScores[score] = value
-                    }
-
-                    objective.displayName = toDisplayTitle
-                    for (score in toDisplayScores.keys) {
-                        val value = toDisplayScores[score]!!
-                        if (objective.getScore(value).score != score) {
-                            objective.getScore(value).score = score
-                        }
-                    }
-
-                    objective.scoreboard.entries
-                        .filter { !toDisplayScores.values.contains(it) }
-                        .forEach { objective.scoreboard.resetScores(it) }
+                toDisplayTitle = replaceVariables(title, player)
+                if (toDisplayTitle.length > 32) {
+                    toDisplayTitle = toDisplayTitle.substring(0..31)
                 }
+
+                for (score in scores.keys) {
+                    var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
+                    if (value.length > 40) {
+                        value = value.substring(0..39)
+                    }
+                    toDisplayScores[score] = value
+                }
+
+                plugin.scoreboardManager.scoreboardHandler.updateScoreboard(toDisplayTitle, toDisplayScores, player)
             }
         }
     }
@@ -59,7 +47,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
         }
 
-        val hearts = ((player.health / player.maxHealth) * 10).roundToInt()
+        val hearts = max(0, ((player.health / player.maxHealth) * 10).roundToInt())
         return replacedText
             .replace("%online%", plugin.server.onlinePlayers.count().toString())
             .replace("%onworld%", player.world.players.count().toString())

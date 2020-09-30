@@ -7,7 +7,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.function.Consumer
 
-class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: Consumer<String?>) {
+class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: Consumer<String>) {
     private val _spigotApi = "https://api.spigotmc.org/legacy/update.php?resource=%s"
     private val _spigotUrl = "https://www.spigotmc.org/resources/%s"
 

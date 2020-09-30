@@ -1,13 +1,14 @@
 package com.r4g3baby.simplescore.scoreboard
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
+import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
+import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.ScoreboardWorld
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.bukkit.scoreboard.DisplaySlot
-import org.bukkit.scoreboard.Objective
 import java.io.*
 import java.util.*
 import java.util.logging.Level
@@ -16,6 +17,8 @@ import kotlin.collections.HashSet
 class ScoreboardManager(private val plugin: SimpleScore) {
     private val _disabledDataFile = File(plugin.dataFolder, "data${File.separator}scoreboards")
     private val disabledScoreboards = HashSet<UUID>()
+
+    var scoreboardHandler: ScoreboardHandler
 
     init {
         plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
@@ -40,6 +43,10 @@ class ScoreboardManager(private val plugin: SimpleScore) {
                 plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", e)
             }
         }
+
+        scoreboardHandler = if (!plugin.server.pluginManager.isPluginEnabled("ProtocolLib")) {
+            BukkitScoreboard(plugin)
+        } else ProtocolScoreboard()
 
         ScoreboardRunnable(plugin).runTaskTimer(plugin, 20L, 1L)
     }
@@ -78,37 +85,13 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     fun toggleScoreboard(player: Player): Boolean {
         return if (disabledScoreboards.contains(player.uniqueId)) {
             disabledScoreboards.remove(player.uniqueId)
-            createObjective(player)
+            scoreboardHandler.createScoreboard(player)
             false
         } else {
             disabledScoreboards.add(player.uniqueId)
-            removeObjective(player)
+            scoreboardHandler.removeScoreboard(player)
             true
         }
-    }
-
-    fun createObjective(player: Player) {
-        if (!disabledScoreboards.contains(player.uniqueId)) {
-            if (player.scoreboard != null && player.scoreboard != plugin.server.scoreboardManager.mainScoreboard) {
-                player.scoreboard.getObjective(getPlayerIdentifier(player))?.unregister()
-            } else {
-                player.scoreboard = plugin.server.scoreboardManager.newScoreboard
-            }
-            val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
-            objective.displaySlot = DisplaySlot.SIDEBAR
-        }
-    }
-
-    fun removeObjective(player: Player) {
-        getObjective(player)?.unregister()
-    }
-
-    fun hasObjective(player: Player): Boolean {
-        return getObjective(player) != null
-    }
-
-    fun getObjective(player: Player): Objective? {
-        return player.scoreboard?.getObjective(getPlayerIdentifier(player))
     }
 
     fun hasScoreboard(world: World): Boolean {
@@ -117,9 +100,5 @@ class ScoreboardManager(private val plugin: SimpleScore) {
 
     fun getScoreboard(world: World): ScoreboardWorld? {
         return plugin.config.worlds[world.name.toLowerCase()]
-    }
-
-    private fun getPlayerIdentifier(player: Player): String {
-        return "sb${player.uniqueId.toString().replace("-", "").substring(0..13)}"
     }
 }

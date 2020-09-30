@@ -1,0 +1,37 @@
+package com.r4g3baby.simplescore.scoreboard.handlers
+
+import com.r4g3baby.simplescore.SimpleScore
+import org.bukkit.entity.Player
+import org.bukkit.scoreboard.DisplaySlot
+
+class BukkitScoreboard(private val plugin: SimpleScore) : ScoreboardHandler() {
+    override fun createScoreboard(player: Player) {
+        if (player.scoreboard != null && player.scoreboard != plugin.server.scoreboardManager.mainScoreboard) {
+            player.scoreboard.getObjective(getPlayerIdentifier(player))?.unregister()
+        } else player.scoreboard = plugin.server.scoreboardManager.newScoreboard
+
+        val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
+        objective.displaySlot = DisplaySlot.SIDEBAR
+    }
+
+    override fun removeScoreboard(player: Player) {
+        player.scoreboard?.getObjective(getPlayerIdentifier(player))?.unregister()
+    }
+
+    override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
+        val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
+        if (objective != null && objective.isModifiable) {
+            objective.displayName = title
+            for (score in scores.keys) {
+                val value = scores[score]!!
+                if (objective.getScore(value).score != score) {
+                    objective.getScore(value).score = score
+                }
+            }
+
+            objective.scoreboard.entries
+                .filter { !scores.values.contains(it) }
+                .forEach { objective.scoreboard.resetScores(it) }
+        }
+    }
+}
