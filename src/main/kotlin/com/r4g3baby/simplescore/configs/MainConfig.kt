@@ -56,7 +56,9 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
             for (shared in sharedWorlds.getKeys(false).filter { worlds.containsKey(it.toLowerCase()) }) {
                 for (world in sharedWorlds.getStringList(shared).filter { !worlds.containsKey(it.toLowerCase()) }) {
                     val original = worlds.getValue(shared.toLowerCase())
-                    worlds[world.toLowerCase()] = ScoreboardWorld(original.titles.clone(), original.scores.mapValues { entry -> entry.value.clone() })
+                    worlds[world.toLowerCase()] = ScoreboardWorld(
+                        original.titles.clone(), original.scores.mapValues { entry -> entry.value.clone() }
+                    )
                 }
             }
         }
