@@ -6,6 +6,7 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
@@ -47,7 +48,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
         }
 
-        val hearts = max(0, ((player.health / player.maxHealth) * 10).roundToInt())
+        val hearts = min(10, max(0, ((player.health / player.maxHealth) * 10).roundToInt()))
         return replacedText
             .replace("%online%", plugin.server.onlinePlayers.count().toString())
             .replace("%onworld%", player.world.players.count().toString())
