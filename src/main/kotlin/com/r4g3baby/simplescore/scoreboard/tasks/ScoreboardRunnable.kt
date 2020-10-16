@@ -16,8 +16,8 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
 
             val title = scoreboard.titles.nextFrame()
             val scores = HashMap<Int, String>()
-            for (score in scoreboard.scores.keys) {
-                scores[score] = scoreboard.scores.getValue(score).nextFrame()
+            scoreboard.scores.forEach { (score, value) ->
+                scores[score] = value.nextFrame()
             }
 
             world.players.forEach { player ->
@@ -29,8 +29,8 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                     toDisplayTitle = toDisplayTitle.substring(0..31)
                 }
 
-                for (score in scores.keys) {
-                    var value = preventDuplicates(replaceVariables(scores[score]!!, player), toDisplayScores.values)
+                scores.forEach { (score, ogValue) ->
+                    var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
                     if (value.length > 40) {
                         value = value.substring(0..39)
                     }

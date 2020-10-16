@@ -22,8 +22,7 @@ class BukkitScoreboard(private val plugin: SimpleScore) : ScoreboardHandler() {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
             objective.displayName = title
-            for (score in scores.keys) {
-                val value = scores[score]!!
+            scores.forEach { (score, value) ->
                 if (objective.getScore(value).score != score) {
                     objective.getScore(value).score = score
                 }

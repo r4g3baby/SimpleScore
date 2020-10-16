@@ -51,8 +51,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
         } else packet.strings.write(1, title) // Display Name
         protocolManager.sendServerPacket(player, packet)
 
-        for (score in scores.keys) {
-            val value = scores[score]!!
+        scores.forEach { (score, value) ->
             packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
             packet.strings.write(0, value) // Score Name
