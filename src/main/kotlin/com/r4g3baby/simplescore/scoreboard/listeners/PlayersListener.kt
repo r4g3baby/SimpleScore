@@ -14,7 +14,7 @@ class PlayersListener(private val plugin: SimpleScore) : Listener {
         plugin.scoreboardManager.scoreboardHandler.createScoreboard(e.player)
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOW)
     fun onPlayerQuit(e: PlayerQuitEvent) {
         plugin.scoreboardManager.scoreboardHandler.removeScoreboard(e.player)
     }
@@ -22,9 +22,9 @@ class PlayersListener(private val plugin: SimpleScore) : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerChangedWorld(e: PlayerChangedWorldEvent) {
         if (plugin.scoreboardManager.hasScoreboard(e.player.world)) {
-            plugin.scoreboardManager.scoreboardHandler.createScoreboard(e.player)
-        } else {
-            plugin.scoreboardManager.scoreboardHandler.removeScoreboard(e.player)
-        }
+            if (!plugin.scoreboardManager.hasScoreboard(e.from)) {
+                plugin.scoreboardManager.scoreboardHandler.createScoreboard(e.player)
+            }
+        } else plugin.scoreboardManager.scoreboardHandler.removeScoreboard(e.player)
     }
 }
