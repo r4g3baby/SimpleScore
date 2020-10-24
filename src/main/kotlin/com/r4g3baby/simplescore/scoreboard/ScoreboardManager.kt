@@ -123,7 +123,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
         return plugin.config.scoreboards[scoreboard.toLowerCase()]
     }
 
-    fun getScoreboard(world: World): ScoreboardWorld? {
-        return plugin.config.worlds[world.name.toLowerCase()]
+    fun getScoreboards(): List<Scoreboard> {
+        return plugin.config.scoreboards.values.toList()
     }
 }
