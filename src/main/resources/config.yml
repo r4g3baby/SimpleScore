@@ -5,7 +5,7 @@ UpdateTime: 20
 SaveScoreboards: true
 
 # Per world scoreboards
-Worlds:
+Scoreboards:
   world:
     Titles:
       - "&7&LYour&6&lServer"

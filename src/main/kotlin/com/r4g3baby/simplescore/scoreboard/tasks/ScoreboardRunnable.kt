@@ -11,8 +11,8 @@ import kotlin.math.roundToInt
 
 class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     override fun run() {
-        for (world in plugin.server.worlds.filter { plugin.scoreboardManager.hasScoreboard(it) }) {
-            val scoreboard = plugin.scoreboardManager.getScoreboard(world)!!
+        for (world in plugin.server.worlds.filter { plugin.scoreboardManager.hasScoreboard(it.name) }) {
+            val scoreboard = plugin.scoreboardManager.getScoreboard(world.name)!!
 
             val title = scoreboard.titles.nextFrame()
             val scores = HashMap<Int, String>()

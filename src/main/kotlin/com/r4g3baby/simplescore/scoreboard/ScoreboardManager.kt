@@ -5,9 +5,8 @@ import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
-import com.r4g3baby.simplescore.scoreboard.models.ScoreboardWorld
+import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
-import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.*
 import java.util.*
@@ -16,6 +15,7 @@ import kotlin.collections.HashSet
 
 class ScoreboardManager(private val plugin: SimpleScore) {
     private val _disabledDataFile = File(plugin.dataFolder, "data${File.separator}scoreboards")
+
     private val disabledScoreboards = HashSet<UUID>()
     private val scoreboardHandler: ScoreboardHandler
 
@@ -115,8 +115,12 @@ class ScoreboardManager(private val plugin: SimpleScore) {
         }
     }
 
-    fun hasScoreboard(world: World): Boolean {
-        return plugin.config.worlds.containsKey(world.name.toLowerCase())
+    fun hasScoreboard(scoreboard: String): Boolean {
+        return plugin.config.scoreboards.containsKey(scoreboard.toLowerCase())
+    }
+
+    fun getScoreboard(scoreboard: String): Scoreboard? {
+        return plugin.config.scoreboards[scoreboard.toLowerCase()]
     }
 
     fun getScoreboard(world: World): ScoreboardWorld? {

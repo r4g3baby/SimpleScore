@@ -2,24 +2,31 @@ package com.r4g3baby.simplescore.configs
 
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.models.ScoreLine
-import com.r4g3baby.simplescore.scoreboard.models.ScoreboardWorld
+import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val saveScoreboards = config.getBoolean("SaveScoreboards", true)
-    val worlds = HashMap<String, ScoreboardWorld>()
+    val scoreboards = HashMap<String, Scoreboard>()
 
     private val updateTime = config.getInt("UpdateTime", 20)
 
     init {
+        // Compatibility with older config format
         if (config.isConfigurationSection("Worlds")) {
-            val worldsSec = config.getConfigurationSection("Worlds")
-            for (world in worldsSec.getKeys(false).filter { !worlds.containsKey(it.toLowerCase()) }) {
-                if (worldsSec.isConfigurationSection(world)) {
-                    val worldSec = worldsSec.getConfigurationSection(world)
+            config.createSection("Scoreboards", config.getConfigurationSection("Worlds").getValues(true))
+            config.set("Worlds", null)
+            config.save(this)
+        }
+
+        if (config.isConfigurationSection("Scoreboards")) {
+            val scoreboardsSec = config.getConfigurationSection("Scoreboards")
+            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it.toLowerCase()) }) {
+                if (scoreboardsSec.isConfigurationSection(scoreboard)) {
+                    val scoreboardSec = scoreboardsSec.getConfigurationSection(scoreboard)
 
                     val titles = ScoreLine()
-                    (worldSec.get("Titles") as List<*>).forEach {
+                    (scoreboardSec.get("Titles") as List<*>).forEach {
                         when (it) {
                             is String -> titles.add(it, updateTime)
                             is Map<*, *> -> titles.add(it["text"] as String, it["time"] as Int)
@@ -30,8 +37,8 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                     }
 
                     val scores = HashMap<Int, ScoreLine>()
-                    if (worldSec.isConfigurationSection("Scores")) {
-                        val scoresSec = worldSec.getConfigurationSection("Scores")
+                    if (scoreboardSec.isConfigurationSection("Scores")) {
+                        val scoresSec = scoreboardSec.getConfigurationSection("Scores")
                         for (score in scoresSec.getKeys(false).filter { !scores.containsKey(it.toInt()) }) {
                             val scoreLine = ScoreLine()
                             (scoresSec.get(score) as List<*>).forEach {
@@ -46,18 +53,19 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                             scores[score.toInt()] = scoreLine
                         }
                     }
-                    worlds[world.toLowerCase()] = ScoreboardWorld(titles, scores)
+                    scoreboards[scoreboard.toLowerCase()] = Scoreboard(titles, scores)
                 }
             }
         }
 
         if (config.isConfigurationSection("Shared")) {
-            val sharedWorlds = config.getConfigurationSection("Shared")
-            for (shared in sharedWorlds.getKeys(false).filter { worlds.containsKey(it.toLowerCase()) }) {
-                for (world in sharedWorlds.getStringList(shared).filter { !worlds.containsKey(it.toLowerCase()) }) {
-                    val original = worlds.getValue(shared.toLowerCase())
-                    worlds[world.toLowerCase()] = ScoreboardWorld(
-                        original.titles.clone(), original.scores.mapValues { entry -> entry.value.clone() }
+            val sharedSec = config.getConfigurationSection("Shared")
+            for (shared in sharedSec.getKeys(false).filter { scoreboards.containsKey(it.toLowerCase()) }) {
+                val original = scoreboards.getValue(shared.toLowerCase())
+                for (scoreboard in sharedSec.getStringList(shared).filter { !scoreboards.containsKey(it.toLowerCase()) }) {
+                    scoreboards[scoreboard.toLowerCase()] = Scoreboard(
+                        original.titles.clone(),
+                        original.scores.mapValues { entry -> entry.value.clone() }
                     )
                 }
             }
