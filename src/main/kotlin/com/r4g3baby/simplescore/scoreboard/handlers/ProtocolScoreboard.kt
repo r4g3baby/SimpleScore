@@ -41,6 +41,18 @@ class ProtocolScoreboard : ScoreboardHandler() {
         playerEntries.remove(player.uniqueId)
     }
 
+    override fun clearScoreboard(player: Player) {
+        playerEntries[player.uniqueId]?.forEach {
+            val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+            packet.modifier.writeDefaults()
+            packet.strings.write(0, it) // Score Name
+            packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
+            packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+            protocolManager.sendServerPacket(player, packet)
+        }
+        playerEntries.remove(player.uniqueId)
+    }
+
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
         var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
         packet.modifier.writeDefaults()

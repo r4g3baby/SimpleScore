@@ -18,6 +18,13 @@ class BukkitScoreboard(private val plugin: SimpleScore) : ScoreboardHandler() {
         player.scoreboard?.getObjective(getPlayerIdentifier(player))?.unregister()
     }
 
+    override fun clearScoreboard(player: Player) {
+        val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
+        if (objective != null && objective.isModifiable) {
+            objective.scoreboard.entries.forEach { objective.scoreboard.resetScores(it) }
+        }
+    }
+
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {

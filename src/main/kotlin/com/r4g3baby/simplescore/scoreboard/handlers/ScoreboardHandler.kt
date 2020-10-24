@@ -2,9 +2,10 @@ package com.r4g3baby.simplescore.scoreboard.handlers
 
 import org.bukkit.entity.Player
 
-abstract class ScoreboardHandler() {
+abstract class ScoreboardHandler {
     abstract fun createScoreboard(player: Player)
     abstract fun removeScoreboard(player: Player)
+    abstract fun clearScoreboard(player: Player)
     abstract fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player)
 
     fun getPlayerIdentifier(player: Player): String {

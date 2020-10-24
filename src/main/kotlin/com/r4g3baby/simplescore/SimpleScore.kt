@@ -43,8 +43,6 @@ class SimpleScore : JavaPlugin() {
             getCommand(name).executor = MainCmd(this)
         } else scoreboardManager.reload()
 
-        server.onlinePlayers
-            .filter { scoreboardManager.hasScoreboard(it.world) }
-            .forEach { scoreboardManager.scoreboardHandler.createScoreboard(it) }
+        server.onlinePlayers.forEach { scoreboardManager.clearScoreboard(it) }
     }
 }

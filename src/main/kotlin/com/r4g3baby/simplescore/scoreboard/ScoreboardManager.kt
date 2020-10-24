@@ -17,8 +17,7 @@ import kotlin.collections.HashSet
 class ScoreboardManager(private val plugin: SimpleScore) {
     private val _disabledDataFile = File(plugin.dataFolder, "data${File.separator}scoreboards")
     private val disabledScoreboards = HashSet<UUID>()
-
-    var scoreboardHandler: ScoreboardHandler
+    private val scoreboardHandler: ScoreboardHandler
 
     init {
         plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
@@ -79,6 +78,28 @@ class ScoreboardManager(private val plugin: SimpleScore) {
             } catch (e: IOException) {
                 plugin.logger.log(Level.WARNING, "Error while saving disabled scoreboards", e)
             }
+        }
+    }
+
+    fun createScoreboard(player: Player) {
+        if (!disabledScoreboards.contains(player.uniqueId)) {
+            scoreboardHandler.createScoreboard(player)
+        }
+    }
+
+    fun removeScoreboard(player: Player) {
+        scoreboardHandler.removeScoreboard(player)
+    }
+
+    fun clearScoreboard(player: Player) {
+        if (!disabledScoreboards.contains(player.uniqueId)) {
+            scoreboardHandler.clearScoreboard(player)
+        }
+    }
+
+    fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
+        if (!disabledScoreboards.contains(player.uniqueId)) {
+            scoreboardHandler.updateScoreboard(title, scores, player)
         }
     }
 

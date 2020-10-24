@@ -11,20 +11,16 @@ import org.bukkit.event.player.PlayerQuitEvent
 class PlayersListener(private val plugin: SimpleScore) : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(e: PlayerJoinEvent) {
-        plugin.scoreboardManager.scoreboardHandler.createScoreboard(e.player)
+        plugin.scoreboardManager.createScoreboard(e.player)
     }
 
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerQuit(e: PlayerQuitEvent) {
-        plugin.scoreboardManager.scoreboardHandler.removeScoreboard(e.player)
+        plugin.scoreboardManager.removeScoreboard(e.player)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerChangedWorld(e: PlayerChangedWorldEvent) {
-        if (plugin.scoreboardManager.hasScoreboard(e.player.world)) {
-            if (!plugin.scoreboardManager.hasScoreboard(e.from)) {
-                plugin.scoreboardManager.scoreboardHandler.createScoreboard(e.player)
-            }
-        } else plugin.scoreboardManager.scoreboardHandler.removeScoreboard(e.player)
+        plugin.scoreboardManager.clearScoreboard(e.player)
     }
 }

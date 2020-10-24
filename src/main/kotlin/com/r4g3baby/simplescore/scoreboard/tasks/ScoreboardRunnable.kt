@@ -37,7 +37,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                     toDisplayScores[score] = value
                 }
 
-                plugin.scoreboardManager.scoreboardHandler.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+                plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
             }
         }
     }
