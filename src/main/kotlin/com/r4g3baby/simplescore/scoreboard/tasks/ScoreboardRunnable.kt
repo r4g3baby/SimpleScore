@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.scoreboard.tasks
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -11,35 +12,67 @@ import kotlin.math.roundToInt
 
 class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     override fun run() {
+        plugin.scoreboardManager.getScoreboards().forEach { scoreboard ->
+            scoreboard.titles.nextFrame()
+            scoreboard.scores.forEach { (_, value) ->
+                value.nextFrame()
+            }
+        }
+
         for (world in plugin.server.worlds) {
-            plugin.scoreboardManager.getScoreboard(world)?.let { scoreboard ->
-                val title = scoreboard.titles.nextFrame()
+            val players = world.players.toMutableList()
+
+            if (plugin.worldGuard) {
+                val iterator = players.iterator()
+                for (player in iterator) {
+                    val flag = WorldGuardAPI.getFlag(player)
+                    if (!flag.isNullOrBlank()) {
+                        plugin.scoreboardManager.getScoreboard(flag)?.let { regionBoard ->
+                            val title = regionBoard.titles.currentFrame()
+                            val scores = HashMap<Int, String>()
+                            regionBoard.scores.forEach { (score, value) ->
+                                scores[score] = value.currentFrame()
+                            }
+
+                            sendScoreboard(player, title, scores)
+                            iterator.remove()
+                        }
+                    }
+                }
+            }
+
+            plugin.scoreboardManager.getScoreboard(world)?.let { worldBoard ->
+                val title = worldBoard.titles.currentFrame()
                 val scores = HashMap<Int, String>()
-                scoreboard.scores.forEach { (score, value) ->
-                    scores[score] = value.nextFrame()
+                worldBoard.scores.forEach { (score, value) ->
+                    scores[score] = value.currentFrame()
                 }
 
-                world.players.forEach { player ->
-                    var toDisplayTitle: String
-                    val toDisplayScores = HashMap<Int, String>()
-
-                    toDisplayTitle = replaceVariables(title, player)
-                    if (toDisplayTitle.length > 32) {
-                        toDisplayTitle = toDisplayTitle.substring(0..31)
-                    }
-
-                    scores.forEach { (score, ogValue) ->
-                        var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
-                        if (value.length > 40) {
-                            value = value.substring(0..39)
-                        }
-                        toDisplayScores[score] = value
-                    }
-
-                    plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+                players.forEach { player ->
+                    sendScoreboard(player, title, scores)
                 }
             }
         }
+    }
+
+    private fun sendScoreboard(player: Player, title: String, scores: HashMap<Int, String>) {
+        var toDisplayTitle: String
+        val toDisplayScores = HashMap<Int, String>()
+
+        toDisplayTitle = replaceVariables(title, player)
+        if (toDisplayTitle.length > 32) {
+            toDisplayTitle = toDisplayTitle.substring(0..31)
+        }
+
+        scores.forEach { (score, ogValue) ->
+            var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
+            if (value.length > 40) {
+                value = value.substring(0..39)
+            }
+            toDisplayScores[score] = value
+        }
+
+        plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
     }
 
     private fun replaceVariables(text: String, player: Player): String {

@@ -4,6 +4,7 @@ import com.r4g3baby.simplescore.commands.MainCmd
 import com.r4g3baby.simplescore.configs.MainConfig
 import com.r4g3baby.simplescore.configs.MessagesConfig
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
+import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bstats.bukkit.MetricsLite
 import org.bukkit.plugin.java.JavaPlugin
@@ -15,8 +16,14 @@ class SimpleScore : JavaPlugin() {
         private set
     lateinit var scoreboardManager: ScoreboardManager
         private set
+    var worldGuard: Boolean = false
+        private set
     var placeholderAPI: Boolean = false
         private set
+
+    override fun onLoad() {
+        worldGuard = WorldGuardAPI.init(this)
+    }
 
     override fun onEnable() {
         reload(true)

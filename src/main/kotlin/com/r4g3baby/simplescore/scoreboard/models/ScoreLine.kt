@@ -22,4 +22,8 @@ class ScoreLine : Cloneable {
         frames++
         return lines[current]
     }
+
+    fun currentFrame(): String {
+        return lines[current]
+    }
 }

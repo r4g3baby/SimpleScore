@@ -22,6 +22,7 @@ dependencies {
     compileOnly("com.comphenix.protocol:ProtocolLib:4.5.1")
     compileOnly("me.clip:placeholderapi:2.8.2")
 
+    implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit-lite:1.7")
 }
 
@@ -52,6 +53,7 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
+        relocate("org.codemc.worldguardwrapper", "com.r4g3baby.simplescore.shaded.worldguard")
         relocate("org.bstats", "com.r4g3baby.simplescore.shaded.bstats")
         relocate("org.jetbrains", "com.r4g3baby.simplescore.shaded.jetbrains")
         relocate("org.intellij", "com.r4g3baby.simplescore.shaded.intellij")

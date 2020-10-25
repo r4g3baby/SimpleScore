@@ -1,7 +1,7 @@
 name: @name@
 version: @version@
 main: @package@.@name@
-softdepend: [ProtocolLib, PlaceholderAPI]
+softdepend: [ProtocolLib, WorldGuard, PlaceholderAPI]
 authors: [R4G3_BABY]
 description: "@description@"
 website: @url@
