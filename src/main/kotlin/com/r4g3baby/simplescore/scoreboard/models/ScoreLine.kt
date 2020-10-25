@@ -22,13 +22,4 @@ class ScoreLine : Cloneable {
         frames++
         return lines[current]
     }
-
-    public override fun clone(): ScoreLine {
-        val clone = super.clone() as ScoreLine
-        clone.lines = ArrayList(lines)
-        clone.timings = ArrayList(timings)
-        clone.current = current
-        clone.frames = frames
-        return clone
-    }
 }

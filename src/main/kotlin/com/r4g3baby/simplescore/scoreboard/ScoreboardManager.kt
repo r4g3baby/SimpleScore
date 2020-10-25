@@ -7,6 +7,7 @@ import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
+import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.*
 import java.util.*
@@ -115,8 +116,24 @@ class ScoreboardManager(private val plugin: SimpleScore) {
         }
     }
 
+    fun hasScoreboard(world: World): Boolean {
+        val scoreboard = plugin.config.worlds[world.name.toLowerCase()]
+        if (scoreboard != null) {
+            return plugin.config.scoreboards.containsKey(scoreboard)
+        }
+        return false
+    }
+
     fun hasScoreboard(scoreboard: String): Boolean {
         return plugin.config.scoreboards.containsKey(scoreboard.toLowerCase())
+    }
+
+    fun getScoreboard(world: World): Scoreboard? {
+        val scoreboard = plugin.config.worlds[world.name.toLowerCase()]
+        if (scoreboard != null) {
+            return plugin.config.scoreboards[scoreboard]
+        }
+        return null
     }
 
     fun getScoreboard(scoreboard: String): Scoreboard? {

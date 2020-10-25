@@ -4,9 +4,9 @@ UpdateTime: 20
 # Save which players have the scoreboard disabled
 SaveScoreboards: true
 
-# Per world scoreboards
+# Configure your scoreboards layout
 Scoreboards:
-  world:
+  example_scoreboard:
     Titles:
       - "&7&LYour&6&lServer"
     Scores:
@@ -38,7 +38,7 @@ Scoreboards:
       1:
         - "&7&m+----------------+"
         - "&7&m------------------"
-  world_the_end:
+  example_with_time:
     Titles:
       - text: "&c100 ticks title"
         time: 100
@@ -61,7 +61,8 @@ Scoreboards:
       1:
         - "&aYour current world: &6%world%"
 
-# Shared scoreboards
-Shared:
-  world_the_end:
-    - "world_nether"
+# Set what scoreboard each world will be using
+Worlds:
+  world: "example_scoreboard"
+  world_nether: "example_with_time"
+  world_the_end: "example_with_time"

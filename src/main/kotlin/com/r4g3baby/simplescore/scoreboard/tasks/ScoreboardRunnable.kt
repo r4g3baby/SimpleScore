@@ -11,33 +11,33 @@ import kotlin.math.roundToInt
 
 class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     override fun run() {
-        for (world in plugin.server.worlds.filter { plugin.scoreboardManager.hasScoreboard(it.name) }) {
-            val scoreboard = plugin.scoreboardManager.getScoreboard(world.name)!!
-
-            val title = scoreboard.titles.nextFrame()
-            val scores = HashMap<Int, String>()
-            scoreboard.scores.forEach { (score, value) ->
-                scores[score] = value.nextFrame()
-            }
-
-            world.players.forEach { player ->
-                var toDisplayTitle: String
-                val toDisplayScores = HashMap<Int, String>()
-
-                toDisplayTitle = replaceVariables(title, player)
-                if (toDisplayTitle.length > 32) {
-                    toDisplayTitle = toDisplayTitle.substring(0..31)
+        for (world in plugin.server.worlds) {
+            plugin.scoreboardManager.getScoreboard(world)?.let { scoreboard ->
+                val title = scoreboard.titles.nextFrame()
+                val scores = HashMap<Int, String>()
+                scoreboard.scores.forEach { (score, value) ->
+                    scores[score] = value.nextFrame()
                 }
 
-                scores.forEach { (score, ogValue) ->
-                    var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
-                    if (value.length > 40) {
-                        value = value.substring(0..39)
+                world.players.forEach { player ->
+                    var toDisplayTitle: String
+                    val toDisplayScores = HashMap<Int, String>()
+
+                    toDisplayTitle = replaceVariables(title, player)
+                    if (toDisplayTitle.length > 32) {
+                        toDisplayTitle = toDisplayTitle.substring(0..31)
                     }
-                    toDisplayScores[score] = value
-                }
 
-                plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+                    scores.forEach { (score, ogValue) ->
+                        var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
+                        if (value.length > 40) {
+                            value = value.substring(0..39)
+                        }
+                        toDisplayScores[score] = value
+                    }
+
+                    plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+                }
             }
         }
     }

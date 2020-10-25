@@ -6,22 +6,43 @@ import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
-    val saveScoreboards = config.getBoolean("SaveScoreboards", true)
-    val scoreboards = HashMap<String, Scoreboard>()
-
     private val updateTime = config.getInt("UpdateTime", 20)
+    val saveScoreboards = config.getBoolean("SaveScoreboards", true)
+
+    val scoreboards = HashMap<String, Scoreboard>()
+    val worlds = HashMap<String, String>()
 
     init {
         // Compatibility with older config format
-        if (config.isConfigurationSection("Worlds")) {
+        if (config.isConfigurationSection("Worlds") && !config.isConfigurationSection("Scoreboards")) {
             config.createSection("Scoreboards", config.getConfigurationSection("Worlds").getValues(true))
             config.set("Worlds", null)
             config.save(this)
         }
 
+        if (config.isConfigurationSection("Shared") && !config.isConfigurationSection("Worlds")) {
+            val sharedSec = config.getConfigurationSection("Shared")
+            val worldsSec = config.createSection("Worlds")
+
+            if (config.isConfigurationSection("Scoreboards")) {
+                for (scoreboard in config.getConfigurationSection("Scoreboards").getKeys(false)) {
+                    worldsSec.set(scoreboard, scoreboard)
+                }
+            }
+
+            for (shared in sharedSec.getKeys(false)) {
+                for (world in sharedSec.getStringList(shared)) {
+                    worldsSec.set(world, shared)
+                }
+            }
+
+            config.set("Shared", null)
+            config.save(this)
+        }
+
         if (config.isConfigurationSection("Scoreboards")) {
             val scoreboardsSec = config.getConfigurationSection("Scoreboards")
-            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it.toLowerCase()) }) {
+            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it) }) {
                 if (scoreboardsSec.isConfigurationSection(scoreboard)) {
                     val scoreboardSec = scoreboardsSec.getConfigurationSection(scoreboard)
 
@@ -53,21 +74,15 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                             scores[score.toInt()] = scoreLine
                         }
                     }
-                    scoreboards[scoreboard.toLowerCase()] = Scoreboard(titles, scores)
+                    scoreboards[scoreboard] = Scoreboard(titles, scores)
                 }
             }
         }
 
-        if (config.isConfigurationSection("Shared")) {
-            val sharedSec = config.getConfigurationSection("Shared")
-            for (shared in sharedSec.getKeys(false).filter { scoreboards.containsKey(it.toLowerCase()) }) {
-                val original = scoreboards.getValue(shared.toLowerCase())
-                for (scoreboard in sharedSec.getStringList(shared).filter { !scoreboards.containsKey(it.toLowerCase()) }) {
-                    scoreboards[scoreboard.toLowerCase()] = Scoreboard(
-                        original.titles.clone(),
-                        original.scores.mapValues { entry -> entry.value.clone() }
-                    )
-                }
+        if (config.isConfigurationSection("Worlds")) {
+            val worldsSec = config.getConfigurationSection("Worlds")
+            for (world in worldsSec.getKeys(false)) {
+                worlds[world.toLowerCase()] = worldsSec.getString(world).toLowerCase()
             }
         }
     }
