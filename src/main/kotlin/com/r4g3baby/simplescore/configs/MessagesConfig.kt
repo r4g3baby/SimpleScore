@@ -10,10 +10,13 @@ class MessagesConfig(plugin: SimpleScore) : ConfigFile(plugin, "messages") {
     private val prefix = color(config.getString("Prefix", "&8[&bSimpleScore&8] "))
     val permission = prefix + color(config.getString("Permission", "&cYou don't have permission to execute this command."))
     val onlyPlayers = prefix + color(config.getString("OnlyPlayers", "&cOnly players can execute this command."))
+    val notOnline = prefix + color(config.getString("NotOnline", "&cThe specified player is not online."))
     val reloading = prefix + color(config.getString("Reloading", "&6Reloading plugin..."))
     val reloaded = prefix + color(config.getString("Reloaded", "&aPlugin reloaded."))
     val enabled = prefix + color(config.getString("Enabled", "&aScoreboard enabled."))
+    val enabledOther = prefix + color(config.getString("EnabledOther", "&aScoreboard enabled for %s."))
     val disabled = prefix + color(config.getString("Disabled", "&cScoreboard disabled."))
+    val disabledOther = prefix + color(config.getString("DisabledOther", "&cScoreboard disabled for %s."))
 
     private fun color(text: String): String = ChatColor.translateAlternateColorCodes('&', text)
 }

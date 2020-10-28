@@ -24,18 +24,23 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
                 }
             }
             sender.sendMessage(plugin.messagesConfig.help)
-        } else {
-            sender.sendMessage(plugin.messagesConfig.help)
-        }
+        } else sender.sendMessage(plugin.messagesConfig.help)
 
         return true
     }
 
     override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): MutableList<String> {
-        return if (args.size == 1) {
-            subCmds.filter {
-                it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
-            }.map { it.name }.toCollection(ArrayList())
-        } else mutableListOf()
+        return when {
+            args.size == 1 -> {
+                subCmds.filter {
+                    it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
+                }.map { it.name }.toCollection(ArrayList())
+            }
+            args.size > 1 -> {
+                val subCmd = subCmds.firstOrNull { it.name.equals(args[0], true) }
+                subCmd?.onTabComplete(sender, args.sliceArray(1 until args.size)) ?: mutableListOf()
+            }
+            else -> mutableListOf()
+        }
     }
 }
