@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class Toggle(private val plugin: SimpleScore) : SubCmd("toggle", "simplescore.toggle") {
-    override fun run(sender: CommandSender, args: List<String>) {
+    override fun run(sender: CommandSender, args: Array<out String>) {
         if (args.isNotEmpty()) {
             if (sender.hasPermission("simplescore.toggle.other")) {
                 @Suppress("DEPRECATION") val target = plugin.server.getPlayer(args[0])

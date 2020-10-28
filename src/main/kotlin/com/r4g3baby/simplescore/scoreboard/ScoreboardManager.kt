@@ -40,8 +40,8 @@ class ScoreboardManager(private val plugin: SimpleScore) {
                 }
 
                 plugin.logger.info("Disabled scoreboards loaded.")
-            } catch (e: IOException) {
-                plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", e)
+            } catch (ex: IOException) {
+                plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", ex)
             }
         }
 
@@ -81,8 +81,8 @@ class ScoreboardManager(private val plugin: SimpleScore) {
                 }
 
                 plugin.logger.info("Disabled scoreboards saved.")
-            } catch (e: IOException) {
-                plugin.logger.log(Level.WARNING, "Error while saving disabled scoreboards", e)
+            } catch (ex: IOException) {
+                plugin.logger.log(Level.WARNING, "Error while saving disabled scoreboards", ex)
             }
         }
     }

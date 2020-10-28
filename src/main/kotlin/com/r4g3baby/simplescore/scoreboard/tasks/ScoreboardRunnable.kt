@@ -13,9 +13,9 @@ import kotlin.math.roundToInt
 class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     override fun run() {
         plugin.scoreboardManager.getScoreboards().forEach { scoreboard ->
-            scoreboard.titles.nextFrame()
+            scoreboard.titles.next()
             scoreboard.scores.forEach { (_, value) ->
-                value.nextFrame()
+                value.next()
             }
         }
 
@@ -28,10 +28,10 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                     val flag = WorldGuardAPI.getFlag(player)
                     if (!flag.isNullOrBlank()) {
                         plugin.scoreboardManager.getScoreboard(flag)?.let { regionBoard ->
-                            val title = regionBoard.titles.currentFrame()
+                            val title = regionBoard.titles.current()
                             val scores = HashMap<Int, String>()
                             regionBoard.scores.forEach { (score, value) ->
-                                scores[score] = value.currentFrame()
+                                scores[score] = value.current()
                             }
 
                             sendScoreboard(player, title, scores)
@@ -42,10 +42,10 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             }
 
             plugin.scoreboardManager.getScoreboard(world)?.let { worldBoard ->
-                val title = worldBoard.titles.currentFrame()
+                val title = worldBoard.titles.current()
                 val scores = HashMap<Int, String>()
                 worldBoard.scores.forEach { (score, value) ->
-                    scores[score] = value.currentFrame()
+                    scores[score] = value.current()
                 }
 
                 players.forEach { player ->

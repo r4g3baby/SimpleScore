@@ -16,6 +16,7 @@ class SimpleScore : JavaPlugin() {
         private set
     lateinit var scoreboardManager: ScoreboardManager
         private set
+
     var worldGuard: Boolean = false
         private set
     var placeholderAPI: Boolean = false

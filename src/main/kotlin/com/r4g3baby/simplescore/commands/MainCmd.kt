@@ -18,7 +18,7 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
             for (subSmd in subCmds) {
                 if (subSmd.name.equals(args[0], true)) {
                     if (sender.hasPermission(subSmd.permission)) {
-                        subSmd.run(sender, args.slice(IntRange(1, args.lastIndex)))
+                        subSmd.run(sender, args.sliceArray(1..args.lastIndex))
                     } else sender.sendMessage(plugin.messagesConfig.permission)
                     return true
                 }
@@ -34,11 +34,11 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
             args.size == 1 -> {
                 subCmds.filter {
                     it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
-                }.map { it.name }.toCollection(ArrayList())
+                }.map { it.name }.toMutableList()
             }
             args.size > 1 -> {
                 val subCmd = subCmds.firstOrNull { it.name.equals(args[0], true) }
-                subCmd?.onTabComplete(sender, args.sliceArray(1 until args.size)) ?: mutableListOf()
+                subCmd?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: mutableListOf()
             }
             else -> mutableListOf()
         }
