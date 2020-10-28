@@ -20,7 +20,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
         }
 
         for (world in plugin.server.worlds) {
-            val players = world.players.toMutableList()
+            val players = world.players.filter { !plugin.scoreboardManager.isScoreboardDisabled(it) }.toMutableList()
 
             if (plugin.worldGuard) {
                 val iterator = players.iterator()
