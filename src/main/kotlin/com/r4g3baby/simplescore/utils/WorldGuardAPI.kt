@@ -14,10 +14,16 @@ object WorldGuardAPI {
         if (plugin.server.pluginManager.getPlugin("WorldGuard") != null) {
             wrapper = WorldGuardWrapper.getInstance()
 
-            val flag = wrapper.registerFlag("scoreboard", String::class.java, "")
+            var flag = wrapper.registerFlag("scoreboard", String::class.java, "")
             if (flag.isPresent) {
                 scoreboardFlag = flag.get()
                 return true
+            } else {
+                flag = wrapper.getFlag("scoreboard", String::class.java)
+                if (flag.isPresent) {
+                    scoreboardFlag = flag.get()
+                    return true
+                }
             }
         }
         return false
