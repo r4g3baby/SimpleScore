@@ -6,6 +6,7 @@ import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
+import com.r4g3baby.simplescore.scoreboard.placeholders.ScoreboardExpansion
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -42,6 +43,10 @@ class ScoreboardManager(private val plugin: SimpleScore) {
             } catch (e: IOException) {
                 plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", e)
             }
+        }
+
+        if (plugin.placeholderAPI) {
+            ScoreboardExpansion(plugin).register()
         }
 
         scoreboardHandler = if (!plugin.server.pluginManager.isPluginEnabled("ProtocolLib")) {
@@ -114,6 +119,10 @@ class ScoreboardManager(private val plugin: SimpleScore) {
             scoreboardHandler.removeScoreboard(player)
             true
         }
+    }
+
+    fun isScoreboardDisabled(player: Player): Boolean {
+        return disabledScoreboards.contains(player.uniqueId)
     }
 
     fun hasScoreboard(world: World): Boolean {
