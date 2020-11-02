@@ -82,7 +82,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
         if (config.isConfigurationSection("Worlds")) {
             val worldsSec = config.getConfigurationSection("Worlds")
             for (world in worldsSec.getKeys(false)) {
-                worlds[world.toLowerCase()] = worldsSec.getString(world).toLowerCase()
+                worlds[world.toLowerCase()] = worldsSec.getString(world)
             }
         }
     }
