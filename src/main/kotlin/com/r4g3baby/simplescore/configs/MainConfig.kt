@@ -4,13 +4,15 @@ import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.models.ScoreLine
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
+import java.util.function.Predicate
+import java.util.regex.Pattern
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     private val updateTime = config.getInt("UpdateTime", 20)
     val saveScoreboards = config.getBoolean("SaveScoreboards", true)
 
     val scoreboards = HashMap<String, Scoreboard>()
-    val worlds = HashMap<String, String>()
+    val worlds = HashMap<Predicate<String>, String>()
 
     init {
         // Compatibility with older config format
@@ -42,7 +44,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
 
         if (config.isConfigurationSection("Scoreboards")) {
             val scoreboardsSec = config.getConfigurationSection("Scoreboards")
-            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it) }) {
+            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it.toLowerCase()) }) {
                 if (scoreboardsSec.isConfigurationSection(scoreboard)) {
                     val scoreboardSec = scoreboardsSec.getConfigurationSection(scoreboard)
 
@@ -74,7 +76,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                             scores[score.toInt()] = scoreLine
                         }
                     }
-                    scoreboards[scoreboard] = Scoreboard(titles, scores)
+                    scoreboards[scoreboard.toLowerCase()] = Scoreboard(titles, scores)
                 }
             }
         }
@@ -82,7 +84,8 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
         if (config.isConfigurationSection("Worlds")) {
             val worldsSec = config.getConfigurationSection("Worlds")
             for (world in worldsSec.getKeys(false)) {
-                worlds[world.toLowerCase()] = worldsSec.getString(world)
+                val pattern = Pattern.compile("^${world}$", Pattern.CASE_INSENSITIVE)
+                worlds[pattern.asPredicate()] = worldsSec.getString(world).toLowerCase()
             }
         }
     }

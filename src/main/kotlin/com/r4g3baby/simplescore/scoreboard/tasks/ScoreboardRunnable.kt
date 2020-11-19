@@ -21,6 +21,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
 
         for (world in plugin.server.worlds) {
             val players = world.players.filter { !plugin.scoreboardManager.isScoreboardDisabled(it) }.toMutableList()
+            if (players.size == 0) continue
 
             if (plugin.worldGuard) {
                 val iterator = players.iterator()
@@ -41,7 +42,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 }
             }
 
-            plugin.scoreboardManager.getScoreboard(world)?.let { worldBoard ->
+            plugin.scoreboardManager.getWorldScoreboard(world)?.let { worldBoard ->
                 val title = worldBoard.titles.current()
                 val scores = HashMap<Int, String>()
                 worldBoard.scores.forEach { (score, value) ->
@@ -76,10 +77,9 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     }
 
     private fun replaceVariables(text: String, player: Player): String {
-        var replacedText = ChatColor.translateAlternateColorCodes('&', text)
-        if (plugin.placeholderAPI) {
-            replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
-        }
+        val replacedText = if (plugin.placeholderAPI) {
+            PlaceholderAPI.setPlaceholders(player, text)
+        } else ChatColor.translateAlternateColorCodes('&', text)
 
         val hearts = min(10, max(0, ((player.health / player.maxHealth) * 10).roundToInt()))
         return replacedText

@@ -28,7 +28,7 @@ class PlayersListener(private val plugin: SimpleScore) : Listener {
         if (e.from.blockX == e.to.blockX && e.from.blockY == e.to.blockY && e.from.blockZ == e.to.blockZ) return
         if (e.from.world != e.to.world) return
 
-        if (plugin.worldGuard && !plugin.scoreboardManager.hasScoreboard(e.to.world)) {
+        if (plugin.worldGuard && !plugin.scoreboardManager.hasWorldScoreboard(e.to.world)) {
             val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
             val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
 
@@ -42,7 +42,7 @@ class PlayersListener(private val plugin: SimpleScore) : Listener {
     fun onPlayerTeleport(e: PlayerTeleportEvent) {
         if (e.from.world != e.to.world) return
 
-        if (plugin.worldGuard && !plugin.scoreboardManager.hasScoreboard(e.to.world)) {
+        if (plugin.worldGuard && !plugin.scoreboardManager.hasWorldScoreboard(e.to.world)) {
             val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
             val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
 
