@@ -93,11 +93,11 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                     is List<*> -> mutableListOf<String>().also { list ->
                         scoreboards.forEach {
                             if (it is String) {
-                                list.add(it)
+                                list.add(it.toLowerCase())
                             }
                         }
                     }.toList()
-                    is String -> listOf(scoreboards)
+                    is String -> listOf(scoreboards.toLowerCase())
                     else -> emptyList()
                 }
 
