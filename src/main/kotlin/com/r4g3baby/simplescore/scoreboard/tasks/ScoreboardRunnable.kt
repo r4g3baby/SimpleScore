@@ -29,28 +29,36 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                     val flag = WorldGuardAPI.getFlag(player)
                     if (!flag.isNullOrBlank()) {
                         plugin.scoreboardManager.getScoreboard(flag)?.let { regionBoard ->
-                            val title = regionBoard.titles.current()
-                            val scores = HashMap<Int, String>()
-                            regionBoard.scores.forEach { (score, value) ->
-                                scores[score] = value.current()
-                            }
+                            if (regionBoard.canSee(player)) {
+                                val title = regionBoard.titles.current()
+                                val scores = HashMap<Int, String>()
+                                regionBoard.scores.forEach { (score, value) ->
+                                    scores[score] = value.current()
+                                }
 
-                            sendScoreboard(player, title, scores)
-                            iterator.remove()
+                                sendScoreboard(player, title, scores)
+                                iterator.remove()
+                            }
                         }
                     }
                 }
             }
 
-            plugin.scoreboardManager.getWorldScoreboard(world)?.let { worldBoard ->
+            plugin.scoreboardManager.getWorldScoreboards(world).forEach { worldBoard ->
+                if (players.size == 0) return@forEach
+
                 val title = worldBoard.titles.current()
                 val scores = HashMap<Int, String>()
                 worldBoard.scores.forEach { (score, value) ->
                     scores[score] = value.current()
                 }
 
-                players.forEach { player ->
-                    sendScoreboard(player, title, scores)
+                val iterator = players.iterator()
+                for (player in iterator) {
+                    if (worldBoard.canSee(player)) {
+                        sendScoreboard(player, title, scores)
+                        iterator.remove()
+                    }
                 }
             }
         }

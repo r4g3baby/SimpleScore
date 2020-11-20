@@ -125,25 +125,23 @@ class ScoreboardManager(private val plugin: SimpleScore) {
         return disabledScoreboards.contains(player.uniqueId)
     }
 
-    fun getWorldScoreboard(world: World): Scoreboard? {
-        plugin.config.worlds.forEach { (predicate, scoreboard) ->
-            if (predicate.test(world.name)) {
-                return plugin.config.scoreboards[scoreboard]
+    fun getWorldScoreboards(world: World): List<Scoreboard> {
+        return mutableListOf<Scoreboard>().also { list ->
+            plugin.config.worlds.forEach { (predicate, scoreboards) ->
+                if (predicate.test(world.name)) {
+                    scoreboards.forEach {
+                        val scoreboard = plugin.config.scoreboards[it]
+                        if (scoreboard != null) {
+                            list.add(scoreboard)
+                        }
+                    }
+                }
             }
-        }
-        return null
-    }
-
-    fun hasWorldScoreboard(world: World): Boolean {
-        return getWorldScoreboard(world) != null
+        }.toList()
     }
 
     fun getScoreboard(scoreboard: String): Scoreboard? {
         return plugin.config.scoreboards[scoreboard.toLowerCase()]
-    }
-
-    fun hasScoreboard(scoreboard: String): Boolean {
-        return plugin.config.scoreboards.containsKey(scoreboard.toLowerCase())
     }
 
     fun getScoreboards(): List<Scoreboard> {

@@ -12,7 +12,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val saveScoreboards = config.getBoolean("SaveScoreboards", true)
 
     val scoreboards = HashMap<String, Scoreboard>()
-    val worlds = HashMap<Predicate<String>, String>()
+    val worlds = HashMap<Predicate<String>, List<String>>()
 
     init {
         // Compatibility with older config format
@@ -49,7 +49,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                     val scoreboardSec = scoreboardsSec.getConfigurationSection(scoreboard)
 
                     val titles = ScoreLine()
-                    (scoreboardSec.get("Titles") as List<*>).forEach {
+                    scoreboardSec.getList("Titles").forEach {
                         when (it) {
                             is String -> titles.add(it, updateTime)
                             is Map<*, *> -> titles.add(it["text"] as String, it["time"] as Int)
@@ -64,7 +64,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                         val scoresSec = scoreboardSec.getConfigurationSection("Scores")
                         for (score in scoresSec.getKeys(false).filter { !scores.containsKey(it.toInt()) }) {
                             val scoreLine = ScoreLine()
-                            (scoresSec.get(score) as List<*>).forEach {
+                            scoresSec.getList(score).forEach {
                                 when (it) {
                                     is String -> scoreLine.add(it, updateTime)
                                     is Map<*, *> -> scoreLine.add(it["text"] as String, it["time"] as Int)
@@ -76,7 +76,10 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                             scores[score.toInt()] = scoreLine
                         }
                     }
-                    scoreboards[scoreboard.toLowerCase()] = Scoreboard(titles, scores)
+
+                    val name = scoreboard.toLowerCase()
+                    val restricted = scoreboardSec.getBoolean("Restricted", false)
+                    scoreboards[name] = Scoreboard(name, titles, scores, restricted)
                 }
             }
         }
@@ -85,7 +88,19 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
             val worldsSec = config.getConfigurationSection("Worlds")
             for (world in worldsSec.getKeys(false)) {
                 val pattern = Pattern.compile("^${world}$", Pattern.CASE_INSENSITIVE)
-                worlds[pattern.asPredicate()] = worldsSec.getString(world).toLowerCase()
+                val scoreboards = worldsSec.get(world)
+                worlds[pattern.asPredicate()] = when (scoreboards) {
+                    is List<*> -> mutableListOf<String>().also { list ->
+                        scoreboards.forEach {
+                            if (it is String) {
+                                list.add(it)
+                            }
+                        }
+                    }.toList()
+                    is String -> listOf(scoreboards)
+                    else -> emptyList()
+                }
+
             }
         }
     }

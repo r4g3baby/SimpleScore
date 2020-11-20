@@ -6,7 +6,7 @@ SaveScoreboards: true
 
 # Configure your scoreboards layout
 Scoreboards:
-  example_scoreboard:
+  example:
     Titles:
       - "&7&LYour&6&lServer"
     Scores:
@@ -38,7 +38,7 @@ Scoreboards:
       1:
         - "&7&m+----------------+"
         - "&7&m------------------"
-  example_with_time:
+  custom_time:
     Titles:
       - text: "&c100 ticks title"
         time: 100
@@ -46,7 +46,7 @@ Scoreboards:
         time: 50
     Scores:
       6:
-        - "&7You can set a per score or title time"
+        - "&7You can set a per title or score time"
       5:
         - "&7instead of using the default value"
       4:
@@ -60,9 +60,32 @@ Scoreboards:
         - ""
       1:
         - "&aYour current world: &6%world%"
+  restricted:
+    Restricted: true
+    Titles:
+      - "&cRestricted Scoreboard"
+    Scores:
+      8:
+        - ""
+      7:
+        - "&7Restricted scoreboards required the"
+      6:
+        - "&6simplescore.<scoreboard> &7permission."
+      5:
+        - ""
+      4:
+        - "&7You can see this scoreboard because"
+      3:
+        - "&7you have the following permission:"
+      2:
+        - "&6simplescore.restricted"
+      1:
+        - ""
 
 # Set what scoreboard each world will be using
 Worlds:
-  world: "example_scoreboard"
+  world: ["example"]
   # This will match all worlds starting with "world_" (e.g. world_nether, world_the_end)
-  world_\w*: "example_with_time"
+  world_\w*: ["custom_time"]
+  # If player doesn't have permission to see the restricted scoreboard then it will display the example
+  multiple: ["restricted", "example"]
