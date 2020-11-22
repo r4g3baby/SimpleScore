@@ -53,7 +53,7 @@ class ScoreboardManager(private val plugin: SimpleScore) {
             BukkitScoreboard(plugin)
         } else ProtocolScoreboard()
 
-        ScoreboardRunnable(plugin).runTaskTimer(plugin, 20L, 1L)
+        ScoreboardRunnable(plugin).runTaskTimerAsynchronously(plugin, 20L, 1L)
     }
 
     fun reload() {

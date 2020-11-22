@@ -65,23 +65,25 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     }
 
     private fun sendScoreboard(player: Player, title: String, scores: HashMap<Int, String>) {
-        var toDisplayTitle: String
-        val toDisplayScores = HashMap<Int, String>()
+        plugin.server.scheduler.runTask(plugin) {
+            var toDisplayTitle: String
+            val toDisplayScores = HashMap<Int, String>()
 
-        toDisplayTitle = replaceVariables(title, player)
-        if (toDisplayTitle.length > 32) {
-            toDisplayTitle = toDisplayTitle.substring(0..31)
-        }
-
-        scores.forEach { (score, ogValue) ->
-            var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
-            if (value.length > 40) {
-                value = value.substring(0..39)
+            toDisplayTitle = replaceVariables(title, player)
+            if (toDisplayTitle.length > 32) {
+                toDisplayTitle = toDisplayTitle.substring(0..31)
             }
-            toDisplayScores[score] = value
-        }
 
-        plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+            scores.forEach { (score, ogValue) ->
+                var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
+                if (value.length > 40) {
+                    value = value.substring(0..39)
+                }
+                toDisplayScores[score] = value
+            }
+
+            plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+        }
     }
 
     private fun replaceVariables(text: String, player: Player): String {
