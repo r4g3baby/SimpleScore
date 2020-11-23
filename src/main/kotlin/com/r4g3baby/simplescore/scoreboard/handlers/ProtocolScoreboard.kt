@@ -11,8 +11,10 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class ProtocolScoreboard : ScoreboardHandler() {
-    private val playerBoards = HashMap<UUID, Map<String, Int>>()
     private val protocolManager = ProtocolLibrary.getProtocolManager()
+
+    private val playerTitles = HashMap<UUID, String>()
+    private val playerBoards = HashMap<UUID, Map<String, Int>>()
 
     override fun createScoreboard(player: Player) {
         var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
@@ -38,11 +40,12 @@ class ProtocolScoreboard : ScoreboardHandler() {
         packet.integers.write(0, 1) // Mode 1: Remove Scoreboard
         protocolManager.sendServerPacket(player, packet)
 
+        playerTitles.remove(player.uniqueId)
         playerBoards.remove(player.uniqueId)
     }
 
     override fun clearScoreboard(player: Player) {
-        playerBoards[player.uniqueId]?.forEach { (value, _) ->
+        playerBoards.remove(player.uniqueId)?.forEach { (value, _) ->
             val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
             packet.strings.write(0, value) // Score Name
@@ -50,25 +53,28 @@ class ProtocolScoreboard : ScoreboardHandler() {
             packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
             protocolManager.sendServerPacket(player, packet)
         }
-        playerBoards.remove(player.uniqueId)
     }
 
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
-        var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
-        packet.modifier.writeDefaults()
-        packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
-        packet.integers.write(0, 2) // Mode 2: Update Display Name
-        if (MinecraftVersion.AQUATIC_UPDATE.atOrAbove()) {
-            packet.chatComponents.write(0, WrappedChatComponent.fromText(title)) // Display Name
-        } else packet.strings.write(1, title) // Display Name
-        protocolManager.sendServerPacket(player, packet)
+        if (playerTitles[player.uniqueId] != title) {
+            val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
+            packet.modifier.writeDefaults()
+            packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
+            packet.integers.write(0, 2) // Mode 2: Update Display Name
+            if (MinecraftVersion.AQUATIC_UPDATE.atOrAbove()) {
+                packet.chatComponents.write(0, WrappedChatComponent.fromText(title)) // Display Name
+            } else packet.strings.write(1, title) // Display Name
+            protocolManager.sendServerPacket(player, packet)
+
+            playerTitles[player.uniqueId] = title
+        }
 
         val playerBoard = playerBoards[player.uniqueId]
         scores.forEach { (score, value) ->
             val boardScore = playerBoard?.get(value)
             if (boardScore == score) return@forEach
 
-            packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+            val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
             packet.strings.write(0, value) // Score Name
             packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.CHANGE) // Action
@@ -78,7 +84,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
         }
 
         playerBoard?.filter { !scores.values.contains(it.key) }?.forEach { (value, _) ->
-            packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+            val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
             packet.strings.write(0, value) // Score Name
             packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action

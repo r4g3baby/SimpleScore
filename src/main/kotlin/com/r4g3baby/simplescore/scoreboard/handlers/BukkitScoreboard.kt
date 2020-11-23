@@ -28,7 +28,10 @@ class BukkitScoreboard(private val plugin: SimpleScore) : ScoreboardHandler() {
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
-            objective.displayName = title
+            if (objective.displayName != title) {
+                objective.displayName = title
+            }
+
             scores.forEach { (score, value) ->
                 val objScore = objective.getScore(value)
                 if (objScore.score != score) {
