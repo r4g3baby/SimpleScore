@@ -53,7 +53,7 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        relocate("org.codemc.worldguardwrapper", "com.r4g3baby.simplescore.shaded.worldguard")
+        relocate("org.codemc.worldguardwrapper", "com.r4g3baby.simplescore.shaded.worldguardwrapper")
         relocate("org.bstats", "com.r4g3baby.simplescore.shaded.bstats")
         relocate("org.jetbrains", "com.r4g3baby.simplescore.shaded.jetbrains")
         relocate("org.intellij", "com.r4g3baby.simplescore.shaded.intellij")
