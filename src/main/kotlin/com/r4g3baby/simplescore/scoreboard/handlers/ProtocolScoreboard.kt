@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class ProtocolScoreboard : ScoreboardHandler() {
-    private val playerEntries = HashMap<UUID, Collection<String>>()
+    private val playerBoards = HashMap<UUID, Map<String, Int>>()
     private val protocolManager = ProtocolLibrary.getProtocolManager()
 
     override fun createScoreboard(player: Player) {
@@ -38,19 +38,19 @@ class ProtocolScoreboard : ScoreboardHandler() {
         packet.integers.write(0, 1) // Mode 1: Remove Scoreboard
         protocolManager.sendServerPacket(player, packet)
 
-        playerEntries.remove(player.uniqueId)
+        playerBoards.remove(player.uniqueId)
     }
 
     override fun clearScoreboard(player: Player) {
-        playerEntries[player.uniqueId]?.forEach {
+        playerBoards[player.uniqueId]?.forEach { (value, _) ->
             val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
-            packet.strings.write(0, it) // Score Name
+            packet.strings.write(0, value) // Score Name
             packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
             packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
             protocolManager.sendServerPacket(player, packet)
         }
-        playerEntries.remove(player.uniqueId)
+        playerBoards.remove(player.uniqueId)
     }
 
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
@@ -63,7 +63,11 @@ class ProtocolScoreboard : ScoreboardHandler() {
         } else packet.strings.write(1, title) // Display Name
         protocolManager.sendServerPacket(player, packet)
 
+        val playerBoard = playerBoards[player.uniqueId]
         scores.forEach { (score, value) ->
+            val boardScore = playerBoard?.get(value)
+            if (boardScore == score) return@forEach
+
             packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
             packet.strings.write(0, value) // Score Name
@@ -73,17 +77,15 @@ class ProtocolScoreboard : ScoreboardHandler() {
             protocolManager.sendServerPacket(player, packet)
         }
 
-        playerEntries[player.uniqueId]
-            ?.filter { !scores.values.contains(it) }
-            ?.forEach {
-                packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
-                packet.modifier.writeDefaults()
-                packet.strings.write(0, it) // Score Name
-                packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
-                packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
-                protocolManager.sendServerPacket(player, packet)
-            }
+        playerBoard?.filter { !scores.values.contains(it.key) }?.forEach { (value, _) ->
+            packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+            packet.modifier.writeDefaults()
+            packet.strings.write(0, value) // Score Name
+            packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
+            packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+            protocolManager.sendServerPacket(player, packet)
+        }
 
-        playerEntries[player.uniqueId] = scores.values
+        playerBoards[player.uniqueId] = scores.map { (key, value) -> value to key }.toMap()
     }
 }
