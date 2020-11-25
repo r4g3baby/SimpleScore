@@ -19,6 +19,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             }
         }
 
+        val playerBoards = HashMap<Player, Pair<String, HashMap<Int, String>>>()
         for (world in plugin.server.worlds) {
             val players = world.players.filter { !plugin.scoreboardManager.isScoreboardDisabled(it) }.toMutableList()
             if (players.size == 0) continue
@@ -36,7 +37,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                                     scores[score] = value.current()
                                 }
 
-                                sendScoreboard(player, title, scores)
+                                playerBoards[player] = (title to scores)
                                 iterator.remove()
                             }
                         }
@@ -56,34 +57,38 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 val iterator = players.iterator()
                 for (player in iterator) {
                     if (worldBoard.canSee(player)) {
-                        sendScoreboard(player, title, scores)
+                        playerBoards[player] = (title to scores)
                         iterator.remove()
                     }
                 }
             }
         }
+
+        plugin.server.scheduler.runTask(plugin) {
+            playerBoards.forEach { (player, board) ->
+                if (player.isOnline) sendScoreboard(player, board.first, board.second)
+            }
+        }
     }
 
     private fun sendScoreboard(player: Player, title: String, scores: HashMap<Int, String>) {
-        plugin.server.scheduler.runTask(plugin) {
-            var toDisplayTitle: String
-            val toDisplayScores = HashMap<Int, String>()
+        var toDisplayTitle: String
+        val toDisplayScores = HashMap<Int, String>()
 
-            toDisplayTitle = replaceVariables(title, player)
-            if (toDisplayTitle.length > 32) {
-                toDisplayTitle = toDisplayTitle.substring(0..31)
-            }
-
-            scores.forEach { (score, ogValue) ->
-                var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
-                if (value.length > 40) {
-                    value = value.substring(0..39)
-                }
-                toDisplayScores[score] = value
-            }
-
-            plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+        toDisplayTitle = replaceVariables(title, player)
+        if (toDisplayTitle.length > 32) {
+            toDisplayTitle = toDisplayTitle.substring(0..31)
         }
+
+        scores.forEach { (score, ogValue) ->
+            var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
+            if (value.length > 40) {
+                value = value.substring(0..39)
+            }
+            toDisplayScores[score] = value
+        }
+
+        plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
     }
 
     private fun replaceVariables(text: String, player: Player): String {
