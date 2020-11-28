@@ -17,6 +17,9 @@ class MessagesConfig(plugin: SimpleScore) : ConfigFile(plugin, "messages") {
     val enabledOther = prefix + color(config.getString("EnabledOther", "&aScoreboard enabled for %s."))
     val disabled = prefix + color(config.getString("Disabled", "&cScoreboard disabled."))
     val disabledOther = prefix + color(config.getString("DisabledOther", "&cScoreboard disabled for %s."))
+    val checkingForUpdates = prefix + color(config.getString("CheckingForUpdates", "&6You are running version &7v%s&6, checking for updates..."))
+    val foundNewUpdate = prefix + color(config.getString("FoundNewUpdate", "&6New update found &7v%s&6, download at:\n&6https://www.spigotmc.org/resources/simplescore.23243/"))
+    val runningLatest = prefix + color(config.getString("RunningLatest", "&aYou are running the latest plugin version."))
 
     private fun color(text: String): String = ChatColor.translateAlternateColorCodes('&', text)
 }

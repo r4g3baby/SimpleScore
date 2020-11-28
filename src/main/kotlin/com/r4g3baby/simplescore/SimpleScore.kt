@@ -30,9 +30,11 @@ class SimpleScore : JavaPlugin() {
         reload(true)
 
         MetricsLite(this, 644)
-        UpdateChecker(this, 23243) {
-            logger.warning("New version available download at:")
-            logger.warning(it)
+        UpdateChecker(this, 23243) { new, _ ->
+            if (new) {
+                logger.warning("New version available download at:")
+                logger.warning("https://www.spigotmc.org/resources/simplescore.23243/")
+            }
         }
     }
 

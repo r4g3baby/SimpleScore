@@ -5,16 +5,15 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.function.Consumer
+import java.util.function.BiConsumer
 
-class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: Consumer<String>) {
-    private val _spigotApi = "https://api.spigotmc.org/legacy/update.php?resource=%s"
-    private val _spigotUrl = "https://www.spigotmc.org/resources/%s"
+class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: BiConsumer<Boolean, String>) {
+    private val _spigotApi = "https://api.spigotmc.org/legacy/update.php?resource=$pluginID"
 
     init {
         plugin.server.scheduler.runTaskAsynchronously(plugin) {
             try {
-                val conn = URL(_spigotApi.format(pluginID)).openConnection() as HttpURLConnection
+                val conn = URL(_spigotApi).openConnection() as HttpURLConnection
                 conn.requestMethod = "GET"
                 conn.useCaches = false
                 conn.connectTimeout = 3000
@@ -23,16 +22,17 @@ class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: Consumer<String>) {
                 conn.setRequestProperty("User-Agent", "${plugin.name}/${plugin.description.version}")
 
                 val reader = BufferedReader(InputStreamReader(conn.inputStream))
-                val latestVersion = reader.readText().replace(".", "")
-                val currentVersion = plugin.description.version.replace(".", "")
+                val latestVersion = reader.readText()
+                val currentVersion = plugin.description.version
 
-                if (currentVersion.toInt() < latestVersion.toInt()) {
-                    consumer.accept(_spigotUrl.format(pluginID))
-                }
+                if (currentVersion.replace(".", "").toInt() < latestVersion.replace(".", "").toInt()) {
+                    consumer.accept(true, latestVersion)
+                } else consumer.accept(false, latestVersion)
 
                 reader.close()
                 conn.disconnect()
             } catch (ignored: Exception) {
+                consumer.accept(false, "")
             }
         }
     }

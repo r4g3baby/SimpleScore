@@ -5,10 +5,10 @@ import com.r4g3baby.simplescore.commands.SubCmd
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class Toggle(private val plugin: SimpleScore) : SubCmd("toggle", "simplescore.toggle") {
+class Toggle(private val plugin: SimpleScore) : SubCmd("toggle") {
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (args.isNotEmpty()) {
-            if (sender.hasPermission("simplescore.toggle.other")) {
+            if (sender.hasPermission("${this.permission}.other")) {
                 @Suppress("DEPRECATION") val target = plugin.server.getPlayer(args[0])
                 if (target != null) {
                     if (plugin.scoreboardManager.toggleScoreboard(target)) {
@@ -26,7 +26,7 @@ class Toggle(private val plugin: SimpleScore) : SubCmd("toggle", "simplescore.to
     }
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
-        if (args.size == 1 && sender.hasPermission("simplescore.toggle.other")) {
+        if (args.size == 1 && sender.hasPermission("${this.permission}.other")) {
             return plugin.server.onlinePlayers.map { it.name }.toMutableList()
         }
         return mutableListOf()

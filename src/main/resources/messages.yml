@@ -13,3 +13,9 @@ Enabled: "&aScoreboard enabled."
 EnabledOther: "&aScoreboard enabled for %s."
 Disabled: "&cScoreboard disabled."
 DisabledOther: "&cScoreboard disabled for %s."
+
+CheckingForUpdates: "&6You are running version &7v%s&6, checking for updates..."
+FoundNewUpdate: |
+  &6New update found &7v%s&6, download at:
+  &6https://www.spigotmc.org/resources/simplescore.23243/
+RunningLatest: "&aYou are running the latest plugin version."

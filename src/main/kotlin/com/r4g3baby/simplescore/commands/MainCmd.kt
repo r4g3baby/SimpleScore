@@ -3,6 +3,7 @@ package com.r4g3baby.simplescore.commands
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.commands.subcmds.Reload
 import com.r4g3baby.simplescore.commands.subcmds.Toggle
+import com.r4g3baby.simplescore.commands.subcmds.Version
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -10,7 +11,7 @@ import org.bukkit.command.TabExecutor
 
 class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
     private val subCmds = listOf(
-        Reload(plugin), Toggle(plugin)
+        Reload(plugin), Toggle(plugin), Version(plugin)
     )
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
