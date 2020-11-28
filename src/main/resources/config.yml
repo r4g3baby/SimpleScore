@@ -85,8 +85,8 @@ Scoreboards:
 # Set what scoreboards each world will be using
 Worlds:
   # World names are case-insensitive
-  world: ["example"]
+  world: [ "example" ]
   # This will match all worlds starting with "world_" (e.g. world_nether, world_the_end)
-  world_\w*: ["custom_time"]
+  world_\w*: [ "custom_time" ]
   # If player doesn't have permission to see the restricted scoreboard then it will display the example
-  multiple: ["restricted", "example"]
+  multiple: [ "restricted", "example" ]
