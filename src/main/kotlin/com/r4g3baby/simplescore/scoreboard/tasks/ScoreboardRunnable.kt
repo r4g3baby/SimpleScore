@@ -37,7 +37,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                                     scores[score] = value.current()
                                 }
 
-                                playerBoards[player] = (title to scores)
+                                playerBoards[player] = applyPlaceholders(player, title, scores)
                                 iterator.remove()
                             }
                         }
@@ -57,7 +57,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 val iterator = players.iterator()
                 for (player in iterator) {
                     if (worldBoard.canSee(player)) {
-                        playerBoards[player] = (title to scores)
+                        playerBoards[player] = applyPlaceholders(player, title, scores)
                         iterator.remove()
                     }
                 }
@@ -66,12 +66,32 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
 
         plugin.server.scheduler.runTask(plugin) {
             playerBoards.forEach { (player, board) ->
-                if (player.isOnline) sendScoreboard(player, board.first, board.second)
+                if (player.isOnline) {
+                    val updatedBoard = applyVariables(player, board.first, board.second)
+                    plugin.scoreboardManager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
+                }
             }
         }
     }
 
-    private fun sendScoreboard(player: Player, title: String, scores: HashMap<Int, String>) {
+    private fun applyPlaceholders(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
+        val toDisplayTitle= replacePlaceholders(title, player)
+
+        val toDisplayScores = HashMap<Int, String>()
+        scores.forEach { (score, ogValue) ->
+            toDisplayScores[score] = preventDuplicates(replacePlaceholders(ogValue, player), toDisplayScores.values)
+        }
+
+        return (toDisplayTitle to toDisplayScores)
+    }
+
+    private fun replacePlaceholders(text: String, player: Player): String {
+        return if (plugin.placeholderAPI) {
+            PlaceholderAPI.setPlaceholders(player, text)
+        } else ChatColor.translateAlternateColorCodes('&', text)
+    }
+
+    private fun applyVariables(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
         var toDisplayTitle: String
         val toDisplayScores = HashMap<Int, String>()
 
@@ -88,16 +108,12 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             toDisplayScores[score] = value
         }
 
-        plugin.scoreboardManager.updateScoreboard(toDisplayTitle, toDisplayScores, player)
+        return (toDisplayTitle to toDisplayScores)
     }
 
     private fun replaceVariables(text: String, player: Player): String {
-        val replacedText = if (plugin.placeholderAPI) {
-            PlaceholderAPI.setPlaceholders(player, text)
-        } else ChatColor.translateAlternateColorCodes('&', text)
-
         val hearts = min(10, max(0, ((player.health / player.maxHealth) * 10).roundToInt()))
-        return replacedText
+        return text
             .replace("%online%", plugin.server.onlinePlayers.count().toString())
             .replace("%onworld%", player.world.players.count().toString())
             .replace("%world%", player.world.name)
