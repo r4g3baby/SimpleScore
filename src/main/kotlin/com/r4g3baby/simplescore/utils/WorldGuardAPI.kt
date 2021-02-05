@@ -8,18 +8,18 @@ import org.codemc.worldguardwrapper.flag.IWrappedFlag
 
 object WorldGuardAPI {
     private lateinit var wrapper: WorldGuardWrapper
-    private lateinit var scoreboardFlag: IWrappedFlag<String>
+    private lateinit var scoreboardFlag: IWrappedFlag<Array<String>>
 
     fun init(plugin: Plugin): Boolean {
         if (plugin.server.pluginManager.getPlugin("WorldGuard") != null) {
             wrapper = WorldGuardWrapper.getInstance()
 
-            var flag = wrapper.registerFlag("scoreboard", String::class.java, "")
+            var flag = wrapper.registerFlag("scoreboard", Array<String>::class.java, arrayOf())
             if (flag.isPresent) {
                 scoreboardFlag = flag.get()
                 return true
             } else {
-                flag = wrapper.getFlag("scoreboard", String::class.java)
+                flag = wrapper.getFlag("scoreboard", Array<String>::class.java)
                 if (flag.isPresent) {
                     scoreboardFlag = flag.get()
                     return true
@@ -29,7 +29,7 @@ object WorldGuardAPI {
         return false
     }
 
-    fun getFlag(player: Player, location: Location = player.location): String? {
+    fun getFlag(player: Player, location: Location = player.location): Array<String>? {
         if (this::scoreboardFlag.isInitialized) {
             val flag = wrapper.queryFlag(player, location, scoreboardFlag)
             if (flag.isPresent) {

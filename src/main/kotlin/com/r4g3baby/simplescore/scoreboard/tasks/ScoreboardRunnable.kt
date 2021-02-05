@@ -28,9 +28,10 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 val iterator = players.iterator()
                 for (player in iterator) {
                     val flag = WorldGuardAPI.getFlag(player)
-                    if (!flag.isNullOrBlank()) {
-                        plugin.scoreboardManager.getScoreboard(flag)?.let { regionBoard ->
-                            if (regionBoard.canSee(player)) {
+                    if (!flag.isNullOrEmpty()) {
+                        for (boardName in flag) {
+                            val regionBoard = plugin.scoreboardManager.getScoreboard(boardName)
+                            if (regionBoard != null && regionBoard.canSee(player)) {
                                 val title = regionBoard.titles.current()
                                 val scores = HashMap<Int, String>()
                                 regionBoard.scores.forEach { (score, value) ->
@@ -39,6 +40,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
 
                                 playerBoards[player] = applyPlaceholders(player, title, scores)
                                 iterator.remove()
+                                break
                             }
                         }
                     }

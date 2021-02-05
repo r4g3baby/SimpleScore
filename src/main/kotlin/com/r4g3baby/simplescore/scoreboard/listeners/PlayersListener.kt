@@ -32,7 +32,7 @@ class PlayersListener(private val plugin: SimpleScore) : Listener {
             val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
             val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
 
-            if (fromFlag != toFlag) {
+            if (!fromFlag.contentEquals(toFlag)) {
                 plugin.server.scheduler.runTask(plugin) { plugin.scoreboardManager.clearScoreboard(e.player) }
             }
         }
@@ -46,7 +46,7 @@ class PlayersListener(private val plugin: SimpleScore) : Listener {
             val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
             val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
 
-            if (fromFlag != toFlag) {
+            if (!fromFlag.contentEquals(toFlag)) {
                 plugin.server.scheduler.runTask(plugin) { plugin.scoreboardManager.clearScoreboard(e.player) }
             }
         }
