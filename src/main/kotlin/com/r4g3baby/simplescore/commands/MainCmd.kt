@@ -9,9 +9,9 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 
-class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
+class MainCmd : CommandExecutor, TabExecutor {
     private val subCmds = listOf(
-        Reload(plugin), Toggle(plugin), Version(plugin)
+        Reload(), Toggle(), Version()
     )
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
@@ -20,12 +20,12 @@ class MainCmd(private val plugin: SimpleScore) : CommandExecutor, TabExecutor {
                 if (subSmd.name.equals(args[0], true)) {
                     if (sender.hasPermission(subSmd.permission)) {
                         subSmd.run(sender, args.sliceArray(1..args.lastIndex))
-                    } else sender.sendMessage(plugin.messagesConfig.permission)
+                    } else sender.sendMessage(SimpleScore.messages.permission)
                     return true
                 }
             }
-            sender.sendMessage(plugin.messagesConfig.help)
-        } else sender.sendMessage(plugin.messagesConfig.help)
+            sender.sendMessage(SimpleScore.messages.help)
+        } else sender.sendMessage(SimpleScore.messages.help)
 
         return true
     }

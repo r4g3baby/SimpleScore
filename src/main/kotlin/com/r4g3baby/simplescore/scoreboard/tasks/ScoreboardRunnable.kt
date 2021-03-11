@@ -3,6 +3,7 @@ package com.r4g3baby.simplescore.scoreboard.tasks
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import me.clip.placeholderapi.PlaceholderAPI
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
@@ -10,9 +11,9 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
+class ScoreboardRunnable : BukkitRunnable() {
     override fun run() {
-        plugin.scoreboardManager.getScoreboards().forEach { scoreboard ->
+        SimpleScore.scoreboardManager.getScoreboards().forEach { scoreboard ->
             scoreboard.titles.next()
             scoreboard.scores.forEach { (_, value) ->
                 value.next()
@@ -20,17 +21,17 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
         }
 
         val playerBoards = HashMap<Player, Pair<String, HashMap<Int, String>>>()
-        for (world in plugin.server.worlds) {
-            val players = world.players.filter { !plugin.scoreboardManager.isScoreboardDisabled(it) }.toMutableList()
+        for (world in Bukkit.getWorlds()) {
+            val players = world.players.filter { !SimpleScore.scoreboardManager.isScoreboardDisabled(it) }.toMutableList()
             if (players.size == 0) continue
 
-            if (plugin.worldGuard) {
+            if (WorldGuardAPI.isEnabled) {
                 val iterator = players.iterator()
                 for (player in iterator) {
                     val flag = WorldGuardAPI.getFlag(player)
                     if (!flag.isNullOrEmpty()) {
                         for (boardName in flag) {
-                            val regionBoard = plugin.scoreboardManager.getScoreboard(boardName)
+                            val regionBoard = SimpleScore.scoreboardManager.getScoreboard(boardName)
                             if (regionBoard != null && regionBoard.canSee(player)) {
                                 val title = regionBoard.titles.current()
                                 val scores = HashMap<Int, String>()
@@ -47,7 +48,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
                 }
             }
 
-            plugin.scoreboardManager.getWorldScoreboards(world).forEach { worldBoard ->
+            SimpleScore.scoreboardManager.getWorldScoreboards(world).forEach { worldBoard ->
                 if (players.size == 0) return@forEach
 
                 val title = worldBoard.titles.current()
@@ -66,11 +67,11 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
             }
         }
 
-        plugin.server.scheduler.runTask(plugin) {
+        Bukkit.getScheduler().runTask(SimpleScore.plugin) {
             playerBoards.forEach { (player, board) ->
                 if (player.isOnline) {
                     val updatedBoard = applyVariables(player, board.first, board.second)
-                    plugin.scoreboardManager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
+                    SimpleScore.scoreboardManager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
                 }
             }
         }
@@ -88,7 +89,7 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     }
 
     private fun replacePlaceholders(text: String, player: Player): String {
-        return if (plugin.placeholderAPI) {
+        return if (SimpleScore.usePlaceholderAPI) {
             PlaceholderAPI.setPlaceholders(player, text)
         } else ChatColor.translateAlternateColorCodes('&', text)
     }
@@ -116,10 +117,10 @@ class ScoreboardRunnable(private val plugin: SimpleScore) : BukkitRunnable() {
     private fun replaceVariables(text: String, player: Player): String {
         val hearts = min(10, max(0, ((player.health / player.maxHealth) * 10).roundToInt()))
         return text
-            .replace("%online%", plugin.server.onlinePlayers.count().toString())
+            .replace("%online%", Bukkit.getOnlinePlayers().count().toString())
             .replace("%onworld%", player.world.players.count().toString())
             .replace("%world%", player.world.name)
-            .replace("%maxplayers%", plugin.server.maxPlayers.toString())
+            .replace("%maxplayers%", Bukkit.getMaxPlayers().toString())
             .replace("%player%", player.name)
             .replace("%playerdisplayname%", player.displayName)
             .replace("%health%", player.health.roundToInt().toString())

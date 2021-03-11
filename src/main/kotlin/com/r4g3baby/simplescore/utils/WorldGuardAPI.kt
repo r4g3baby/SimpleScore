@@ -10,23 +10,25 @@ object WorldGuardAPI {
     private lateinit var wrapper: WorldGuardWrapper
     private lateinit var scoreboardFlag: IWrappedFlag<Array<String>>
 
-    fun init(plugin: Plugin): Boolean {
+    var isEnabled = false
+        private set
+
+    fun init(plugin: Plugin) {
         if (plugin.server.pluginManager.getPlugin("WorldGuard") != null) {
             wrapper = WorldGuardWrapper.getInstance()
 
             var flag = wrapper.registerFlag("scoreboard", Array<String>::class.java, arrayOf())
             if (flag.isPresent) {
                 scoreboardFlag = flag.get()
-                return true
+                isEnabled = true
             } else {
                 flag = wrapper.getFlag("scoreboard", Array<String>::class.java)
                 if (flag.isPresent) {
                     scoreboardFlag = flag.get()
-                    return true
+                    isEnabled = true
                 }
             }
         }
-        return false
     }
 
     fun getFlag(player: Player, location: Location = player.location): Array<String>? {

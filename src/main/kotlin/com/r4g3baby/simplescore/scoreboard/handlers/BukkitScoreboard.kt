@@ -1,14 +1,14 @@
 package com.r4g3baby.simplescore.scoreboard.handlers
 
-import com.r4g3baby.simplescore.SimpleScore
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 
-class BukkitScoreboard(private val plugin: SimpleScore) : ScoreboardHandler() {
+class BukkitScoreboard : ScoreboardHandler() {
     override fun createScoreboard(player: Player) {
-        if (player.scoreboard != null && player.scoreboard != plugin.server.scoreboardManager.mainScoreboard) {
+        if (player.scoreboard != null && player.scoreboard != Bukkit.getScoreboardManager().mainScoreboard) {
             player.scoreboard.getObjective(getPlayerIdentifier(player))?.unregister()
-        } else player.scoreboard = plugin.server.scoreboardManager.newScoreboard
+        } else player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
 
         val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
         objective.displaySlot = DisplaySlot.SIDEBAR

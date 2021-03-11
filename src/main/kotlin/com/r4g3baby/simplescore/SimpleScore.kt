@@ -7,27 +7,18 @@ import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bstats.bukkit.Metrics
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
 class SimpleScore : JavaPlugin() {
-    lateinit var config: MainConfig
-        private set
-    lateinit var messagesConfig: MessagesConfig
-        private set
-    lateinit var scoreboardManager: ScoreboardManager
-        private set
-
-    var worldGuard: Boolean = false
-        private set
-    var placeholderAPI: Boolean = false
-        private set
-
     override fun onLoad() {
-        worldGuard = WorldGuardAPI.init(this)
+        WorldGuardAPI.init(this)
     }
 
     override fun onEnable() {
-        reload(true)
+        Api.init(this)
+
+        getCommand(name).executor = MainCmd()
 
         Metrics(this, 644)
         UpdateChecker(this, 23243) { new, _ ->
@@ -42,17 +33,32 @@ class SimpleScore : JavaPlugin() {
         scoreboardManager.disable()
     }
 
-    fun reload(firstLoad: Boolean = false) {
-        config = MainConfig(this)
-        messagesConfig = MessagesConfig(this)
-        placeholderAPI = server.pluginManager.isPluginEnabled("PlaceholderAPI")
+    companion object Api {
+        lateinit var plugin: SimpleScore
+            private set
+        var usePlaceholderAPI = false
+            private set
+        lateinit var config: MainConfig
+            private set
+        lateinit var messages: MessagesConfig
+            private set
+        lateinit var scoreboardManager: ScoreboardManager
+            private set
 
-        if (firstLoad) {
-            scoreboardManager = ScoreboardManager(this)
+        internal fun init(plugin: SimpleScore) {
+            check(!this::plugin.isInitialized) { "SimpleScore has already been initialized." }
+            this.plugin = plugin
 
-            getCommand(name).executor = MainCmd(this)
-        } else scoreboardManager.reload()
+            usePlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
+            config = MainConfig(plugin)
+            messages = MessagesConfig(plugin)
+            scoreboardManager = ScoreboardManager()
+        }
 
-        server.onlinePlayers.forEach { scoreboardManager.clearScoreboard(it) }
+        fun reload() {
+            config = MainConfig(plugin)
+            messages = MessagesConfig(plugin)
+            scoreboardManager.reload()
+        }
     }
 }

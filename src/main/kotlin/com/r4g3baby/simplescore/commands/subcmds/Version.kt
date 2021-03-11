@@ -5,14 +5,14 @@ import com.r4g3baby.simplescore.commands.SubCmd
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bukkit.command.CommandSender
 
-class Version(private val plugin: SimpleScore) : SubCmd("version") {
+class Version : SubCmd("version") {
     override fun run(sender: CommandSender, args: Array<out String>) {
-        val version = plugin.description.version
-        sender.sendMessage(plugin.messagesConfig.checkingForUpdates.format(version))
-        UpdateChecker(plugin, 23243) { new, latest ->
+        val version = SimpleScore.plugin.description.version
+        sender.sendMessage(SimpleScore.messages.checkingForUpdates.format(version))
+        UpdateChecker(SimpleScore.plugin, 23243) { new, latest ->
             if (new) {
-                sender.sendMessage(plugin.messagesConfig.foundNewUpdate.format(latest))
-            } else sender.sendMessage(plugin.messagesConfig.runningLatest)
+                sender.sendMessage(SimpleScore.messages.foundNewUpdate.format(latest))
+            } else sender.sendMessage(SimpleScore.messages.runningLatest)
         }
     }
 }

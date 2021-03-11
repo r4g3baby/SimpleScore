@@ -2,32 +2,33 @@ package com.r4g3baby.simplescore.commands.subcmds
 
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.commands.SubCmd
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class Toggle(private val plugin: SimpleScore) : SubCmd("toggle") {
+class Toggle : SubCmd("toggle") {
     override fun run(sender: CommandSender, args: Array<out String>) {
         if (args.isNotEmpty()) {
             if (sender.hasPermission("${this.permission}.other")) {
-                @Suppress("DEPRECATION") val target = plugin.server.getPlayer(args[0])
+                val target = Bukkit.getOnlinePlayers().find { it.name.equals(args[0], true) }
                 if (target != null) {
-                    if (plugin.scoreboardManager.toggleScoreboard(target)) {
-                        sender.sendMessage(plugin.messagesConfig.disabledOther.format(target.name))
-                    } else sender.sendMessage(plugin.messagesConfig.enabledOther.format(target.name))
-                } else sender.sendMessage(plugin.messagesConfig.notOnline)
-            } else sender.sendMessage(plugin.messagesConfig.permission)
+                    if (SimpleScore.scoreboardManager.toggleScoreboard(target)) {
+                        sender.sendMessage(SimpleScore.messages.disabledOther.format(target.name))
+                    } else sender.sendMessage(SimpleScore.messages.enabledOther.format(target.name))
+                } else sender.sendMessage(SimpleScore.messages.notOnline)
+            } else sender.sendMessage(SimpleScore.messages.permission)
         } else {
             if (sender is Player) {
-                if (plugin.scoreboardManager.toggleScoreboard(sender)) {
-                    sender.sendMessage(plugin.messagesConfig.disabled)
-                } else sender.sendMessage(plugin.messagesConfig.enabled)
-            } else sender.sendMessage(plugin.messagesConfig.onlyPlayers)
+                if (SimpleScore.scoreboardManager.toggleScoreboard(sender)) {
+                    sender.sendMessage(SimpleScore.messages.disabled)
+                } else sender.sendMessage(SimpleScore.messages.enabled)
+            } else sender.sendMessage(SimpleScore.messages.onlyPlayers)
         }
     }
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
         if (args.size == 1 && sender.hasPermission("${this.permission}.other")) {
-            return plugin.server.onlinePlayers.map { it.name }.toMutableList()
+            return Bukkit.getOnlinePlayers().map { it.name }.toMutableList()
         }
         return mutableListOf()
     }

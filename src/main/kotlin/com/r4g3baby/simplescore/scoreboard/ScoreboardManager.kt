@@ -8,6 +8,7 @@ import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.ScoreboardExpansion
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.io.*
@@ -15,17 +16,17 @@ import java.util.*
 import java.util.logging.Level
 import kotlin.collections.HashSet
 
-class ScoreboardManager(private val plugin: SimpleScore) {
-    private val _disabledDataFile = File(plugin.dataFolder, "data${File.separator}scoreboards")
+class ScoreboardManager {
+    private val _disabledDataFile = File(SimpleScore.plugin.dataFolder, "data${File.separator}scoreboards")
 
     private val disabledScoreboards = HashSet<UUID>()
     private val scoreboardHandler: ScoreboardHandler
 
     init {
-        plugin.server.pluginManager.registerEvents(PlayersListener(plugin), plugin)
+        Bukkit.getPluginManager().registerEvents(PlayersListener(), SimpleScore.plugin)
 
-        if (plugin.config.saveScoreboards) {
-            plugin.logger.info("Loading disabled scoreboards...")
+        if (SimpleScore.config.saveScoreboards) {
+            SimpleScore.plugin.logger.info("Loading disabled scoreboards...")
 
             try {
                 if (_disabledDataFile.exists()) {
@@ -39,32 +40,33 @@ class ScoreboardManager(private val plugin: SimpleScore) {
                     }
                 }
 
-                plugin.logger.info("Disabled scoreboards loaded.")
+                SimpleScore.plugin.logger.info("Disabled scoreboards loaded.")
             } catch (ex: IOException) {
-                plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", ex)
+                SimpleScore.plugin.logger.log(Level.WARNING, "Error while loading disabled scoreboards", ex)
             }
         }
 
-        if (plugin.placeholderAPI) {
-            ScoreboardExpansion(plugin).register()
+        if (SimpleScore.usePlaceholderAPI) {
+            ScoreboardExpansion(SimpleScore.plugin).register()
         }
 
-        scoreboardHandler = if (!plugin.server.pluginManager.isPluginEnabled("ProtocolLib")) {
-            BukkitScoreboard(plugin)
+        scoreboardHandler = if (!Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            BukkitScoreboard()
         } else ProtocolScoreboard()
 
-        ScoreboardRunnable(plugin).runTaskTimerAsynchronously(plugin, 20L, 1L)
+        ScoreboardRunnable().runTaskTimerAsynchronously(SimpleScore.plugin, 20L, 1L)
     }
 
     fun reload() {
-        if (!plugin.config.saveScoreboards) {
+        if (!SimpleScore.config.saveScoreboards) {
             disabledScoreboards.clear()
         }
+        Bukkit.getOnlinePlayers().forEach { clearScoreboard(it) }
     }
 
     fun disable() {
-        if (plugin.config.saveScoreboards) {
-            plugin.logger.info("Saving disabled scoreboards...")
+        if (SimpleScore.config.saveScoreboards) {
+            SimpleScore.plugin.logger.info("Saving disabled scoreboards...")
 
             try {
                 if (!_disabledDataFile.parentFile.exists()) {
@@ -80,9 +82,9 @@ class ScoreboardManager(private val plugin: SimpleScore) {
                     }
                 }
 
-                plugin.logger.info("Disabled scoreboards saved.")
+                SimpleScore.plugin.logger.info("Disabled scoreboards saved.")
             } catch (ex: IOException) {
-                plugin.logger.log(Level.WARNING, "Error while saving disabled scoreboards", ex)
+                SimpleScore.plugin.logger.log(Level.WARNING, "Error while saving disabled scoreboards", ex)
             }
         }
     }
@@ -127,10 +129,10 @@ class ScoreboardManager(private val plugin: SimpleScore) {
 
     fun getWorldScoreboards(world: World): List<Scoreboard> {
         return mutableListOf<Scoreboard>().also { list ->
-            plugin.config.worlds.forEach { (predicate, scoreboards) ->
+            SimpleScore.config.worlds.forEach { (predicate, scoreboards) ->
                 if (predicate.test(world.name)) {
                     scoreboards.forEach {
-                        val scoreboard = plugin.config.scoreboards[it]
+                        val scoreboard = SimpleScore.config.scoreboards[it]
                         if (scoreboard != null) {
                             list.add(scoreboard)
                         }
@@ -141,10 +143,10 @@ class ScoreboardManager(private val plugin: SimpleScore) {
     }
 
     fun getScoreboard(scoreboard: String): Scoreboard? {
-        return plugin.config.scoreboards[scoreboard.toLowerCase()]
+        return SimpleScore.config.scoreboards[scoreboard.toLowerCase()]
     }
 
     fun getScoreboards(): List<Scoreboard> {
-        return plugin.config.scoreboards.values.toList()
+        return SimpleScore.config.scoreboards.values.toList()
     }
 }

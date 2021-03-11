@@ -24,7 +24,7 @@ class ScoreboardExpansion(private val plugin: SimpleScore): PlaceholderExpansion
     override fun onPlaceholderRequest(player: Player?, identifier: String?): String? {
         if (player != null && identifier != null) {
             if (identifier == "enabled") {
-                return (!plugin.scoreboardManager.isScoreboardDisabled(player)).toString()
+                return (!SimpleScore.scoreboardManager.isScoreboardDisabled(player)).toString()
             }
         }
         return null
