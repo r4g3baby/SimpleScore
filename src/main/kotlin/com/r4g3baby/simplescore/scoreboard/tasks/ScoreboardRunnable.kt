@@ -22,7 +22,9 @@ class ScoreboardRunnable : BukkitRunnable() {
 
         val playerBoards = HashMap<Player, Pair<String, HashMap<Int, String>>>()
         for (world in Bukkit.getWorlds()) {
-            val players = world.players.filter { !SimpleScore.scoreboardManager.isScoreboardDisabled(it) }.toMutableList()
+            val players = world.players.filter {
+                !SimpleScore.scoreboardManager.isScoreboardDisabled(it)
+            }.toMutableList()
             if (players.size == 0) continue
 
             if (WorldGuardAPI.isEnabled) {
@@ -39,7 +41,9 @@ class ScoreboardRunnable : BukkitRunnable() {
                                     scores[score] = value.current()
                                 }
 
-                                playerBoards[player] = applyPlaceholders(player, title, scores)
+                                playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
+                                    applyPlaceholders(player, title, scores)
+                                } else (title to scores)
                                 iterator.remove()
                                 break
                             }
@@ -60,7 +64,9 @@ class ScoreboardRunnable : BukkitRunnable() {
                 val iterator = players.iterator()
                 for (player in iterator) {
                     if (worldBoard.canSee(player)) {
-                        playerBoards[player] = applyPlaceholders(player, title, scores)
+                        playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
+                            applyPlaceholders(player, title, scores)
+                        } else (title to scores)
                         iterator.remove()
                     }
                 }
@@ -70,7 +76,10 @@ class ScoreboardRunnable : BukkitRunnable() {
         Bukkit.getScheduler().runTask(SimpleScore.plugin) {
             playerBoards.forEach { (player, board) ->
                 if (player.isOnline) {
-                    val updatedBoard = applyVariables(player, board.first, board.second)
+                    val updatedBoard = if (!SimpleScore.config.asyncPlaceholders) {
+                        val tmp = applyPlaceholders(player, board.first, board.second)
+                        applyVariables(player, tmp.first, tmp.second)
+                    } else applyVariables(player, board.first, board.second)
                     SimpleScore.scoreboardManager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
                 }
             }
@@ -78,7 +87,7 @@ class ScoreboardRunnable : BukkitRunnable() {
     }
 
     private fun applyPlaceholders(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
-        val toDisplayTitle= replacePlaceholders(title, player)
+        val toDisplayTitle = replacePlaceholders(title, player)
 
         val toDisplayScores = HashMap<Int, String>()
         scores.forEach { (score, ogValue) ->

@@ -10,6 +10,7 @@ import java.util.regex.Pattern
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     private val updateTime = config.getInt("UpdateTime", 20)
     val saveScoreboards = config.getBoolean("SaveScoreboards", true)
+    val asyncPlaceholders = config.getBoolean("AsyncPlaceholders", true)
 
     val scoreboards = HashMap<String, Scoreboard>()
     val worlds = HashMap<Predicate<String>, List<String>>()

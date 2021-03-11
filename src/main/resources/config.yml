@@ -4,6 +4,9 @@ UpdateTime: 20
 # Save which players have the scoreboard disabled
 SaveScoreboards: true
 
+# Whether to apply placeholders asynchronously or not
+AsyncPlaceholders: true
+
 # Configure your scoreboards layout
 Scoreboards:
   example:
