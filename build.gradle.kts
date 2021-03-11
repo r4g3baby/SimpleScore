@@ -23,7 +23,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.8.2")
 
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
-    implementation("org.bstats:bstats-bukkit-lite:1.7")
+    implementation("org.bstats:bstats-bukkit:2.2.1")
 }
 
 tasks {

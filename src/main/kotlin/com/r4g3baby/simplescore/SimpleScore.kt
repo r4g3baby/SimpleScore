@@ -6,7 +6,7 @@ import com.r4g3baby.simplescore.configs.MessagesConfig
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
-import org.bstats.bukkit.MetricsLite
+import org.bstats.bukkit.Metrics
 import org.bukkit.plugin.java.JavaPlugin
 
 class SimpleScore : JavaPlugin() {
@@ -29,7 +29,7 @@ class SimpleScore : JavaPlugin() {
     override fun onEnable() {
         reload(true)
 
-        MetricsLite(this, 644)
+        Metrics(this, 644)
         UpdateChecker(this, 23243) { new, _ ->
             if (new) {
                 logger.warning("New version available download at:")
