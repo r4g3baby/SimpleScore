@@ -33,7 +33,7 @@ class PlayersListener : Listener {
             val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
             val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
 
-            if (!fromFlag.contentEquals(toFlag)) {
+            if (!fromFlag.isEqual(toFlag)) {
                 Bukkit.getScheduler().runTask(SimpleScore.plugin) {
                     SimpleScore.scoreboardManager.clearScoreboard(e.player)
                 }
@@ -49,7 +49,7 @@ class PlayersListener : Listener {
             val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
             val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
 
-            if (!fromFlag.contentEquals(toFlag)) {
+            if (!fromFlag.isEqual(toFlag)) {
                 Bukkit.getScheduler().runTask(SimpleScore.plugin) {
                     SimpleScore.scoreboardManager.clearScoreboard(e.player)
                 }

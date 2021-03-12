@@ -8,7 +8,7 @@ import org.codemc.worldguardwrapper.flag.IWrappedFlag
 
 object WorldGuardAPI {
     private lateinit var wrapper: WorldGuardWrapper
-    private lateinit var scoreboardFlag: IWrappedFlag<Array<String>>
+    private lateinit var scoreboardFlag: IWrappedFlag<String>
 
     var isEnabled = false
         private set
@@ -17,12 +17,12 @@ object WorldGuardAPI {
         if (plugin.server.pluginManager.getPlugin("WorldGuard") != null) {
             wrapper = WorldGuardWrapper.getInstance()
 
-            var flag = wrapper.registerFlag("scoreboard", Array<String>::class.java, arrayOf())
+            var flag = wrapper.registerFlag("scoreboard", String::class.java, "")
             if (flag.isPresent) {
                 scoreboardFlag = flag.get()
                 isEnabled = true
             } else {
-                flag = wrapper.getFlag("scoreboard", Array<String>::class.java)
+                flag = wrapper.getFlag("scoreboard", String::class.java)
                 if (flag.isPresent) {
                     scoreboardFlag = flag.get()
                     isEnabled = true
@@ -31,13 +31,13 @@ object WorldGuardAPI {
         }
     }
 
-    fun getFlag(player: Player, location: Location = player.location): Array<String>? {
+    fun getFlag(player: Player, location: Location = player.location): List<String> {
         if (this::scoreboardFlag.isInitialized) {
             val flag = wrapper.queryFlag(player, location, scoreboardFlag)
             if (flag.isPresent) {
-                return flag.get()
+                return flag.get().split(",").map { it.trim() }
             }
         }
-        return null
+        return emptyList()
     }
 }
