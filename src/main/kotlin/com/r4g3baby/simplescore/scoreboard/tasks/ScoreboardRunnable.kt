@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -98,9 +99,11 @@ class ScoreboardRunnable : BukkitRunnable() {
     }
 
     private fun replacePlaceholders(text: String, player: Player): String {
-        return if (SimpleScore.usePlaceholderAPI) {
-            PlaceholderAPI.setPlaceholders(player, text)
-        } else ChatColor.translateAlternateColorCodes('&', text)
+        return translateHexColorCodes(
+            if (SimpleScore.usePlaceholderAPI) {
+                PlaceholderAPI.setPlaceholders(player, text)
+            } else ChatColor.translateAlternateColorCodes('&', text)
+        )
     }
 
     private fun applyVariables(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
@@ -143,5 +146,21 @@ class ScoreboardRunnable : BukkitRunnable() {
         return if (values.contains(text)) {
             preventDuplicates(text + ChatColor.RESET, values)
         } else text
+    }
+
+    private val hexPattern: Pattern = Pattern.compile("#([A-Fa-f0-9]{6})")
+    private fun translateHexColorCodes(text: String): String {
+        val matcher = hexPattern.matcher(text)
+        val buffer = StringBuffer(text.length + 4 * 8)
+        while (matcher.find()) {
+            val group = matcher.group(1)
+            matcher.appendReplacement(
+                buffer, ChatColor.COLOR_CHAR.toString() + "x"
+                    + ChatColor.COLOR_CHAR + group[0] + ChatColor.COLOR_CHAR + group[1]
+                    + ChatColor.COLOR_CHAR + group[2] + ChatColor.COLOR_CHAR + group[3]
+                    + ChatColor.COLOR_CHAR + group[4] + ChatColor.COLOR_CHAR + group[5]
+            )
+        }
+        return matcher.appendTail(buffer).toString()
     }
 }
