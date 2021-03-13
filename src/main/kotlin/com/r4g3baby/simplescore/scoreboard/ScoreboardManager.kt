@@ -111,6 +111,10 @@ class ScoreboardManager {
         }
     }
 
+    fun hasLineLengthLimit(): Boolean {
+        return scoreboardHandler.hasLineLengthLimit()
+    }
+
     fun toggleScoreboard(player: Player): Boolean {
         return if (disabledScoreboards.contains(player.uniqueId)) {
             disabledScoreboards.remove(player.uniqueId)

@@ -108,13 +108,13 @@ class ScoreboardRunnable : BukkitRunnable() {
         val toDisplayScores = HashMap<Int, String>()
 
         toDisplayTitle = replaceVariables(title, player)
-        if (toDisplayTitle.length > 32) {
+        if (SimpleScore.scoreboardManager.hasLineLengthLimit() && toDisplayTitle.length > 32) {
             toDisplayTitle = toDisplayTitle.substring(0..31)
         }
 
         scores.forEach { (score, ogValue) ->
             var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
-            if (value.length > 40) {
+            if (SimpleScore.scoreboardManager.hasLineLengthLimit() && value.length > 40) {
                 value = value.substring(0..39)
             }
             toDisplayScores[score] = value

@@ -5,24 +5,26 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.utility.MinecraftVersion
 import com.comphenix.protocol.wrappers.EnumWrappers
-import com.comphenix.protocol.wrappers.WrappedChatComponent
+import com.comphenix.protocol.wrappers.WrappedChatComponent.fromChatMessage
+import com.comphenix.protocol.wrappers.WrappedChatComponent.fromText
+import com.r4g3baby.simplescore.scoreboard.models.PlayerBoard
+import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
-import kotlin.collections.HashMap
 
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
+    private val afterAquaticUpdate = MinecraftVersion.AQUATIC_UPDATE.atOrAbove()
 
-    private val playerTitles = HashMap<UUID, String>()
-    private val playerBoards = HashMap<UUID, Map<String, Int>>()
+    private val playerBoards = HashMap<UUID, PlayerBoard>()
 
     override fun createScoreboard(player: Player) {
         var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
         packet.modifier.writeDefaults()
         packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
         packet.integers.write(0, 0) // Mode 0: Created Scoreboard
-        if (MinecraftVersion.AQUATIC_UPDATE.atOrAbove()) {
-            packet.chatComponents.write(0, WrappedChatComponent.fromText(getPlayerIdentifier(player))) // Display Name
+        if (afterAquaticUpdate) {
+            packet.chatComponents.write(0, fromText(getPlayerIdentifier(player))) // Display Name
         } else packet.strings.write(1, getPlayerIdentifier(player)) // Display Name
         protocolManager.sendServerPacket(player, packet)
 
@@ -34,64 +36,133 @@ class ProtocolScoreboard : ScoreboardHandler() {
     }
 
     override fun removeScoreboard(player: Player) {
-        val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
+        var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
         packet.modifier.writeDefaults()
         packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
         packet.integers.write(0, 1) // Mode 1: Remove Scoreboard
         protocolManager.sendServerPacket(player, packet)
 
-        playerTitles.remove(player.uniqueId)
-        playerBoards.remove(player.uniqueId)
+        if (afterAquaticUpdate) {
+            playerBoards.remove(player.uniqueId)?.scores?.forEach { (score, _) ->
+                packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
+                packet.modifier.writeDefaults()
+                packet.strings.write(0, scoreToName(score)) // Team Name
+                packet.integers.write(0, 1) // Mode - remove team
+                protocolManager.sendServerPacket(player, packet)
+            }
+        } else playerBoards.remove(player.uniqueId)
     }
 
     override fun clearScoreboard(player: Player) {
-        playerBoards.remove(player.uniqueId)?.forEach { (value, _) ->
-            val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
-            packet.modifier.writeDefaults()
-            packet.strings.write(0, value) // Score Name
-            packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
-            packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
-            protocolManager.sendServerPacket(player, packet)
+        playerBoards[player.uniqueId]?.run {
+            scores.forEach { (score, value) ->
+                var scoreName = value
+                if (afterAquaticUpdate) {
+                    scoreName = scoreToName(score)
+
+                    val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
+                    packet.modifier.writeDefaults()
+                    packet.strings.write(0, scoreName) // Team Name
+                    packet.integers.write(0, 1) // Mode - remove team
+                    protocolManager.sendServerPacket(player, packet)
+                }
+
+                val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+                packet.modifier.writeDefaults()
+                packet.strings.write(0, scoreName) // Score Name
+                packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
+                packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+                protocolManager.sendServerPacket(player, packet)
+            }
+            scores = emptyMap()
         }
     }
 
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
-        if (playerTitles[player.uniqueId] != title) {
+        val playerBoard = playerBoards[player.uniqueId]
+        if (playerBoard?.title != title) {
             val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
             packet.modifier.writeDefaults()
             packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
             packet.integers.write(0, 2) // Mode 2: Update Display Name
-            if (MinecraftVersion.AQUATIC_UPDATE.atOrAbove()) {
-                packet.chatComponents.write(0, WrappedChatComponent.fromText(title)) // Display Name
+            if (afterAquaticUpdate) {
+                packet.chatComponents.write(0, fromChatMessage(title)[0]) // Display Name
             } else packet.strings.write(1, title) // Display Name
             protocolManager.sendServerPacket(player, packet)
-
-            playerTitles[player.uniqueId] = title
         }
 
-        val playerBoard = playerBoards[player.uniqueId]
         scores.forEach { (score, value) ->
-            val boardScore = playerBoard?.get(value)
+            val boardScore = playerBoard?.getScore(value)
             if (boardScore == score) return@forEach
+
+            var scoreName = value
+            if (afterAquaticUpdate) {
+                scoreName = scoreToName(score)
+
+                val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
+                packet.modifier.writeDefaults()
+                packet.strings.write(0, scoreName) // Team Name
+                packet.chatComponents.write(0, fromText(scoreName)) // Display Name
+                packet.chatComponents.write(1, fromChatMessage(value)[0]) // Prefix
+                // packet.chatComponents.write(2, fromText("")) // Suffix
+
+                playerBoard?.scores?.containsKey(score)?.let { update ->
+                    // there's no need to create the team again if this line already exists
+                    if (update) {
+                        packet.integers.write(0, 2) // Mode - update team info
+                        protocolManager.sendServerPacket(player, packet)
+                        return@forEach
+                    }
+                }
+
+                packet.integers.write(0, 0) // Mode - create team
+                packet.getSpecificModifier(Collection::class.java).write(0, listOf(scoreName)) // Entities
+                protocolManager.sendServerPacket(player, packet)
+            }
 
             val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
-            packet.strings.write(0, value) // Score Name
+            packet.strings.write(0, scoreName) // Score Name
             packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.CHANGE) // Action
             packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
             packet.integers.write(0, score) // Score Value
             protocolManager.sendServerPacket(player, packet)
         }
 
-        playerBoard?.filter { !scores.values.contains(it.key) }?.forEach { (value, _) ->
+        playerBoard?.scores?.filter { !scores.contains(it.key) }?.forEach { (score, value) ->
+            var scoreName = value
+            if (afterAquaticUpdate) {
+                scoreName = scoreToName(score)
+
+                val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
+                packet.modifier.writeDefaults()
+                packet.strings.write(0, scoreName) // Team Name
+                packet.integers.write(0, 1) // Mode - remove team
+                protocolManager.sendServerPacket(player, packet)
+            }
+
             val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
             packet.modifier.writeDefaults()
-            packet.strings.write(0, value) // Score Name
+            packet.strings.write(0, scoreName) // Score Name
             packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
             packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
             protocolManager.sendServerPacket(player, packet)
         }
 
-        playerBoards[player.uniqueId] = scores.map { (key, value) -> value to key }.toMap()
+        playerBoard?.let {
+            it.title = title
+            it.scores = scores
+        } ?: run {
+            playerBoards[player.uniqueId] = PlayerBoard(title, scores)
+        }
+    }
+
+    override fun hasLineLengthLimit(): Boolean {
+        return !afterAquaticUpdate
+    }
+
+    private fun scoreToName(score: Int): String {
+        return score.toString().toCharArray()
+            .joinToString(ChatColor.COLOR_CHAR.toString(), ChatColor.COLOR_CHAR.toString())
     }
 }

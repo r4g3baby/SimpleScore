@@ -44,4 +44,8 @@ class BukkitScoreboard : ScoreboardHandler() {
                 .forEach { objective.scoreboard.resetScores(it) }
         }
     }
+
+    override fun hasLineLengthLimit(): Boolean {
+        return true
+    }
 }
