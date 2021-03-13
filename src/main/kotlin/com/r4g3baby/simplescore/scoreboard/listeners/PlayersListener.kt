@@ -4,6 +4,8 @@ import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.isEqual
 import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -30,29 +32,24 @@ class PlayersListener : Listener {
         if (e.from.blockX == e.to.blockX && e.from.blockY == e.to.blockY && e.from.blockZ == e.to.blockZ) return
         if (e.from.world != e.to.world) return
 
-        if (WorldGuardAPI.isEnabled) {
-            val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
-            val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
-
-            if (!fromFlag.isEqual(toFlag)) {
-                Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-                    SimpleScore.scoreboardManager.clearScoreboard(e.player)
-                }
-            }
-        }
+        clearIfNeeded(e.player, e.from, e.to)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerTeleport(e: PlayerTeleportEvent) {
         if (e.from.world != e.to.world) return
 
+        clearIfNeeded(e.player, e.from, e.to)
+    }
+
+    private fun clearIfNeeded(player: Player, from: Location, to: Location) {
         if (WorldGuardAPI.isEnabled) {
-            val fromFlag = WorldGuardAPI.getFlag(e.player, e.from)
-            val toFlag = WorldGuardAPI.getFlag(e.player, e.to)
+            val fromFlag = WorldGuardAPI.getFlag(player, from)
+            val toFlag = WorldGuardAPI.getFlag(player, to)
 
             if (!fromFlag.isEqual(toFlag)) {
                 Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-                    SimpleScore.scoreboardManager.clearScoreboard(e.player)
+                    SimpleScore.scoreboardManager.clearScoreboard(player)
                 }
             }
         }
