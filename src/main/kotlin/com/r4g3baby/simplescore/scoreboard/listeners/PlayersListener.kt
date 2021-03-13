@@ -2,6 +2,7 @@ package com.r4g3baby.simplescore.scoreboard.listeners
 
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
+import com.r4g3baby.simplescore.utils.isEqual
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
