@@ -7,7 +7,7 @@ import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.ScoreboardExpansion
-import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardRunnable
+import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardTask
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -54,7 +54,7 @@ class ScoreboardManager {
             BukkitScoreboard()
         } else ProtocolScoreboard()
 
-        ScoreboardRunnable().runTaskTimerAsynchronously(SimpleScore.plugin, 20L, 1L)
+        ScoreboardTask().runTaskTimerAsynchronously(SimpleScore.plugin, 20L, 1L)
     }
 
     fun reload() {

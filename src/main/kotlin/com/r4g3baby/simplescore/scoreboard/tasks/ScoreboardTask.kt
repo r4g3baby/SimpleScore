@@ -12,7 +12,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class ScoreboardRunnable : BukkitRunnable() {
+class ScoreboardTask : BukkitRunnable() {
     override fun run() {
         SimpleScore.scoreboardManager.getScoreboards().forEach { scoreboard ->
             scoreboard.titles.next()
@@ -30,7 +30,7 @@ class ScoreboardRunnable : BukkitRunnable() {
 
             if (WorldGuardAPI.isEnabled) {
                 val iterator = players.iterator()
-                for (player in iterator) {
+                iterator.forEach { player ->
                     val flag = WorldGuardAPI.getFlag(player)
                     if (!flag.isNullOrEmpty()) {
                         for (boardName in flag) {
@@ -63,7 +63,7 @@ class ScoreboardRunnable : BukkitRunnable() {
                 }
 
                 val iterator = players.iterator()
-                for (player in iterator) {
+                iterator.forEach { player ->
                     if (worldBoard.canSee(player)) {
                         playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
                             applyPlaceholders(player, title, scores)
@@ -92,7 +92,7 @@ class ScoreboardRunnable : BukkitRunnable() {
 
         val toDisplayScores = HashMap<Int, String>()
         scores.forEach { (score, ogValue) ->
-            toDisplayScores[score] = preventDuplicates(replacePlaceholders(ogValue, player), toDisplayScores.values)
+            toDisplayScores[score] = replacePlaceholders(ogValue, player)
         }
 
         return (toDisplayTitle to toDisplayScores)
