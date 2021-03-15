@@ -129,9 +129,10 @@ class ProtocolScoreboard : ScoreboardHandler() {
             protocolManager.sendServerPacket(player, packet)
         }
 
-        playerBoard?.scores?.filter { !scores.contains(it.key) }?.forEach { (score, value) ->
+        playerBoard?.scores?.forEach { (score, value) ->
             var scoreName = value
-            if (afterAquaticUpdate) {
+            var remove = false
+            if (afterAquaticUpdate && !scores.containsKey(score)) {
                 scoreName = scoreToName(score)
 
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
@@ -139,14 +140,18 @@ class ProtocolScoreboard : ScoreboardHandler() {
                 packet.strings.write(0, scoreName) // Team Name
                 packet.integers.write(0, 1) // Mode - remove team
                 protocolManager.sendServerPacket(player, packet)
+
+                remove = true
             }
 
-            val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
-            packet.modifier.writeDefaults()
-            packet.strings.write(0, scoreName) // Score Name
-            packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
-            packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
-            protocolManager.sendServerPacket(player, packet)
+            if (remove || (!afterAquaticUpdate && !scores.containsValue(value))) {
+                val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+                packet.modifier.writeDefaults()
+                packet.strings.write(0, scoreName) // Score Name
+                packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
+                packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+                protocolManager.sendServerPacket(player, packet)
+            }
         }
 
         playerBoard?.let {
