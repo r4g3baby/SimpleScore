@@ -12,7 +12,7 @@ repositories {
     maven(uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots"))
     maven(uri("https://repo.dmulloy2.net/nexus/repository/public/"))
     maven(uri("https://repo.extendedclip.com/content/repositories/placeholderapi/"))
-    maven(uri("https://repo.codemc.org/repository/maven-public/"))
+    maven(uri("https://repo.codemc.io/repository/maven-public/"))
 }
 
 dependencies {
