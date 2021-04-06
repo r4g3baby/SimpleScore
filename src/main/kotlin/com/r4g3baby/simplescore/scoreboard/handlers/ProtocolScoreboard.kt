@@ -162,6 +162,10 @@ class ProtocolScoreboard : ScoreboardHandler() {
         }
     }
 
+    override fun hasScoreboard(player: Player): Boolean {
+        return player.uniqueId in playerBoards
+    }
+
     override fun hasLineLengthLimit(): Boolean {
         return !afterAquaticUpdate
     }

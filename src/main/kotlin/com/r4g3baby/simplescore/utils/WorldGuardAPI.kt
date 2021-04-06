@@ -10,8 +10,7 @@ object WorldGuardAPI {
     private lateinit var wrapper: WorldGuardWrapper
     private lateinit var scoreboardFlag: IWrappedFlag<String>
 
-    var isEnabled = false
-        private set
+    val isEnabled get() = this::scoreboardFlag.isInitialized
 
     fun init(plugin: Plugin) {
         if (plugin.server.pluginManager.getPlugin("WorldGuard") != null) {
@@ -20,22 +19,20 @@ object WorldGuardAPI {
             var flag = wrapper.registerFlag("scoreboard", String::class.java, "")
             if (flag.isPresent) {
                 scoreboardFlag = flag.get()
-                isEnabled = true
             } else {
                 flag = wrapper.getFlag("scoreboard", String::class.java)
                 if (flag.isPresent) {
                     scoreboardFlag = flag.get()
-                    isEnabled = true
                 }
             }
         }
     }
 
     fun getFlag(player: Player, location: Location = player.location): List<String> {
-        if (this::scoreboardFlag.isInitialized) {
+        if (isEnabled) {
             val flag = wrapper.queryFlag(player, location, scoreboardFlag)
             if (flag.isPresent) {
-                return flag.get().split(",").map { it.trim() }
+                return flag.get().split(",").map { it.trim() }.filter { it.isNotEmpty() }
             }
         }
         return emptyList()

@@ -45,6 +45,11 @@ class BukkitScoreboard : ScoreboardHandler() {
         }
     }
 
+    override fun hasScoreboard(player: Player): Boolean {
+        val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
+        return objective != null && objective.isModifiable
+    }
+
     override fun hasLineLengthLimit(): Boolean {
         return true
     }

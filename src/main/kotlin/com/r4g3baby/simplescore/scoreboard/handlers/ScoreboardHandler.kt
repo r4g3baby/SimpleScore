@@ -7,6 +7,7 @@ abstract class ScoreboardHandler {
     abstract fun removeScoreboard(player: Player)
     abstract fun clearScoreboard(player: Player)
     abstract fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player)
+    abstract fun hasScoreboard(player: Player): Boolean
     abstract fun hasLineLengthLimit(): Boolean
 
     fun getPlayerIdentifier(player: Player): String {

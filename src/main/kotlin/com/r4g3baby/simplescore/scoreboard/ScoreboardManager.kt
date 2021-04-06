@@ -14,11 +14,11 @@ import org.bukkit.entity.Player
 import java.io.*
 import java.util.*
 import java.util.logging.Level
-import kotlin.collections.HashSet
 
 class ScoreboardManager {
     private val _disabledDataFile = File(SimpleScore.plugin.dataFolder, "data${File.separator}scoreboards")
 
+    private val worldScoreboardsCache = HashMap<World, List<Scoreboard>>()
     private val disabledScoreboards = HashSet<UUID>()
     private val scoreboardHandler: ScoreboardHandler
 
@@ -58,6 +58,7 @@ class ScoreboardManager {
     }
 
     fun reload() {
+        worldScoreboardsCache.clear()
         if (!SimpleScore.config.saveScoreboards) {
             disabledScoreboards.clear()
         }
@@ -111,6 +112,10 @@ class ScoreboardManager {
         }
     }
 
+    fun hasScoreboard(player: Player): Boolean {
+        return scoreboardHandler.hasScoreboard(player)
+    }
+
     fun hasLineLengthLimit(): Boolean {
         return scoreboardHandler.hasLineLengthLimit()
     }
@@ -132,18 +137,20 @@ class ScoreboardManager {
     }
 
     fun getWorldScoreboards(world: World): List<Scoreboard> {
-        return mutableListOf<Scoreboard>().also { list ->
-            SimpleScore.config.worlds.forEach { (predicate, scoreboards) ->
-                if (predicate.test(world.name)) {
-                    scoreboards.forEach {
-                        val scoreboard = SimpleScore.config.scoreboards[it]
-                        if (scoreboard != null) {
-                            list.add(scoreboard)
+        return worldScoreboardsCache.computeIfAbsent(world) {
+            mutableListOf<Scoreboard>().also { list ->
+                SimpleScore.config.worlds.forEach { (predicate, scoreboards) ->
+                    if (predicate.test(world.name)) {
+                        scoreboards.forEach {
+                            val scoreboard = SimpleScore.config.scoreboards[it]
+                            if (scoreboard != null) {
+                                list.add(scoreboard)
+                            }
                         }
                     }
                 }
-            }
-        }.toList()
+            }.toList()
+        }
     }
 
     fun getScoreboard(scoreboard: String): Scoreboard? {
