@@ -91,9 +91,7 @@ class ScoreboardManager {
     }
 
     fun createScoreboard(player: Player) {
-        if (!disabledScoreboards.contains(player.uniqueId)) {
-            scoreboardHandler.createScoreboard(player)
-        }
+        scoreboardHandler.createScoreboard(player)
     }
 
     fun removeScoreboard(player: Player) {
@@ -101,9 +99,7 @@ class ScoreboardManager {
     }
 
     fun clearScoreboard(player: Player) {
-        if (!disabledScoreboards.contains(player.uniqueId)) {
-            scoreboardHandler.clearScoreboard(player)
-        }
+        scoreboardHandler.clearScoreboard(player)
     }
 
     fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
@@ -121,15 +117,11 @@ class ScoreboardManager {
     }
 
     fun toggleScoreboard(player: Player): Boolean {
-        return if (disabledScoreboards.contains(player.uniqueId)) {
-            disabledScoreboards.remove(player.uniqueId)
-            scoreboardHandler.createScoreboard(player)
-            false
-        } else {
+        return if (!disabledScoreboards.remove(player.uniqueId)) {
             disabledScoreboards.add(player.uniqueId)
-            scoreboardHandler.removeScoreboard(player)
+            scoreboardHandler.clearScoreboard(player)
             true
-        }
+        } else false
     }
 
     fun isScoreboardDisabled(player: Player): Boolean {
