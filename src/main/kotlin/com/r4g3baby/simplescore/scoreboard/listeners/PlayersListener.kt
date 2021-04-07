@@ -24,17 +24,14 @@ class PlayersListener : Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerQuit(e: PlayerQuitEvent) {
-        if (
-            SimpleScore.scoreboardManager.getWorldScoreboards(e.player.world).isNotEmpty()
-            || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty()
-        ) {
+        if (SimpleScore.scoreboardManager.hasScoreboard(e.player)) {
             SimpleScore.scoreboardManager.removeScoreboard(e.player)
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerChangedWorld(e: PlayerChangedWorldEvent) {
-        clearIfNeeded(e.player, null, e.player.location)
+        doScoreboardCheck(e.player, null, e.player.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -42,17 +39,17 @@ class PlayersListener : Listener {
         if (e.from.blockX == e.to.blockX && e.from.blockY == e.to.blockY && e.from.blockZ == e.to.blockZ) return
         if (e.from.world != e.to.world) return
 
-        clearIfNeeded(e.player, e.from, e.to)
+        doScoreboardCheck(e.player, e.from, e.to)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerTeleport(e: PlayerTeleportEvent) {
         if (e.from.world != e.to.world) return
 
-        clearIfNeeded(e.player, e.from, e.to)
+        doScoreboardCheck(e.player, e.from, e.to)
     }
 
-    private fun clearIfNeeded(player: Player, from: Location?, to: Location) {
+    private fun doScoreboardCheck(player: Player, from: Location?, to: Location) {
         val toBoards = SimpleScore.scoreboardManager.getWorldScoreboards(to.world)
         val toFlag = WorldGuardAPI.getFlag(player, to)
         if (SimpleScore.scoreboardManager.hasScoreboard(player)) {
