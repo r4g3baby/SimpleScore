@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.r4g3baby"
-version = "3.7.0"
+version = "3.7.1"
 
 repositories {
     jcenter()
