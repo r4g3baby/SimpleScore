@@ -15,8 +15,9 @@ class PlayersListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(e: PlayerJoinEvent) {
         if (
-            SimpleScore.scoreboardManager.getWorldScoreboards(e.player.world).isNotEmpty()
-            || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty()
+            !SimpleScore.scoreboardManager.hasScoreboard(e.player)
+            && (SimpleScore.scoreboardManager.getWorldScoreboards(e.player.world).isNotEmpty()
+                || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty())
         ) {
             SimpleScore.scoreboardManager.createScoreboard(e.player)
         }
