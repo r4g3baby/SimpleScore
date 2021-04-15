@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import java.util.logging.Level
 import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
@@ -101,7 +102,14 @@ class ScoreboardTask : BukkitRunnable() {
     private fun replacePlaceholders(text: String, player: Player): String {
         return translateHexColorCodes(
             if (SimpleScore.usePlaceholderAPI) {
-                PlaceholderAPI.setPlaceholders(player, text)
+                try {
+                    PlaceholderAPI.setPlaceholders(player, text)
+                } catch (ex: Exception) {
+                    SimpleScore.plugin.logger.log(
+                        Level.WARNING, "Could not apply PlaceholderAPI placeholders", ex
+                    )
+                    ChatColor.translateAlternateColorCodes('&', text)
+                }
             } else ChatColor.translateAlternateColorCodes('&', text)
         )
     }
