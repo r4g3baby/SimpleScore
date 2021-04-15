@@ -109,7 +109,9 @@ class ScoreboardTask : BukkitRunnable() {
                     if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
                         lastException = System.currentTimeMillis()
                         SimpleScore.plugin.logger.log(
-                            Level.WARNING, "Could not apply PlaceholderAPI placeholders", ex
+                            Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
+                                "Could not apply PlaceholderAPI placeholders. Disable 'AsyncPlaceholders' and try again"
+                            } else "Could not apply PlaceholderAPI placeholders", ex
                         )
                     }
                     ChatColor.translateAlternateColorCodes('&', text)
