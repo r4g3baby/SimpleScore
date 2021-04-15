@@ -162,7 +162,7 @@ class ScoreboardTask : BukkitRunnable() {
         } else text
     }
 
-    private val hexPattern: Pattern = Pattern.compile("#([A-Fa-f0-9]{6})")
+    private val hexPattern: Pattern = Pattern.compile("&?#([A-Fa-f0-9]{6})")
     private fun translateHexColorCodes(text: String): String {
         val matcher = hexPattern.matcher(text)
         val buffer = StringBuffer(text.length + 4 * 8)
