@@ -99,15 +99,19 @@ class ScoreboardTask : BukkitRunnable() {
         return (toDisplayTitle to toDisplayScores)
     }
 
+    private var lastException = System.currentTimeMillis()
     private fun replacePlaceholders(text: String, player: Player): String {
         return translateHexColorCodes(
             if (SimpleScore.usePlaceholderAPI) {
                 try {
                     PlaceholderAPI.setPlaceholders(player, text)
                 } catch (ex: Exception) {
-                    SimpleScore.plugin.logger.log(
-                        Level.WARNING, "Could not apply PlaceholderAPI placeholders", ex
-                    )
+                    if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
+                        lastException = System.currentTimeMillis()
+                        SimpleScore.plugin.logger.log(
+                            Level.WARNING, "Could not apply PlaceholderAPI placeholders", ex
+                        )
+                    }
                     ChatColor.translateAlternateColorCodes('&', text)
                 }
             } else ChatColor.translateAlternateColorCodes('&', text)
