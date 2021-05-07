@@ -7,7 +7,7 @@ group = "com.r4g3baby"
 version = "3.7.2"
 
 repositories {
-    jcenter()
+    mavenCentral()
 
     maven(uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots"))
     maven(uri("https://repo.dmulloy2.net/nexus/repository/public/"))
