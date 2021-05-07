@@ -153,7 +153,7 @@ class ScoreboardTask : BukkitRunnable() {
             .replace("%maxhealth%", player.maxHealth.roundToInt().toString())
             .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
             .replace("%level%", player.level.toString())
-            .replace("%gamemode%", player.gameMode.name.toLowerCase().capitalize())
+            .replace("%gamemode%", player.gameMode.name.lowercase().replaceFirstChar { it.uppercase() })
     }
 
     private fun preventDuplicates(text: String, values: Collection<String>): String {

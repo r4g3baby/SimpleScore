@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 
 class ScoreboardExpansion(private val plugin: SimpleScore): PlaceholderExpansion() {
     override fun getIdentifier(): String {
-        return plugin.description.name.toLowerCase()
+        return plugin.description.name.lowercase()
     }
 
     override fun getPlugin(): String {

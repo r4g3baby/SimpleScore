@@ -146,7 +146,7 @@ class ScoreboardManager {
     }
 
     fun getScoreboard(scoreboard: String): Scoreboard? {
-        return SimpleScore.config.scoreboards[scoreboard.toLowerCase()]
+        return SimpleScore.config.scoreboards[scoreboard.lowercase()]
     }
 
     fun getScoreboards(): List<Scoreboard> {

@@ -4,8 +4,10 @@ import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.models.ScoreLine
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
+import java.util.*
 import java.util.function.Predicate
 import java.util.regex.Pattern
+import kotlin.collections.HashMap
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     private val updateTime = config.getInt("UpdateTime", 20)
@@ -45,7 +47,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
 
         if (config.isConfigurationSection("Scoreboards")) {
             val scoreboardsSec = config.getConfigurationSection("Scoreboards")
-            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it.toLowerCase()) }) {
+            for (scoreboard in scoreboardsSec.getKeys(false).filter { !scoreboards.containsKey(it.lowercase()) }) {
                 if (scoreboardsSec.isConfigurationSection(scoreboard)) {
                     val scoreboardSec = scoreboardsSec.getConfigurationSection(scoreboard)
 
@@ -78,7 +80,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                         }
                     }
 
-                    val name = scoreboard.toLowerCase()
+                    val name = scoreboard.lowercase()
                     val restricted = scoreboardSec.getBoolean("Restricted", false)
                     scoreboards[name] = Scoreboard(name, titles, scores, restricted)
                 }
@@ -94,11 +96,11 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
                     is List<*> -> mutableListOf<String>().also { list ->
                         scoreboards.forEach {
                             if (it is String) {
-                                list.add(it.toLowerCase())
+                                list.add(it.lowercase())
                             }
                         }
                     }.toList()
-                    is String -> listOf(scoreboards.toLowerCase())
+                    is String -> listOf(scoreboards.lowercase())
                     else -> emptyList()
                 }
 
