@@ -50,9 +50,11 @@ class ScoreboardManager {
             ScoreboardExpansion(SimpleScore.plugin).register()
         }
 
-        scoreboardHandler = if (!Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-            BukkitScoreboard()
-        } else ProtocolScoreboard()
+        scoreboardHandler = if (!SimpleScore.config.forceLegacy) {
+            if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+                ProtocolScoreboard()
+            } else BukkitScoreboard()
+        } else BukkitScoreboard()
 
         ScoreboardTask().runTaskTimerAsynchronously(SimpleScore.plugin, 20L, 1L)
     }

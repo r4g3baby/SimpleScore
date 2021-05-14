@@ -4,7 +4,6 @@ import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.models.ScoreLine
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
-import java.util.*
 import java.util.function.Predicate
 import java.util.regex.Pattern
 import kotlin.collections.HashMap
@@ -13,6 +12,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     private val updateTime = config.getInt("UpdateTime", 20)
     val saveScoreboards = config.getBoolean("SaveScoreboards", true)
     val asyncPlaceholders = config.getBoolean("AsyncPlaceholders", true)
+    val forceLegacy = config.getBoolean("ForceLegacy", false)
 
     val scoreboards = HashMap<String, Scoreboard>()
     val worlds = HashMap<Predicate<String>, List<String>>()

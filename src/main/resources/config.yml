@@ -7,6 +7,9 @@ SaveScoreboards: true
 # Whether to apply placeholders asynchronously or not
 AsyncPlaceholders: true
 
+# Enable this if you are running a 1.13+ server with backwards version support
+ForceLegacy: false
+
 # Configure your scoreboards layout
 Scoreboards:
   example:
