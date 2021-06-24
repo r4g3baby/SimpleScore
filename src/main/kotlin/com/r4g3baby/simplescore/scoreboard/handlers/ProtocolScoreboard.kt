@@ -2,6 +2,7 @@ package com.r4g3baby.simplescore.scoreboard.handlers
 
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.events.InternalStructure
 import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.utility.MinecraftVersion
 import com.comphenix.protocol.wrappers.EnumWrappers
@@ -11,6 +12,7 @@ import com.r4g3baby.simplescore.scoreboard.models.PlayerBoard
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
+
 
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
@@ -104,9 +106,22 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Team Name
-                    packet.chatComponents.write(0, fromText(scoreName)) // Display Name
-                    packet.chatComponents.write(1, fromChatMessage(value)[0]) // Prefix
-                    // packet.chatComponents.write(2, fromText("")) // Suffix
+
+                    if (MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
+                        val optStruct: Optional<InternalStructure> = packet.optionalStructures.read(0)
+                        if (optStruct.isPresent) {
+                            val struct = optStruct.get()
+                            struct.chatComponents.write(0, fromText(scoreName)) // Display Name
+                            struct.chatComponents.write(1, fromChatMessage(value)[0]) // Prefix
+                            // struct.chatComponents.write(2, fromText("")) // Suffix
+
+                            packet.optionalStructures.write(0, Optional.of(struct))
+                        }
+                    } else {
+                        packet.chatComponents.write(0, fromText(scoreName)) // Display Name
+                        packet.chatComponents.write(1, fromChatMessage(value)[0]) // Prefix
+                        // packet.chatComponents.write(2, fromText("")) // Suffix
+                    }
 
                     playerBoard.scores.containsKey(score).let { update ->
                         // there's no need to create the team again if this line already exists

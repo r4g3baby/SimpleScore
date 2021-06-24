@@ -19,7 +19,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.5.1")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.8.2")
 
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
