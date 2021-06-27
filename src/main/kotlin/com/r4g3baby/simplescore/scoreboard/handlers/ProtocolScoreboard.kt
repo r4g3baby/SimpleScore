@@ -16,7 +16,10 @@ import java.util.*
 
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
-    private val afterAquaticUpdate = MinecraftVersion.AQUATIC_UPDATE.atOrAbove()
+
+    // Don't use ProtocolLib enums so we can support older versions
+    private val afterAquaticUpdate = MinecraftVersion("1.13").atOrAbove()
+    private val afterCavesAndCliffsUpdate = MinecraftVersion("1.17").atOrAbove()
 
     private val playerBoards = HashMap<UUID, PlayerBoard>()
 
@@ -107,7 +110,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Team Name
 
-                    if (MinecraftVersion.CAVES_CLIFFS_1.atOrAbove()) {
+                    if (afterCavesAndCliffsUpdate) {
                         val optStruct: Optional<InternalStructure> = packet.optionalStructures.read(0)
                         if (optStruct.isPresent) {
                             val struct = optStruct.get()
