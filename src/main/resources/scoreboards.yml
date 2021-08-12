@@ -1,0 +1,77 @@
+example:
+  titles:
+    - "&7&LYour&6&lServer"
+  scores:
+    13:
+      - "&7&m+----------------+"
+      - "&7&m------------------"
+    12:
+      - "&7» &6&lPlayer"
+    11:
+      - "    &7%player%"
+    10:
+      - ""
+    9:
+      - "&7» &6&lHealth"
+    8:
+      - "    %hearts%"
+    7:
+      - ""
+    6:
+      - "&7» &6&lWorld"
+    5:
+      - "    &7%world%"
+    4:
+      - ""
+    3:
+      - "&7» &6&lOnline Players"
+    2:
+      - "    &7%online% &6players"
+    1:
+      - "&7&m+----------------+"
+      - "&7&m------------------"
+
+custom_time:
+  titles:
+    - text: "&c100 ticks title"
+      time: 100
+    - text: "&a50 ticks title"
+      time: 50
+  scores:
+    6:
+      - "&7You can set a per title or score time"
+    5:
+      - "&7instead of using the default value"
+    4:
+      - ""
+    3:
+      - text: "&7This will last for &810 seconds"
+        time: 200
+      - text: "&7while this only lasts for &85 seconds"
+        time: 100
+    2:
+      - ""
+    1:
+      - "&aYour current world: &6%world%"
+
+restricted:
+  permission: "mypermission"
+  titles:
+    - "&cRestricted Scoreboard"
+  scores:
+    8:
+      - ""
+    7:
+      - "&7Restricted scoreboards required the"
+    6:
+      - "&6simplescore.sb.<perm> &7permission."
+    5:
+      - ""
+    4:
+      - "&7You can see this scoreboard because"
+    3:
+      - "&7you have the following permission:"
+    2:
+      - "&6simplescore.sb.mypermission"
+    1:
+      - ""
