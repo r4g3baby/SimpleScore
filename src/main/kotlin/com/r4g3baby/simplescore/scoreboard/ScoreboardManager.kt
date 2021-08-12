@@ -141,6 +141,7 @@ class ScoreboardManager {
                                 list.add(scoreboard)
                             }
                         }
+                        return@forEach
                     }
                 }
             }.toList()
