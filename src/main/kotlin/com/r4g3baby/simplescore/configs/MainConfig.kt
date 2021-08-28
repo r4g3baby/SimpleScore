@@ -1,46 +1,59 @@
 package com.r4g3baby.simplescore.configs
 
 import com.r4g3baby.simplescore.SimpleScore
-import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import java.util.function.Predicate
 import java.util.regex.Pattern
 
-class MainConfig(plugin: SimpleScore, fileName: String = "config") : ConfigFile(plugin, fileName) {
+class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     private val version = config.getInt("version", -1)
-    private val updateTime = config.getInt("updateTime", 20)
-    val saveScoreboards = config.getBoolean("saveScoreboards", true)
-    val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
-    val forceLegacy = config.getBoolean("forceLegacy", false)
+    private var updateTime = config.getInt("updateTime", 20)
+    var saveScoreboards = config.getBoolean("saveScoreboards", true)
+        private set
+    var asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
+        private set
+    var forceLegacy = config.getBoolean("forceLegacy", false)
+        private set
 
-    val scoreboards = HashMap<String, Scoreboard>()
+    private var scoreboardsConfig = ScoreboardsConfig(plugin, updateTime)
+    val scoreboards get() = scoreboardsConfig.scoreboards
     val worlds = HashMap<Predicate<String>, List<String>>()
 
     init {
         if (version < 0) {
-            // Compatibility with older config format
-            if (config.isConfigurationSection("Worlds") && !config.isConfigurationSection("Scoreboards")) {
-                config.createSection("Scoreboards", config.getConfigurationSection("Worlds").getValues(true))
-                config.set("Worlds", null)
+            if (config.contains("UpdateTime")) {
+                updateTime = config.getInt("UpdateTime", updateTime)
+                config.set("updateTime", updateTime)
+                config.set("UpdateTime", null)
             }
 
-            if (config.isConfigurationSection("Shared") && !config.isConfigurationSection("Worlds")) {
-                val sharedSec = config.getConfigurationSection("Shared")
-                val worldsSec = config.createSection("Worlds")
+            if (config.contains("SaveScoreboards")) {
+                saveScoreboards = config.getBoolean("SaveScoreboards", saveScoreboards)
+                config.set("saveScoreboards", saveScoreboards)
+                config.set("SaveScoreboards", null)
+            }
 
-                if (config.isConfigurationSection("Scoreboards")) {
-                    for (scoreboard in config.getConfigurationSection("Scoreboards").getKeys(false)) {
-                        worldsSec.set(scoreboard, scoreboard)
-                    }
-                }
+            if (config.contains("AsyncPlaceholders")) {
+                asyncPlaceholders = config.getBoolean("AsyncPlaceholders", asyncPlaceholders)
+                config.set("asyncPlaceholders", asyncPlaceholders)
+                config.set("AsyncPlaceholders", null)
+            }
 
-                for (shared in sharedSec.getKeys(false)) {
-                    for (world in sharedSec.getStringList(shared)) {
-                        worldsSec.set(world, shared)
-                    }
-                }
+            if (config.contains("ForceLegacy")) {
+                forceLegacy = config.getBoolean("ForceLegacy", forceLegacy)
+                config.set("forceLegacy", forceLegacy)
+                config.set("ForceLegacy", null)
+            }
 
-                config.set("Shared", null)
+            if (config.isConfigurationSection("Scoreboards")) {
+                scoreboardsConfig.saveOldScoreboards(config.getConfigurationSection("Scoreboards"))
+                scoreboardsConfig = ScoreboardsConfig(plugin, updateTime)
+                config.set("Scoreboards", null)
+            }
+
+            if (config.isConfigurationSection("Worlds")) {
+                config.set("worlds", config.getConfigurationSection("Worlds"))
+                config.set("Worlds", null)
             }
 
             config.set("version", 1)

@@ -64,7 +64,7 @@ restricted:
     7:
       - "&7Restricted scoreboards required the"
     6:
-      - "&6simplescore.sb.<perm> &7permission."
+      - "&6simplescore.<perm> &7permission."
     5:
       - ""
     4:
@@ -72,6 +72,6 @@ restricted:
     3:
       - "&7you have the following permission:"
     2:
-      - "&6simplescore.sb.mypermission"
+      - "&6simplescore.mypermission"
     1:
       - ""
