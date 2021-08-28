@@ -13,11 +13,10 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
 
-
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
 
-    // Don't use ProtocolLib enums so we can support older versions
+    // Don't use ProtocolLib enums, so we can support older versions
     private val afterAquaticUpdate = MinecraftVersion("1.13").atOrAbove()
     private val afterCavesAndCliffsUpdate = MinecraftVersion("1.17").atOrAbove()
 
@@ -110,20 +109,21 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Team Name
 
+                    val splitText = splitText(value)
                     if (afterCavesAndCliffsUpdate) {
                         val optStruct: Optional<InternalStructure> = packet.optionalStructures.read(0)
                         if (optStruct.isPresent) {
                             val struct = optStruct.get()
                             struct.chatComponents.write(0, fromText(scoreName)) // Display Name
-                            struct.chatComponents.write(1, fromChatMessage(value)[0]) // Prefix
-                            // struct.chatComponents.write(2, fromText("")) // Suffix
+                            struct.chatComponents.write(1, fromChatMessage(splitText.first)[0]) // Prefix
+                            struct.chatComponents.write(2, fromChatMessage(splitText.second)[0]) // Suffix
 
                             packet.optionalStructures.write(0, Optional.of(struct))
                         }
                     } else {
                         packet.chatComponents.write(0, fromText(scoreName)) // Display Name
-                        packet.chatComponents.write(1, fromChatMessage(value)[0]) // Prefix
-                        // packet.chatComponents.write(2, fromText("")) // Suffix
+                        packet.chatComponents.write(1, fromChatMessage(splitText.first)[0]) // Prefix
+                        packet.chatComponents.write(2, fromChatMessage(splitText.second)[0]) // Suffix
                     }
 
                     playerBoard.scores.containsKey(score).let { update ->
@@ -192,5 +192,22 @@ class ProtocolScoreboard : ScoreboardHandler() {
     private fun scoreToName(score: Int): String {
         return score.toString().toCharArray()
             .joinToString(ChatColor.COLOR_CHAR.toString(), ChatColor.COLOR_CHAR.toString())
+    }
+
+    private fun splitText(text: String): Pair<String, String> {
+        if (text.length > 16) {
+            // Don't split color codes
+            val index = if (text.elementAt(15) == ChatColor.COLOR_CHAR) 15 else 16
+
+            val prefix = text.substring(0, index)
+            val suffix = text.substring(index)
+
+            // Get last colors from prefix
+            val lastColors = ChatColor.getLastColors(prefix)
+
+            return prefix to (lastColors + suffix)
+        }
+        // Return empty suffix
+        return text to ""
     }
 }
