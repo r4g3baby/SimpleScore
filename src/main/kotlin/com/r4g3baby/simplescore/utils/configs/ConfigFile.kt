@@ -9,7 +9,7 @@ import java.io.InputStreamReader
 
 @Suppress("LeakingThis")
 open class ConfigFile(plugin: Plugin, name: String) : File(plugin.dataFolder, "$name.yml") {
-    protected val config: FileConfiguration
+    val config: FileConfiguration
 
     init {
         if (!plugin.dataFolder.exists()) {

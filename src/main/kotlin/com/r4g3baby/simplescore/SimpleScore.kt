@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore
 
 import com.r4g3baby.simplescore.commands.MainCmd
+import com.r4g3baby.simplescore.configs.ConfigUpdater
 import com.r4g3baby.simplescore.configs.MainConfig
 import com.r4g3baby.simplescore.configs.MessagesConfig
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
@@ -48,6 +49,8 @@ class SimpleScore : JavaPlugin() {
         internal fun init(plugin: SimpleScore) {
             check(!this::plugin.isInitialized) { "SimpleScore has already been initialized." }
             this.plugin = plugin
+
+            ConfigUpdater(plugin)
 
             usePlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
             config = MainConfig(plugin)

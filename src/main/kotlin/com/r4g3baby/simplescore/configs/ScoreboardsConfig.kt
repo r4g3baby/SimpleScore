@@ -4,7 +4,6 @@ import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.models.ScoreLine
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
-import org.bukkit.configuration.ConfigurationSection
 
 class ScoreboardsConfig(plugin: SimpleScore, updateTime: Int) : ConfigFile(plugin, "scoreboards") {
     val scoreboards = HashMap<String, Scoreboard>()
@@ -48,25 +47,5 @@ class ScoreboardsConfig(plugin: SimpleScore, updateTime: Int) : ConfigFile(plugi
                 scoreboards[name] = Scoreboard(name, titles, scores, permission)
             }
         }
-    }
-
-    internal fun saveOldScoreboards(section: ConfigurationSection) {
-        for (scoreboard in section.getKeys(false)) {
-            config.set(scoreboard, section.getConfigurationSection(scoreboard))
-
-            config.getConfigurationSection(scoreboard).apply {
-                if (getBoolean("Restricted", false)) {
-                    set("permission", scoreboard.lowercase())
-                    set("Restricted", null)
-                }
-
-                set("titles", get("Titles"))
-                set("Titles", null)
-
-                set("scores", get("Scores"))
-                set("Scores", null)
-            }
-        }
-        config.save(this)
     }
 }
