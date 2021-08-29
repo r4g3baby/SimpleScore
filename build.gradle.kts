@@ -22,6 +22,7 @@ dependencies {
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.8.2")
 
+    implementation("net.swiftzer.semver:semver:1.1.1")
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit:2.2.1")
 }

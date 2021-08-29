@@ -2,6 +2,7 @@ package com.r4g3baby.simplescore.utils.updater
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import net.swiftzer.semver.SemVer
 import org.bukkit.plugin.Plugin
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -25,12 +26,12 @@ class UpdateChecker(plugin: Plugin, pluginId: Int, consumer: BiConsumer<Boolean,
 
                 val reader = BufferedReader(InputStreamReader(conn.inputStream))
                 val jsonObject = Gson().fromJson(reader, JsonObject::class.java)
-                val latestVersion = jsonObject.get("current_version").asString
-                val currentVersion = plugin.description.version
+                val latestVersion = SemVer.parse(jsonObject.get("current_version").asString)
+                val currentVersion = SemVer.parse(plugin.description.version)
 
-                if (currentVersion.replace(".", "").toInt() < latestVersion.replace(".", "").toInt()) {
-                    consumer.accept(true, latestVersion)
-                } else consumer.accept(false, latestVersion)
+                if (currentVersion < latestVersion) {
+                    consumer.accept(true, latestVersion.toString())
+                } else consumer.accept(false, latestVersion.toString())
 
                 reader.close()
                 conn.disconnect()
