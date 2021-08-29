@@ -33,7 +33,7 @@ class ScoreboardTask : BukkitRunnable() {
                 val iterator = players.iterator()
                 iterator.forEach { player ->
                     val flag = WorldGuardAPI.getFlag(player)
-                    if (!flag.isNullOrEmpty()) {
+                    if (flag.isNotEmpty()) {
                         for (boardName in flag) {
                             val regionBoard = SimpleScore.scoreboardManager.getScoreboard(boardName)
                             if (regionBoard != null && regionBoard.canSee(player)) {
@@ -110,7 +110,7 @@ class ScoreboardTask : BukkitRunnable() {
                         lastException = System.currentTimeMillis()
                         SimpleScore.plugin.logger.log(
                             Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
-                                "Could not apply PlaceholderAPI placeholders. Disable 'AsyncPlaceholders' and try again"
+                                "Could not apply PlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
                             } else "Could not apply PlaceholderAPI placeholders", ex
                         )
                     }

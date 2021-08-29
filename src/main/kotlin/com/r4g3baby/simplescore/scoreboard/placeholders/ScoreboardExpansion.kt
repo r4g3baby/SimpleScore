@@ -4,7 +4,7 @@ import com.r4g3baby.simplescore.SimpleScore
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.entity.Player
 
-class ScoreboardExpansion(private val plugin: SimpleScore): PlaceholderExpansion() {
+class ScoreboardExpansion(private val plugin: SimpleScore) : PlaceholderExpansion() {
     override fun getIdentifier(): String {
         return plugin.description.name.lowercase()
     }
