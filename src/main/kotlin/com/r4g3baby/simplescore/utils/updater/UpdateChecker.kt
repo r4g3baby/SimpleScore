@@ -1,5 +1,7 @@
 package com.r4g3baby.simplescore.utils.updater
 
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import org.bukkit.plugin.Plugin
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -7,8 +9,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.function.BiConsumer
 
-class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: BiConsumer<Boolean, String>) {
-    private val _spigotApi = "https://api.spigotmc.org/legacy/update.php?resource=$pluginID"
+class UpdateChecker(plugin: Plugin, pluginId: Int, consumer: BiConsumer<Boolean, String>) {
+    private val _spigotApi = "https://api.spigotmc.org/simple/0.2/index.php?action=getResource&id=$pluginId"
 
     init {
         plugin.server.scheduler.runTaskAsynchronously(plugin) {
@@ -22,7 +24,8 @@ class UpdateChecker(plugin: Plugin, pluginID: Int, consumer: BiConsumer<Boolean,
                 conn.setRequestProperty("User-Agent", "${plugin.name}/${plugin.description.version}")
 
                 val reader = BufferedReader(InputStreamReader(conn.inputStream))
-                val latestVersion = reader.readText()
+                val jsonObject = Gson().fromJson(reader, JsonObject::class.java)
+                val latestVersion = jsonObject.get("current_version").asString
                 val currentVersion = plugin.description.version
 
                 if (currentVersion.replace(".", "").toInt() < latestVersion.replace(".", "").toInt()) {
