@@ -16,14 +16,12 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-
     compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.8.2")
 
-    implementation("net.swiftzer.semver:semver:1.1.1")
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
+    implementation("net.swiftzer.semver:semver:1.1.1")
     implementation("org.bstats:bstats-bukkit:2.2.1")
 }
 
@@ -54,10 +52,12 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        relocate("org.codemc.worldguardwrapper", "com.r4g3baby.simplescore.shaded.worldguardwrapper")
-        relocate("org.bstats", "com.r4g3baby.simplescore.shaded.bstats")
-        relocate("org.jetbrains", "com.r4g3baby.simplescore.shaded.jetbrains")
-        relocate("org.intellij", "com.r4g3baby.simplescore.shaded.intellij")
-        relocate("kotlin", "com.r4g3baby.simplescore.shaded.kotlin")
+        val shaded = "${project.group}.${project.name.toLowerCase()}.shaded"
+        relocate("org.codemc.worldguardwrapper", "$shaded.worldguardwrapper")
+        relocate("net.swiftzer.semver", "$shaded.semver")
+        relocate("org.bstats", "$shaded.bstats")
+        relocate("org.jetbrains", "$shaded.jetbrains")
+        relocate("org.intellij", "$shaded.intellij")
+        relocate("kotlin", "$shaded.kotlin")
     }
 }
