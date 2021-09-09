@@ -62,9 +62,9 @@ restricted:
     8:
       - ""
     7:
-      - "&7Scoreboards with permissions require the"
+      - "&7Scoreboards with a specified permission require"
     6:
-      - "&6simplescore.<permission> &7permission."
+      - "&7the &6simplescore.<permission> &7permission."
     5:
       - ""
     4:
