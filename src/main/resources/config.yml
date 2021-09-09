@@ -10,7 +10,7 @@ saveScoreboards: true
 # Whether to apply placeholders asynchronously or not
 asyncPlaceholders: true
 
-# Enable this if you are running a 1.13+ server with backwards version support and are having issues
+# Enable this if you have other plugins that override the scoreboard (requires server restart)
 forceLegacy: false
 
 # The format here is "<world name>: [ <list of scoreboards> ]"
