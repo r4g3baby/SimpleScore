@@ -39,6 +39,8 @@ class SimpleScore : JavaPlugin() {
             private set
         var usePlaceholderAPI = false
             private set
+        var useMVdWPlaceholderAPI = false
+            private set
         lateinit var config: MainConfig
             private set
         lateinit var messages: MessagesConfig
@@ -53,6 +55,7 @@ class SimpleScore : JavaPlugin() {
             ConfigUpdater(plugin)
 
             usePlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
+            useMVdWPlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
             config = MainConfig(plugin)
             messages = MessagesConfig(plugin)
             scoreboardManager = ScoreboardManager()

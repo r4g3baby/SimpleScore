@@ -12,6 +12,7 @@ repositories {
     maven(uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots"))
     maven(uri("https://repo.dmulloy2.net/nexus/repository/public/"))
     maven(uri("https://repo.extendedclip.com/content/repositories/placeholderapi/"))
+    maven(uri("https://repo.mvdw-software.com/content/groups/public/"))
     maven(uri("https://repo.codemc.io/repository/maven-public/"))
 }
 
@@ -19,6 +20,9 @@ dependencies {
     compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.8.2")
+    compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
+        exclude("org.spigotmc") // build error
+    }
 
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
     implementation("net.swiftzer.semver:semver:1.1.1")

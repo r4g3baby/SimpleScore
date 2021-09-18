@@ -2,9 +2,9 @@ package com.r4g3baby.simplescore.scoreboard.tasks
 
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
-import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.logging.Level
@@ -89,35 +89,25 @@ class ScoreboardTask : BukkitRunnable() {
     }
 
     private fun applyPlaceholders(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
-        val toDisplayTitle = replacePlaceholders(title, player)
+        val toDisplayTitle = replacePlaceholders(player, title)
 
         val toDisplayScores = HashMap<Int, String>()
         scores.forEach { (score, ogValue) ->
-            toDisplayScores[score] = replacePlaceholders(ogValue, player)
+            toDisplayScores[score] = replacePlaceholders(player, ogValue)
         }
 
         return (toDisplayTitle to toDisplayScores)
     }
 
-    private var lastException = System.currentTimeMillis()
-    private fun replacePlaceholders(text: String, player: Player): String {
-        return translateHexColorCodes(
-            if (SimpleScore.usePlaceholderAPI) {
-                try {
-                    PlaceholderAPI.setPlaceholders(player, text)
-                } catch (ex: Exception) {
-                    if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
-                        lastException = System.currentTimeMillis()
-                        SimpleScore.plugin.logger.log(
-                            Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
-                                "Could not apply PlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
-                            } else "Could not apply PlaceholderAPI placeholders", ex
-                        )
-                    }
-                    ChatColor.translateAlternateColorCodes('&', text)
-                }
-            } else ChatColor.translateAlternateColorCodes('&', text)
-        )
+    private fun replacePlaceholders(player: Player, text: String): String {
+        var result = text
+        if (SimpleScore.usePlaceholderAPI) {
+            result = applyPlaceholderAPI(player, text)
+        }
+        if (SimpleScore.useMVdWPlaceholderAPI) {
+            result = applyMVdWPlaceholderAPI(player, text)
+        }
+        return translateHexColorCodes(translateAlternateColorCodes('&', result))
     }
 
     private fun applyVariables(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
@@ -176,5 +166,38 @@ class ScoreboardTask : BukkitRunnable() {
             )
         }
         return matcher.appendTail(buffer).toString()
+    }
+
+    private var lastException = System.currentTimeMillis()
+    private fun applyPlaceholderAPI(player: Player, text: String): String {
+        try {
+            return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text)
+        } catch (ex: Exception) {
+            if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
+                lastException = System.currentTimeMillis()
+                SimpleScore.plugin.logger.log(
+                    Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
+                        "Could not apply PlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
+                    } else "Could not apply PlaceholderAPI placeholders", ex
+                )
+            }
+        }
+        return text
+    }
+
+    private fun applyMVdWPlaceholderAPI(player: Player, text: String): String {
+        try {
+            return be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, text)
+        } catch (ex: Exception) {
+            if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
+                lastException = System.currentTimeMillis()
+                SimpleScore.plugin.logger.log(
+                    Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
+                        "Could not apply MVdWPlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
+                    } else "Could not apply MVdWPlaceholderAPI placeholders", ex
+                )
+            }
+        }
+        return text
     }
 }
