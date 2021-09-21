@@ -4,6 +4,9 @@ version: 1
 # Default scoreboard line update time in ticks (20 ticks = 1 second)
 updateTime: 20
 
+# Check for updates when the plugin starts
+checkForUpdates: true
+
 # Save which players have the scoreboard disabled
 saveScoreboards: true
 

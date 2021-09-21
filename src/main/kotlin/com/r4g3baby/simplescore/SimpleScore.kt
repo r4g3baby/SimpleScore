@@ -22,10 +22,14 @@ class SimpleScore : JavaPlugin() {
         getCommand(name).executor = MainCmd()
 
         Metrics(this, 644)
-        UpdateChecker(this, 23243) { new, _ ->
-            if (new) {
-                logger.warning("New version available download at:")
-                logger.warning("https://www.spigotmc.org/resources/simplescore.23243/")
+
+        @Suppress("RedundantCompanionReference")
+        if (Api.config.checkForUpdates) {
+            UpdateChecker(this, 23243) { hasUpdate, newVersion ->
+                if (hasUpdate) {
+                    logger.warning("New version (v$newVersion) available download at:")
+                    logger.warning("https://www.spigotmc.org/resources/simplescore.23243/")
+                }
             }
         }
     }
