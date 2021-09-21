@@ -102,10 +102,10 @@ class ScoreboardTask : BukkitRunnable() {
     private fun replacePlaceholders(player: Player, text: String): String {
         var result = text
         if (SimpleScore.usePlaceholderAPI) {
-            result = applyPlaceholderAPI(player, text)
+            result = applyPlaceholderAPI(player, result)
         }
         if (SimpleScore.useMVdWPlaceholderAPI) {
-            result = applyMVdWPlaceholderAPI(player, text)
+            result = applyMVdWPlaceholderAPI(player, result)
         }
         return translateHexColorCodes(translateAlternateColorCodes('&', result))
     }
