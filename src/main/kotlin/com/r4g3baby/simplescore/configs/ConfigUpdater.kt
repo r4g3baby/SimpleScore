@@ -23,7 +23,7 @@ class ConfigUpdater(plugin: SimpleScore) {
             }
 
             if (mainConfig.contains("SaveScoreboards")) {
-                mainConfig.set("saveScoreboards", mainConfig.get("SaveScoreboards"))
+                mainConfig.set("savePlayerData", mainConfig.get("SaveScoreboards"))
                 mainConfig.set("SaveScoreboards", null)
             }
 

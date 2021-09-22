@@ -35,7 +35,7 @@ class SimpleScore : JavaPlugin() {
     }
 
     override fun onDisable() {
-        scoreboardManager.disable()
+        scoreboardManager.playersData.save()
     }
 
     companion object Api {

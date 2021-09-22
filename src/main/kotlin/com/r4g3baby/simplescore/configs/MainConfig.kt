@@ -9,7 +9,7 @@ class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
     val updateTime = config.getInt("updateTime", 20)
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
-    val saveScoreboards = config.getBoolean("saveScoreboards", true)
+    val savePlayerData = config.getBoolean("savePlayerData", true)
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
     val forceLegacy = config.getBoolean("forceLegacy", false)
 

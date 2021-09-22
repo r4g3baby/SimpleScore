@@ -12,14 +12,14 @@ class Toggle : SubCmd("toggle") {
             if (sender.hasPermission("${this.permission}.other")) {
                 val target = Bukkit.getOnlinePlayers().find { it.name.equals(args[0], true) }
                 if (target != null) {
-                    if (SimpleScore.scoreboardManager.toggleScoreboard(target)) {
+                    if (SimpleScore.scoreboardManager.playersData.toggleForceHidden(target)) {
                         sender.sendMessage(SimpleScore.messages.disabledOther.format(target.name))
                     } else sender.sendMessage(SimpleScore.messages.enabledOther.format(target.name))
                 } else sender.sendMessage(SimpleScore.messages.notOnline)
             } else sender.sendMessage(SimpleScore.messages.permission)
         } else {
             if (sender is Player) {
-                if (SimpleScore.scoreboardManager.toggleScoreboard(sender)) {
+                if (SimpleScore.scoreboardManager.playersData.toggleForceHidden(sender)) {
                     sender.sendMessage(SimpleScore.messages.disabled)
                 } else sender.sendMessage(SimpleScore.messages.enabled)
             } else sender.sendMessage(SimpleScore.messages.onlyPlayers)

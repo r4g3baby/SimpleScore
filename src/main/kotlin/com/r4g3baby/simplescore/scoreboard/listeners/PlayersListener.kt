@@ -16,7 +16,7 @@ class PlayersListener : Listener {
     fun onPlayerJoin(e: PlayerJoinEvent) {
         if (
             !SimpleScore.scoreboardManager.hasScoreboard(e.player)
-            && (SimpleScore.scoreboardManager.getWorldScoreboards(e.player.world).isNotEmpty()
+            && (SimpleScore.scoreboardManager.scoreboards.getForWorld(e.player.world).isNotEmpty()
                 || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty())
         ) {
             SimpleScore.scoreboardManager.createScoreboard(e.player)
@@ -51,13 +51,13 @@ class PlayersListener : Listener {
     }
 
     private fun doScoreboardCheck(player: Player, from: Location?, to: Location) {
-        val toBoards = SimpleScore.scoreboardManager.getWorldScoreboards(to.world)
+        val toBoards = SimpleScore.scoreboardManager.scoreboards.getForWorld(to.world)
         val toFlag = WorldGuardAPI.getFlag(player, to)
         if (SimpleScore.scoreboardManager.hasScoreboard(player)) {
             if (toBoards.isEmpty() && toFlag.isEmpty()) {
                 SimpleScore.scoreboardManager.removeScoreboard(player)
             } else if (from != null) {
-                val fromBoards = SimpleScore.scoreboardManager.getWorldScoreboards(from.world)
+                val fromBoards = SimpleScore.scoreboardManager.scoreboards.getForWorld(from.world)
                 val fromFlag = WorldGuardAPI.getFlag(player, from)
                 if (!fromBoards.isEqual(toBoards) || !fromFlag.isEqual(toFlag)) {
                     Bukkit.getScheduler().runTask(SimpleScore.plugin) {

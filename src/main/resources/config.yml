@@ -7,8 +7,8 @@ updateTime: 20
 # Check for updates when the plugin starts
 checkForUpdates: true
 
-# Save which players have the scoreboard disabled
-saveScoreboards: true
+# Should we save player information (scoreboard force hidden/disabled)
+savePlayerData: true
 
 # Whether to apply placeholders asynchronously or not
 asyncPlaceholders: true

@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
-        SimpleScore.scoreboardManager.getScoreboards().forEach { scoreboard ->
+        SimpleScore.scoreboardManager.scoreboards.forEach { (_, scoreboard) ->
             scoreboard.titles.next()
             scoreboard.scores.forEach { (_, value) ->
                 value.next()
@@ -25,7 +25,9 @@ class ScoreboardTask : BukkitRunnable() {
         val playerBoards = HashMap<Player, Pair<String, HashMap<Int, String>>>()
         for (world in Bukkit.getWorlds()) {
             val players = world.players.filter {
-                !SimpleScore.scoreboardManager.isScoreboardDisabled(it)
+                // No need to waste power computing scoreboards for players that won't see it
+                val playerData = SimpleScore.scoreboardManager.playersData.get(it)
+                return@filter !playerData.isHidden && !playerData.isDisabled
             }.toMutableList()
             if (players.size == 0) continue
 
@@ -35,7 +37,7 @@ class ScoreboardTask : BukkitRunnable() {
                     val flag = WorldGuardAPI.getFlag(player)
                     if (flag.isNotEmpty()) {
                         for (boardName in flag) {
-                            val regionBoard = SimpleScore.scoreboardManager.getScoreboard(boardName)
+                            val regionBoard = SimpleScore.scoreboardManager.scoreboards.get(boardName)
                             if (regionBoard != null && regionBoard.canSee(player)) {
                                 val title = regionBoard.titles.current()
                                 val scores = HashMap<Int, String>()
@@ -54,7 +56,7 @@ class ScoreboardTask : BukkitRunnable() {
                 }
             }
 
-            SimpleScore.scoreboardManager.getWorldScoreboards(world).forEach { worldBoard ->
+            SimpleScore.scoreboardManager.scoreboards.getForWorld(world).forEach { worldBoard ->
                 if (players.size == 0) return@forEach
 
                 val title = worldBoard.titles.current()
