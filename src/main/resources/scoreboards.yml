@@ -1,4 +1,6 @@
 example:
+  # Default scoreboard line update time in ticks (20 ticks = 1 second)
+  updateTime: 20
   titles:
     - "&7&LYour&6&lServer"
   scores:

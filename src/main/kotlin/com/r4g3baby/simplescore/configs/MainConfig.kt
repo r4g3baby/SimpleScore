@@ -7,13 +7,12 @@ import java.util.regex.Pattern
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
-    val updateTime = config.getInt("updateTime", 20)
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
     val savePlayerData = config.getBoolean("savePlayerData", true)
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
     val forceLegacy = config.getBoolean("forceLegacy", false)
 
-    val scoreboardsConfig = ScoreboardsConfig(plugin, updateTime)
+    private val scoreboardsConfig = ScoreboardsConfig(plugin)
     val scoreboards get() = scoreboardsConfig.scoreboards
     val worlds = HashMap<Predicate<String>, List<String>>()
 

@@ -5,13 +5,14 @@ import com.r4g3baby.simplescore.scoreboard.models.ScoreLine
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 
-class ScoreboardsConfig(plugin: SimpleScore, updateTime: Int) : ConfigFile(plugin, "scoreboards") {
+class ScoreboardsConfig(plugin: SimpleScore) : ConfigFile(plugin, "scoreboards") {
     val scoreboards = HashMap<String, Scoreboard>()
 
     init {
         for (scoreboard in config.getKeys(false).filter { !scoreboards.containsKey(it.lowercase()) }) {
             if (config.isConfigurationSection(scoreboard)) {
                 val scoreboardSec = config.getConfigurationSection(scoreboard)
+                val updateTime = scoreboardSec.getInt("updateTime", 20)
 
                 val titles = ScoreLine()
                 scoreboardSec.getList("titles").forEach {

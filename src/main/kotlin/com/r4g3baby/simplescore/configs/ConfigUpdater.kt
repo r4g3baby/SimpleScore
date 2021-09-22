@@ -17,8 +17,8 @@ class ConfigUpdater(plugin: SimpleScore) {
             plugin.logger.info("Detected an old config format, the plugin will create a backup and attempt to update it.")
             mainConfigFile.copyTo(File(mainConfigFile.parentFile, "config.bak"), true)
 
+            val updateTime = mainConfig.getInt("UpdateTime", 20)
             if (mainConfig.contains("UpdateTime")) {
-                mainConfig.set("updateTime", mainConfig.get("UpdateTime"))
                 mainConfig.set("UpdateTime", null)
             }
 
@@ -43,6 +43,10 @@ class ConfigUpdater(plugin: SimpleScore) {
                     scoreboardsConfig.set(scoreboard, scoreboardsSection.getConfigurationSection(scoreboard))
 
                     scoreboardsConfig.getConfigurationSection(scoreboard).apply {
+                        if (updateTime != 20) {
+                            set("updateTime", updateTime)
+                        }
+
                         if (getBoolean("Restricted", false)) {
                             set("permission", scoreboard.lowercase())
                             set("Restricted", null)
