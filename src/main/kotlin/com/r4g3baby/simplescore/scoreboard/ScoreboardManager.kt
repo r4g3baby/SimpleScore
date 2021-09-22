@@ -22,7 +22,12 @@ class ScoreboardManager {
     val playersData: PlayersData = PlayersData()
 
     init {
-        Bukkit.getPluginManager().registerEvents(PlayersListener(), SimpleScore.plugin)
+        Bukkit.getPluginManager().apply {
+            registerEvents(PlayersListener(), SimpleScore.plugin)
+            if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
+                registerEvents(McMMOListener(), SimpleScore.plugin)
+            }
+        }
 
         if (SimpleScore.usePlaceholderAPI) {
             ScoreboardExpansion(SimpleScore.plugin).register()

@@ -13,6 +13,7 @@ repositories {
     maven(uri("https://repo.dmulloy2.net/nexus/repository/public/"))
     maven(uri("https://repo.extendedclip.com/content/repositories/placeholderapi/"))
     maven(uri("https://repo.mvdw-software.com/content/groups/public/"))
+    maven(uri("https://nexus.neetgames.com/repository/maven-public/"))
     maven(uri("https://repo.codemc.io/repository/maven-public/"))
 }
 
@@ -22,6 +23,9 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.8.2")
     compileOnly("be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT") {
         exclude("org.spigotmc") // build error
+    }
+    compileOnly("com.gmail.nossr50.mcMMO:mcMMO:2.1.201") {
+        exclude("com.sk89q.worldguard") // build error
     }
 
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
