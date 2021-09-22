@@ -4,6 +4,7 @@ import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
+import com.r4g3baby.simplescore.scoreboard.listeners.McMMOListener
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
