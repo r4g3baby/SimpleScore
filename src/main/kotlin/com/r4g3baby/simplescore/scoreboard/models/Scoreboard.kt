@@ -6,9 +6,9 @@ data class Scoreboard(
     val name: String,
     val titles: ScoreLine,
     val scores: Map<Int, ScoreLine>,
-    val permission: String
+    val permission: String? = null
 ) {
     fun canSee(player: Player): Boolean {
-        return permission.isBlank() || player.hasPermission("simplescore.$permission")
+        return permission.isNullOrBlank() || player.hasPermission("simplescore.$permission")
     }
 }

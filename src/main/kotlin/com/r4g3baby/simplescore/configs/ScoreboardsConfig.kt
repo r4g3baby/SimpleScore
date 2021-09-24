@@ -44,7 +44,7 @@ class ScoreboardsConfig(plugin: SimpleScore) : ConfigFile(plugin, "scoreboards")
                 }
 
                 val name = scoreboard.lowercase()
-                val permission = scoreboardSec.getString("permission", "")
+                val permission = scoreboardSec.getString("permission")
                 scoreboards[name] = Scoreboard(name, titles, scores, permission)
             }
         }
