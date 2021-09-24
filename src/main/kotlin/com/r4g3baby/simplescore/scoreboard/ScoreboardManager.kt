@@ -179,11 +179,31 @@ class ScoreboardManager {
             }
         }
 
+        fun setForceHidden(player: Player, hidden: Boolean) {
+            get(player).takeIf { it.isForceHidden != hidden }?.also { playerData ->
+                playerData.isForceHidden = hidden
+                if (playerData.isForceHidden) {
+                    SimpleScore.scoreboardManager.clearScoreboard(player)
+                }
+            }
+        }
+
         fun toggleForceHidden(player: Player): Boolean {
             return get(player).let { playerData ->
                 playerData.isForceHidden = !playerData.isForceHidden
-                if (playerData.isForceHidden) SimpleScore.scoreboardManager.clearScoreboard(player)
+                if (playerData.isForceHidden) {
+                    SimpleScore.scoreboardManager.clearScoreboard(player)
+                }
                 return@let playerData.isForceHidden
+            }
+        }
+
+        fun setForceDisabled(player: Player, disabled: Boolean) {
+            get(player).takeIf { it.isForceDisabled != disabled }?.also { playerData ->
+                playerData.isForceDisabled = disabled
+                if (playerData.isForceDisabled) {
+                    SimpleScore.scoreboardManager.removeScoreboard(player)
+                } else SimpleScore.scoreboardManager.createScoreboard(player)
             }
         }
 
@@ -197,27 +217,47 @@ class ScoreboardManager {
             }
         }
 
+        fun setHidden(plugin: Plugin, player: Player, hidden: Boolean) {
+            get(player).also { playerData ->
+                if (hidden) {
+                    if (playerData.hide(plugin)) {
+                        SimpleScore.scoreboardManager.clearScoreboard(player)
+                    }
+                } else playerData.show(plugin)
+            }
+        }
+
         fun toggleHidden(plugin: Plugin, player: Player): Boolean {
             return get(player).let { playerData ->
                 if (!playerData.show(plugin)) {
-                    val wasHiddenBefore = playerData.isHidden
                     playerData.hide(plugin)
-                    if (!wasHiddenBefore) SimpleScore.scoreboardManager.clearScoreboard(player)
+                    SimpleScore.scoreboardManager.clearScoreboard(player)
                     return@let false
                 }
                 return@let true
             }
         }
 
+        fun setDisabled(plugin: Plugin, player: Player, disabled: Boolean) {
+            get(player).also { playerData ->
+                if (disabled) {
+                    if (playerData.disable(plugin)) {
+                        SimpleScore.scoreboardManager.removeScoreboard(player)
+                    }
+                } else if (playerData.enable(plugin)) {
+                    SimpleScore.scoreboardManager.createScoreboard(player)
+                }
+            }
+        }
+
         fun toggleDisabled(plugin: Plugin, player: Player): Boolean {
             return get(player).let { playerData ->
-                val wasDisabledBefore = playerData.isDisabled
                 if (!playerData.enable(plugin)) {
                     playerData.disable(plugin)
-                    if (!wasDisabledBefore) SimpleScore.scoreboardManager.removeScoreboard(player)
+                    SimpleScore.scoreboardManager.removeScoreboard(player)
                     return@let false
                 }
-                if (wasDisabledBefore) SimpleScore.scoreboardManager.createScoreboard(player)
+                SimpleScore.scoreboardManager.createScoreboard(player)
                 return@let true
             }
         }
