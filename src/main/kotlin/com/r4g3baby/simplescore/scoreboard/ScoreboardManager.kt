@@ -151,10 +151,14 @@ class ScoreboardManager {
                     getKeys(false).forEach { set(it, null) }
 
                     playersData.forEach { (uniqueId, playerData) ->
-                        createSection(uniqueId.toString(), mapOf(
-                            "isForceHidden" to playerData.isForceHidden,
-                            "isForceDisabled" to playerData.isForceDisabled
-                        ))
+                        if (playerData.isForceHidden || playerData.isForceDisabled) {
+                            createSection(
+                                uniqueId.toString(), mapOf(
+                                    "isForceHidden" to playerData.isForceHidden,
+                                    "isForceDisabled" to playerData.isForceDisabled
+                                )
+                            )
+                        }
                     }
 
                     save(playersDataFile)
