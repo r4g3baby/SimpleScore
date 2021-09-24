@@ -23,40 +23,44 @@ class ProtocolScoreboard : ScoreboardHandler() {
     private val playerBoards = HashMap<UUID, PlayerBoard>()
 
     override fun createScoreboard(player: Player) {
-        var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
-        packet.modifier.writeDefaults()
-        packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
-        packet.integers.write(0, 0) // Mode 0: Created Scoreboard
-        if (afterAquaticUpdate) {
-            packet.chatComponents.write(0, fromText(getPlayerIdentifier(player))) // Display Name
-        } else packet.strings.write(1, getPlayerIdentifier(player)) // Display Name
-        protocolManager.sendServerPacket(player, packet)
+        playerBoards.computeIfAbsent(player.uniqueId) {
+            var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
+            packet.modifier.writeDefaults()
+            packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
+            packet.integers.write(0, 0) // Mode 0: Created Scoreboard
+            if (afterAquaticUpdate) {
+                packet.chatComponents.write(0, fromText(getPlayerIdentifier(player))) // Display Name
+            } else packet.strings.write(1, getPlayerIdentifier(player)) // Display Name
+            protocolManager.sendServerPacket(player, packet)
 
-        packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE)
-        packet.modifier.writeDefaults()
-        packet.integers.write(0, 1) // Position 1: Sidebar
-        packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
-        protocolManager.sendServerPacket(player, packet)
+            packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE)
+            packet.modifier.writeDefaults()
+            packet.integers.write(0, 1) // Position 1: Sidebar
+            packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
+            protocolManager.sendServerPacket(player, packet)
 
-        playerBoards[player.uniqueId] = PlayerBoard(getPlayerIdentifier(player), mapOf())
+            return@computeIfAbsent PlayerBoard(getPlayerIdentifier(player), mapOf())
+        }
     }
 
     override fun removeScoreboard(player: Player) {
-        var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
-        packet.modifier.writeDefaults()
-        packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
-        packet.integers.write(0, 1) // Mode 1: Remove Scoreboard
-        protocolManager.sendServerPacket(player, packet)
+        playerBoards.remove(player.uniqueId)?.also { playerBoard ->
+            var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
+            packet.modifier.writeDefaults()
+            packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
+            packet.integers.write(0, 1) // Mode 1: Remove Scoreboard
+            protocolManager.sendServerPacket(player, packet)
 
-        if (afterAquaticUpdate) {
-            playerBoards.remove(player.uniqueId)?.scores?.forEach { (score, _) ->
-                packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
-                packet.modifier.writeDefaults()
-                packet.strings.write(0, scoreToName(score)) // Team Name
-                packet.integers.write(0, 1) // Mode - remove team
-                protocolManager.sendServerPacket(player, packet)
+            if (afterAquaticUpdate) {
+                playerBoard.scores.forEach { (score, _) ->
+                    packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
+                    packet.modifier.writeDefaults()
+                    packet.strings.write(0, scoreToName(score)) // Team Name
+                    packet.integers.write(0, 1) // Mode - remove team
+                    protocolManager.sendServerPacket(player, packet)
+                }
             }
-        } else playerBoards.remove(player.uniqueId)
+        }
     }
 
     override fun clearScoreboard(player: Player) {
