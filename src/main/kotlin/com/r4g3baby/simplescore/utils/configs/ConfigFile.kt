@@ -9,7 +9,8 @@ import java.io.InputStreamReader
 
 @Suppress("LeakingThis")
 open class ConfigFile(plugin: Plugin, name: String) : File(plugin.dataFolder, "$name.yml") {
-    val config: FileConfiguration
+    lateinit var config: FileConfiguration
+        private set
 
     init {
         if (!plugin.dataFolder.exists()) {
@@ -19,11 +20,11 @@ open class ConfigFile(plugin: Plugin, name: String) : File(plugin.dataFolder, "$
         if (!this.exists()) {
             if (plugin.getResource("$name.yml") != null) {
                 plugin.saveResource("$name.yml", true)
-            } else {
-                this.createNewFile()
-            }
+            } else config = YamlConfiguration()
         }
 
-        config = YamlConfiguration.loadConfiguration(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
+        if (!this::config.isInitialized) {
+            config = YamlConfiguration.loadConfiguration(InputStreamReader(FileInputStream(this), Charsets.UTF_8))
+        }
     }
 }
