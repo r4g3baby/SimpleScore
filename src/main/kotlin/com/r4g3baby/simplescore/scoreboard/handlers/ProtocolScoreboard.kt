@@ -64,8 +64,8 @@ class ProtocolScoreboard : ScoreboardHandler() {
     }
 
     override fun clearScoreboard(player: Player) {
-        playerBoards[player.uniqueId]?.run {
-            scores.forEach { (score, value) ->
+        playerBoards[player.uniqueId]?.also { playerBoard ->
+            playerBoard.scores.forEach { (score, value) ->
                 var scoreName = value
                 if (afterAquaticUpdate) {
                     scoreName = scoreToName(score)
@@ -84,12 +84,12 @@ class ProtocolScoreboard : ScoreboardHandler() {
                 packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
                 protocolManager.sendServerPacket(player, packet)
             }
-            scores = emptyMap()
+            playerBoard.scores = emptyMap()
         }
     }
 
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
-        playerBoards[player.uniqueId]?.let { playerBoard ->
+        playerBoards[player.uniqueId]?.also { playerBoard ->
             if (playerBoard.title != title) {
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
                 packet.modifier.writeDefaults()
@@ -130,7 +130,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
                         packet.chatComponents.write(2, fromChatMessage(splitText.second)[0]) // Suffix
                     }
 
-                    playerBoard.scores.containsKey(score).let { update ->
+                    playerBoard.scores.containsKey(score).also { update ->
                         // there's no need to create the team again if this line already exists
                         if (update) {
                             packet.integers.write(0, 2) // Mode - update team info

@@ -20,7 +20,7 @@ data class PlayerData(
     }
 
     fun isHiding(plugin: Plugin): Boolean {
-        return pluginsHiding.contains(plugin)
+        return plugin in pluginsHiding
     }
 
     fun disable(plugin: Plugin): Boolean {
@@ -32,6 +32,6 @@ data class PlayerData(
     }
 
     fun isDisabling(plugin: Plugin): Boolean {
-        return pluginsDisabling.contains(plugin)
+        return plugin in pluginsDisabling
     }
 }

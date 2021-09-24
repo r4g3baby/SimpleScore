@@ -27,7 +27,7 @@ class SimpleScore : JavaPlugin() {
         if (Api.config.checkForUpdates) {
             UpdateChecker(this, 23243) { hasUpdate, newVersion ->
                 if (hasUpdate) {
-                    logger.warning("New version (v$newVersion) available download at:")
+                    logger.warning("New version (v$newVersion) available, download at:")
                     logger.warning("https://www.spigotmc.org/resources/simplescore.23243/")
                 }
             }

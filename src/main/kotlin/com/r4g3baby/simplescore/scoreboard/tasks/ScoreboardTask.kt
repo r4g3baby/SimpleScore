@@ -102,10 +102,9 @@ class ScoreboardTask : BukkitRunnable() {
     }
 
     private fun replacePlaceholders(player: Player, text: String): String {
-        var result = text
-        if (SimpleScore.usePlaceholderAPI) {
-            result = applyPlaceholderAPI(player, result)
-        }
+        var result = if (SimpleScore.usePlaceholderAPI) {
+            applyPlaceholderAPI(player, text)
+        } else text
         if (SimpleScore.useMVdWPlaceholderAPI) {
             result = applyMVdWPlaceholderAPI(player, result)
         }

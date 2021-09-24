@@ -9,9 +9,9 @@ class Version : SubCmd("version") {
     override fun run(sender: CommandSender, args: Array<out String>) {
         val version = SimpleScore.plugin.description.version
         sender.sendMessage(SimpleScore.messages.checkingForUpdates.format(version))
-        UpdateChecker(SimpleScore.plugin, 23243) { new, latest ->
-            if (new) {
-                sender.sendMessage(SimpleScore.messages.foundNewUpdate.format(latest))
+        UpdateChecker(SimpleScore.plugin, 23243) { hasUpdate, newVersion ->
+            if (hasUpdate) {
+                sender.sendMessage(SimpleScore.messages.foundNewUpdate.format(newVersion))
             } else sender.sendMessage(SimpleScore.messages.runningLatest)
         }
     }
