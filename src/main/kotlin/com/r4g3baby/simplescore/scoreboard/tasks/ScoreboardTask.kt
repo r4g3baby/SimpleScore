@@ -1,17 +1,15 @@
 package com.r4g3baby.simplescore.scoreboard.tasks
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderReplacer
+import com.r4g3baby.simplescore.scoreboard.placeholders.VariablesReplacer
 import com.r4g3baby.simplescore.utils.WorldGuardAPI
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.logging.Level
 import java.util.regex.Pattern
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
@@ -46,7 +44,7 @@ class ScoreboardTask : BukkitRunnable() {
                                 }
 
                                 playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
-                                    applyPlaceholders(player, title, scores)
+                                    applyPlaceholders(title, scores, player)
                                 } else (title to scores)
                                 iterator.remove()
                                 break
@@ -69,7 +67,7 @@ class ScoreboardTask : BukkitRunnable() {
                 iterator.forEach { player ->
                     if (worldBoard.canSee(player)) {
                         playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
-                            applyPlaceholders(player, title, scores)
+                            applyPlaceholders(title, scores, player)
                         } else (title to scores)
                         iterator.remove()
                     }
@@ -81,47 +79,42 @@ class ScoreboardTask : BukkitRunnable() {
             playerBoards.forEach { (player, board) ->
                 if (player.isOnline) {
                     val updatedBoard = if (!SimpleScore.config.asyncPlaceholders) {
-                        val tmp = applyPlaceholders(player, board.first, board.second)
-                        applyVariables(player, tmp.first, tmp.second)
-                    } else applyVariables(player, board.first, board.second)
+                        val tmp = applyPlaceholders(board.first, board.second, player)
+                        applyVariables(tmp.first, tmp.second, player)
+                    } else applyVariables(board.first, board.second, player)
                     SimpleScore.scoreboardManager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
                 }
             }
         }
     }
 
-    private fun applyPlaceholders(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
-        val toDisplayTitle = replacePlaceholders(player, title)
+    private fun applyPlaceholders(title: String, scores: HashMap<Int, String>, player: Player): Pair<String, HashMap<Int, String>> {
+        val toDisplayTitle = replacePlaceholders(title, player)
 
         val toDisplayScores = HashMap<Int, String>()
         scores.forEach { (score, ogValue) ->
-            toDisplayScores[score] = replacePlaceholders(player, ogValue)
+            toDisplayScores[score] = replacePlaceholders(ogValue, player)
         }
 
         return (toDisplayTitle to toDisplayScores)
     }
 
-    private fun replacePlaceholders(player: Player, text: String): String {
-        var result = if (SimpleScore.usePlaceholderAPI) {
-            applyPlaceholderAPI(player, text)
-        } else text
-        if (SimpleScore.useMVdWPlaceholderAPI) {
-            result = applyMVdWPlaceholderAPI(player, result)
-        }
+    private fun replacePlaceholders(input: String, player: Player): String {
+        val result = PlaceholderReplacer.replace(input, player)
         return translateHexColorCodes(translateAlternateColorCodes('&', result))
     }
 
-    private fun applyVariables(player: Player, title: String, scores: HashMap<Int, String>): Pair<String, HashMap<Int, String>> {
+    private fun applyVariables(title: String, scores: HashMap<Int, String>, player: Player): Pair<String, HashMap<Int, String>> {
         var toDisplayTitle: String
         val toDisplayScores = HashMap<Int, String>()
 
-        toDisplayTitle = replaceVariables(title, player)
+        toDisplayTitle = VariablesReplacer.replace(title, player)
         if (SimpleScore.scoreboardManager.hasLineLengthLimit() && toDisplayTitle.length > 32) {
             toDisplayTitle = toDisplayTitle.substring(0..31)
         }
 
         scores.forEach { (score, ogValue) ->
-            var value = preventDuplicates(replaceVariables(ogValue, player), toDisplayScores.values)
+            var value = preventDuplicates(VariablesReplacer.replace(ogValue, player), toDisplayScores.values)
             if (SimpleScore.scoreboardManager.hasLineLengthLimit() && value.length > 40) {
                 value = value.substring(0..39)
             }
@@ -129,22 +122,6 @@ class ScoreboardTask : BukkitRunnable() {
         }
 
         return (toDisplayTitle to toDisplayScores)
-    }
-
-    private fun replaceVariables(text: String, player: Player): String {
-        val hearts = min(10, max(0, ((player.health / player.maxHealth) * 10).roundToInt()))
-        return text
-            .replace("%online%", Bukkit.getOnlinePlayers().count().toString())
-            .replace("%onworld%", player.world.players.count().toString())
-            .replace("%world%", player.world.name)
-            .replace("%maxplayers%", Bukkit.getMaxPlayers().toString())
-            .replace("%player%", player.name)
-            .replace("%playerdisplayname%", player.displayName)
-            .replace("%health%", player.health.roundToInt().toString())
-            .replace("%maxhealth%", player.maxHealth.roundToInt().toString())
-            .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
-            .replace("%level%", player.level.toString())
-            .replace("%gamemode%", player.gameMode.name.lowercase().replaceFirstChar { it.uppercase() })
     }
 
     private fun preventDuplicates(text: String, values: Collection<String>): String {
@@ -167,38 +144,5 @@ class ScoreboardTask : BukkitRunnable() {
             )
         }
         return matcher.appendTail(buffer).toString()
-    }
-
-    private var lastException = System.currentTimeMillis()
-    private fun applyPlaceholderAPI(player: Player, text: String): String {
-        try {
-            return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text)
-        } catch (ex: Exception) {
-            if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
-                lastException = System.currentTimeMillis()
-                SimpleScore.plugin.logger.log(
-                    Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
-                        "Could not apply PlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
-                    } else "Could not apply PlaceholderAPI placeholders", ex
-                )
-            }
-        }
-        return text
-    }
-
-    private fun applyMVdWPlaceholderAPI(player: Player, text: String): String {
-        try {
-            return be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, text)
-        } catch (ex: Exception) {
-            if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
-                lastException = System.currentTimeMillis()
-                SimpleScore.plugin.logger.log(
-                    Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
-                        "Could not apply MVdWPlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
-                    } else "Could not apply MVdWPlaceholderAPI placeholders", ex
-                )
-            }
-        }
-        return text
     }
 }
