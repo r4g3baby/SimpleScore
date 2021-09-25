@@ -3,7 +3,7 @@ package com.r4g3baby.simplescore.scoreboard.tasks
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderReplacer
 import com.r4g3baby.simplescore.scoreboard.placeholders.VariablesReplacer
-import com.r4g3baby.simplescore.utils.WorldGuardAPI
+import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.translateAlternateColorCodes

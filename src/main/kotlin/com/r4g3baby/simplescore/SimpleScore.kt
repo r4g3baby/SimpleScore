@@ -5,7 +5,7 @@ import com.r4g3baby.simplescore.configs.ConfigUpdater
 import com.r4g3baby.simplescore.configs.MainConfig
 import com.r4g3baby.simplescore.configs.MessagesConfig
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
-import com.r4g3baby.simplescore.utils.WorldGuardAPI
+import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit

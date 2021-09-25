@@ -1,4 +1,4 @@
-package com.r4g3baby.simplescore.utils
+package com.r4g3baby.simplescore.scoreboard.worldguard
 
 import org.bukkit.Location
 import org.bukkit.entity.Player
