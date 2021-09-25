@@ -18,7 +18,7 @@ class ScoreboardsConfig(plugin: SimpleScore) : ConfigFile(plugin, "scoreboards")
                 scoreboardSec.getList("titles").forEach {
                     when (it) {
                         is String -> titles.add(it, updateTime)
-                        is Map<*, *> -> titles.add(it["text"] as String, it["time"] as Int)
+                        is Map<*, *> -> titles.add(it["text"] as String, it.getOrDefault("time", updateTime) as Int)
                         else -> {
                             plugin.logger.warning("Failed to parse titles expected String or Map but got ${it!!::class.java} instead.")
                         }
