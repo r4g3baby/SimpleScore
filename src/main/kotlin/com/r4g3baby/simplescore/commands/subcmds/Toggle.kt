@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.commands.subcmds
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.SimpleScore.Api.i18n
 import com.r4g3baby.simplescore.commands.SubCmd
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -13,16 +14,16 @@ class Toggle : SubCmd("toggle") {
                 val target = Bukkit.getOnlinePlayers().find { it.name.equals(args[0], true) }
                 if (target != null) {
                     if (SimpleScore.scoreboardManager.playersData.toggleForceHidden(target)) {
-                        sender.sendMessage(SimpleScore.messages.disabledOther.format(target.name))
-                    } else sender.sendMessage(SimpleScore.messages.enabledOther.format(target.name))
-                } else sender.sendMessage(SimpleScore.messages.notOnline)
-            } else sender.sendMessage(SimpleScore.messages.permission)
+                        sender.sendMessage(i18n.t("cmd.toggle.other.hidden", target.name))
+                    } else sender.sendMessage(i18n.t("cmd.toggle.other.shown", target.name))
+                } else sender.sendMessage(i18n.t("cmd.notOnline"))
+            } else sender.sendMessage(i18n.t("cmd.noPermission"))
         } else {
             if (sender is Player) {
                 if (SimpleScore.scoreboardManager.playersData.toggleForceHidden(sender)) {
-                    sender.sendMessage(SimpleScore.messages.disabled)
-                } else sender.sendMessage(SimpleScore.messages.enabled)
-            } else sender.sendMessage(SimpleScore.messages.onlyPlayers)
+                    sender.sendMessage(i18n.t("cmd.toggle.hidden"))
+                } else sender.sendMessage(i18n.t("cmd.toggle.shown"))
+            } else sender.sendMessage(i18n.t("cmd.onlyPlayers"))
         }
     }
 

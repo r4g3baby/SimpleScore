@@ -7,6 +7,7 @@ import java.util.regex.Pattern
 
 class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
+    val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
     val savePlayerData = config.getBoolean("savePlayerData", true)
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)

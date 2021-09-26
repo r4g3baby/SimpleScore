@@ -3,7 +3,7 @@ package com.r4g3baby.simplescore
 import com.r4g3baby.simplescore.commands.MainCmd
 import com.r4g3baby.simplescore.configs.ConfigUpdater
 import com.r4g3baby.simplescore.configs.MainConfig
-import com.r4g3baby.simplescore.configs.MessagesConfig
+import com.r4g3baby.simplescore.configs.lang.I18n
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
@@ -47,7 +47,7 @@ class SimpleScore : JavaPlugin() {
             private set
         lateinit var config: MainConfig
             private set
-        lateinit var messages: MessagesConfig
+        lateinit var i18n: I18n
             private set
         lateinit var scoreboardManager: ScoreboardManager
             private set
@@ -61,13 +61,13 @@ class SimpleScore : JavaPlugin() {
             usePlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
             useMVdWPlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
             config = MainConfig(plugin)
-            messages = MessagesConfig(plugin)
+            i18n = I18n(config.language, plugin)
             scoreboardManager = ScoreboardManager()
         }
 
         fun reload() {
             config = MainConfig(plugin)
-            messages = MessagesConfig(plugin)
+            i18n.loadTranslations(config.language)
             scoreboardManager.reload()
         }
     }

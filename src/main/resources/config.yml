@@ -1,6 +1,9 @@
 # Config version (don't change this value)
 version: 1
 
+# Plugin language (supported: en, pt)
+language: en
+
 # Check for updates when the plugin starts
 checkForUpdates: true
 

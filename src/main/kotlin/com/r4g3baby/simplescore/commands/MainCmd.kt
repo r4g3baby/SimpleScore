@@ -1,6 +1,6 @@
 package com.r4g3baby.simplescore.commands
 
-import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.SimpleScore.Api.i18n
 import com.r4g3baby.simplescore.commands.subcmds.Reload
 import com.r4g3baby.simplescore.commands.subcmds.Toggle
 import com.r4g3baby.simplescore.commands.subcmds.Version
@@ -20,12 +20,12 @@ class MainCmd : CommandExecutor, TabExecutor {
                 if (subSmd.name.equals(args[0], true)) {
                     if (sender.hasPermission(subSmd.permission)) {
                         subSmd.run(sender, args.sliceArray(1..args.lastIndex))
-                    } else sender.sendMessage(SimpleScore.messages.permission)
+                    } else sender.sendMessage(i18n.t("cmd.noPermission"))
                     return true
                 }
             }
-            sender.sendMessage(SimpleScore.messages.help)
-        } else sender.sendMessage(SimpleScore.messages.help)
+            sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
+        } else sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
 
         return true
     }
