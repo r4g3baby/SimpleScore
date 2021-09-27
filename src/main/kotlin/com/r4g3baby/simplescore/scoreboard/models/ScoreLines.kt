@@ -1,6 +1,6 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
-data class ScoreLine(
+data class ScoreLines(
     private val lines: ArrayList<String> = ArrayList(),
     private val timings: ArrayList<Int> = ArrayList()
 ) {

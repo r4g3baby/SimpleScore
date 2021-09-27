@@ -1,0 +1,6 @@
+## Conditions
+# Here you can specify conditions to be used on scoreboards and scores
+
+hasAdminPermission:
+  type: HAS_PERMISSION
+  perm: "simplescore.conditions.admin"

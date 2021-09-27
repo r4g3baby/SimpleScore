@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.scoreboard.tasks
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderReplacer
 import com.r4g3baby.simplescore.scoreboard.placeholders.VariablesReplacer
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
@@ -15,12 +16,12 @@ class ScoreboardTask : BukkitRunnable() {
     override fun run() {
         SimpleScore.scoreboardManager.scoreboards.forEach { (_, scoreboard) ->
             scoreboard.titles.next()
-            scoreboard.scores.forEach { (_, value) ->
-                value.next()
+            scoreboard.scores.forEach { score ->
+                score.lines.next()
             }
         }
 
-        val playerBoards = HashMap<Player, Pair<String, HashMap<Int, String>>>()
+        val playerBoards = HashMap<Player, Pair<String, Map<Int, String>>>()
         for (world in Bukkit.getWorlds()) {
             val players = world.players.filter {
                 // No need to waste power computing scoreboards for players that won't see it
@@ -37,15 +38,7 @@ class ScoreboardTask : BukkitRunnable() {
                         for (boardName in flag) {
                             val regionBoard = SimpleScore.scoreboardManager.scoreboards.get(boardName)
                             if (regionBoard != null && regionBoard.canSee(player)) {
-                                val title = regionBoard.titles.current()
-                                val scores = HashMap<Int, String>()
-                                regionBoard.scores.forEach { (score, value) ->
-                                    scores[score] = value.current()
-                                }
-
-                                playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
-                                    applyPlaceholders(title, scores, player)
-                                } else (title to scores)
+                                playerBoards[player] = getPlayerBoard(regionBoard, player)
                                 iterator.remove()
                                 break
                             }
@@ -57,18 +50,10 @@ class ScoreboardTask : BukkitRunnable() {
             SimpleScore.scoreboardManager.scoreboards.getForWorld(world).forEach { worldBoard ->
                 if (players.size == 0) return@forEach
 
-                val title = worldBoard.titles.current()
-                val scores = HashMap<Int, String>()
-                worldBoard.scores.forEach { (score, value) ->
-                    scores[score] = value.current()
-                }
-
                 val iterator = players.iterator()
                 iterator.forEach { player ->
                     if (worldBoard.canSee(player)) {
-                        playerBoards[player] = if (SimpleScore.config.asyncPlaceholders) {
-                            applyPlaceholders(title, scores, player)
-                        } else (title to scores)
+                        playerBoards[player] = getPlayerBoard(worldBoard, player)
                         iterator.remove()
                     }
                 }
@@ -88,7 +73,20 @@ class ScoreboardTask : BukkitRunnable() {
         }
     }
 
-    private fun applyPlaceholders(title: String, scores: HashMap<Int, String>, player: Player): Pair<String, HashMap<Int, String>> {
+    private fun getPlayerBoard(scoreboard: Scoreboard, player: Player): Pair<String, Map<Int, String>> {
+        val title = scoreboard.titles.current()
+        val scores = HashMap<Int, String>()
+        scoreboard.scores.forEach { score ->
+            if (score.canSee(player)) {
+                scores[score.score] = score.lines.current()
+            }
+        }
+        return if (SimpleScore.config.asyncPlaceholders) {
+            applyPlaceholders(title, scores, player)
+        } else (title to scores)
+    }
+
+    private fun applyPlaceholders(title: String, scores: Map<Int, String>, player: Player): Pair<String, Map<Int, String>> {
         val toDisplayTitle = replacePlaceholders(title, player)
 
         val toDisplayScores = HashMap<Int, String>()
@@ -104,7 +102,7 @@ class ScoreboardTask : BukkitRunnable() {
         return translateHexColorCodes(translateAlternateColorCodes('&', result))
     }
 
-    private fun applyVariables(title: String, scores: HashMap<Int, String>, player: Player): Pair<String, HashMap<Int, String>> {
+    private fun applyVariables(title: String, scores: Map<Int, String>, player: Player): Pair<String, Map<Int, String>> {
         var toDisplayTitle: String
         val toDisplayScores = HashMap<Int, String>()
 

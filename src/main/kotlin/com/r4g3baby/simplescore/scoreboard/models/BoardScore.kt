@@ -2,10 +2,9 @@ package com.r4g3baby.simplescore.scoreboard.models
 
 import org.bukkit.entity.Player
 
-data class Scoreboard(
-    val name: String,
-    val titles: ScoreLines,
-    val scores: List<BoardScore>,
+data class BoardScore(
+    val score: Int,
+    val lines: ScoreLines,
     val conditions: List<Condition> = emptyList()
 ) {
     fun canSee(player: Player): Boolean {
