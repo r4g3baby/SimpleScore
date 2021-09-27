@@ -1,3 +1,5 @@
+## Scoreboards
+
 example:
   # Default scoreboard line update time in ticks (20 ticks = 1 second)
   updateTime: 20
@@ -33,7 +35,7 @@ example:
       - "&7&m+----------------+"
       - "&7&m------------------"
 
-custom_time:
+customTime:
   titles:
     - text: "&c100 ticks title"
       time: 100

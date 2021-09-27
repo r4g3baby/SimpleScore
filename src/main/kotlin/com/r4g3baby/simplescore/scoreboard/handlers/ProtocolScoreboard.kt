@@ -178,7 +178,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
                 }
             }
 
-            playerBoard.let {
+            playerBoard.also {
                 it.title = title
                 it.scores = scores
             }

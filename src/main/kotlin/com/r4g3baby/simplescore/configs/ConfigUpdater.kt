@@ -1,10 +1,10 @@
 package com.r4g3baby.simplescore.configs
 
-import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
+import org.bukkit.plugin.Plugin
 import java.io.File
 
-class ConfigUpdater(plugin: SimpleScore) {
+class ConfigUpdater(plugin: Plugin) {
     private val mainConfigFile = ConfigFile(plugin, "config")
     private val mainConfig = mainConfigFile.config
 

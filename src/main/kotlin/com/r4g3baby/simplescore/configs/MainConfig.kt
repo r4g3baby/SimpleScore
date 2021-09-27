@@ -1,11 +1,11 @@
 package com.r4g3baby.simplescore.configs
 
-import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
+import org.bukkit.plugin.Plugin
 import java.util.function.Predicate
 import java.util.regex.Pattern
 
-class MainConfig(plugin: SimpleScore) : ConfigFile(plugin, "config") {
+class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
