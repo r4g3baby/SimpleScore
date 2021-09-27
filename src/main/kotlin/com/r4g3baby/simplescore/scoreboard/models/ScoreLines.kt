@@ -13,10 +13,12 @@ data class ScoreLines(
     }
 
     fun current(): String {
+        if (lines.isEmpty()) return ""
         return lines[current]
     }
 
     fun next(): String {
+        if (lines.isEmpty()) return ""
         if (ticks >= timings[current]) {
             current++
             if (current >= lines.size) {
