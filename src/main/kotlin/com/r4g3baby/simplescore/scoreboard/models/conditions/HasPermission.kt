@@ -4,9 +4,9 @@ import com.r4g3baby.simplescore.scoreboard.models.Condition
 import org.bukkit.entity.Player
 
 data class HasPermission(
-    val perm: String
+    val permission: String
 ) : Condition {
     override fun check(player: Player): Boolean {
-        return player.hasPermission(perm)
+        return player.hasPermission(permission)
     }
 }

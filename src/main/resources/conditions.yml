@@ -3,4 +3,4 @@
 
 hasAdminPermission:
   type: HAS_PERMISSION
-  perm: "simplescore.conditions.admin"
+  permission: "simplescore.conditions.admin"

@@ -16,7 +16,7 @@ class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions") {
                 when (Condition.Type.valueOf(type)) {
                     Condition.Type.HAS_PERMISSION -> {
                         conditions[condition.lowercase()] = HasPermission(
-                            conditionSec.getString("perm")
+                            conditionSec.getString("permission")
                         )
                     }
                     Condition.Type.EQUALS -> {
