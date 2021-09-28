@@ -1,9 +1,20 @@
 ## Scoreboards (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/scoreboards.yml)
 # This is where you create your scoreboards to be displayed
 
+# You can create a scoreboard by creating a node with the scoreboard name and
+# then specifying a default "updateTime" and a list of "titles" and "scores".
+#
+# "updateTime": the default update time in ticks (optional and defaults to 20 ticks/1 second)
+# "titles": a list of lines*
+# "scores": a list of scores*
+# *scores: the score number/value followed by a list of lines* or a map with the
+#  "conditions" (list of conditions) and "lines" (list of lines*) attributes
+# *lines: is a list of strings or list of maps with the "text" (text to display) and
+#  "time" (time to stay visible, optional and defaults to "updateTime") attributes
+#
+# Check out the examples bellow for more information
+
 example:
-  # Default scoreboard line update time in ticks (20 ticks = 1 second)
-  updateTime: 20
   titles:
     - "&7&LYour&6&lServer"
   scores:
