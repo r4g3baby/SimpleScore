@@ -1,5 +1,5 @@
-## Conditions
-# Here you can specify conditions to be used on scoreboards and scores
+## Conditions (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/conditions.yml)
+# This is where you specify conditions to be used on scoreboards and scores
 
 hasAdminPermission:
   type: HAS_PERMISSION

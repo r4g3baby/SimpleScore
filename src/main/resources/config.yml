@@ -1,3 +1,6 @@
+## Main Config (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/config.yml)
+# This is where you can customize some plugin settings and the default world scoreboards
+
 # Config version (don't change this value)
 version: 1
 
