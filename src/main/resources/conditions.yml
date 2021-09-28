@@ -1,6 +1,24 @@
 ## Conditions (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/conditions.yml)
 # This is where you specify conditions to be used on scoreboards and scores
 
-hasAdminPermission:
+# You can create a condition by creating a node with the condition name and
+# then specifying the "type" and the required attributes for that type.
+#
+# List of available types (attributes with an = are optional and default to the value shown after):
+# - HAS_PERMISSION (attributes: permission)
+#   - Checks if the player has the specified permission
+# - EQUALS, CONTAINS, ENDS_WITH, STARTS_WITH (attributes: input, value, ignoreCase=false)
+#   - Performs the specified operation between the input and value
+#   - You can use placeholders/variables in the input attribute
+#   - You can set ignoreCase to true to make the operation case-insensitive
+
+# This condition is true when the player has the specified permission
+hasPermissionExample:
   type: HAS_PERMISSION
-  permission: "simplescore.conditions.admin"
+  permission: "simplescore.example.condition"
+
+# This condition is true when the player world equals to the specified value
+equalsOperationExample:
+  type: EQUALS
+  input: "%world%"
+  value: "world_the_end"

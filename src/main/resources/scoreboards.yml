@@ -60,7 +60,7 @@ customTime:
       - "&aYour current world: &6%world%"
 
 restricted:
-  conditions: [ "hasAdminPermission" ]
+  conditions: [ "hasPermissionExample" ]
   titles:
     - "&cRestricted Scoreboard"
   scores:
