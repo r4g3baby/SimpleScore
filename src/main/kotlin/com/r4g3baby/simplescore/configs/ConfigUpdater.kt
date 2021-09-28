@@ -11,11 +11,17 @@ class ConfigUpdater(plugin: Plugin) {
     private val scoreboardsConfigFile = ConfigFile(plugin, "scoreboards")
     private val scoreboardsConfig = scoreboardsConfigFile.config
 
+    private val conditionsConfigFile = ConfigFile(plugin, "conditions")
+    private val conditionsConfig = conditionsConfigFile.config
+
     init {
         val version = mainConfig.getInt("version", -1)
         if (version < 0) {
             plugin.logger.info("Detected an old config format, the plugin will create a backup and attempt to update it.")
             mainConfigFile.copyTo(File(mainConfigFile.parentFile, "config.bak"), true)
+
+            mainConfig.set("language", "en")
+            mainConfig.set("checkForUpdates", true)
 
             val updateTime = mainConfig.getInt("UpdateTime", 20)
             if (mainConfig.contains("UpdateTime")) {
@@ -48,7 +54,15 @@ class ConfigUpdater(plugin: Plugin) {
                         }
 
                         if (getBoolean("Restricted", false)) {
-                            set("permission", scoreboard.lowercase())
+                            val condition = "sb$scoreboard"
+                            conditionsConfig.createSection(
+                                condition, mapOf(
+                                    "type" to "HAS_PERMISSION",
+                                    "perm" to "simplescore.${scoreboard.lowercase()}"
+                                )
+                            )
+
+                            set("conditions", listOf(condition))
                             set("Restricted", null)
                         }
 
@@ -59,7 +73,9 @@ class ConfigUpdater(plugin: Plugin) {
                         set("Scores", null)
                     }
                 }
+
                 mainConfig.set("Scoreboards", null)
+                conditionsConfig.save(conditionsConfigFile)
                 scoreboardsConfig.save(scoreboardsConfigFile)
             }
 
