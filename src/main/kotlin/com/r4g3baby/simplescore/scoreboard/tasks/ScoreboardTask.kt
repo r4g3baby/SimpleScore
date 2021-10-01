@@ -128,12 +128,14 @@ class ScoreboardTask : BukkitRunnable() {
         } else text
     }
 
-    private val hexPattern: Pattern = Pattern.compile("&?#([A-Fa-f0-9]{6})")
+    private val hexPattern: Pattern = Pattern.compile("&?#([A-Fa-f0-9]{6})|\\{#([A-Fa-f0-9]{6})}")
     private fun translateHexColorCodes(text: String): String {
         val matcher = hexPattern.matcher(text)
         val buffer = StringBuffer(text.length + 4 * 8)
         while (matcher.find()) {
-            val group = matcher.group(1)
+            var group = matcher.group(1)
+            if (group == null) group = matcher.group(2)
+
             matcher.appendReplacement(
                 buffer, ChatColor.COLOR_CHAR.toString() + "x"
                     + ChatColor.COLOR_CHAR + group[0] + ChatColor.COLOR_CHAR + group[1]
