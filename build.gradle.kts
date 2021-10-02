@@ -34,13 +34,13 @@ dependencies {
 }
 
 tasks {
-    withType<JavaCompile> {
+    compileJava {
         options.encoding = "UTF-8"
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
     }
 
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
 
