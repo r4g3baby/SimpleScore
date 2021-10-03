@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
-        SimpleScore.scoreboardManager.scoreboards.forEach { (_, scoreboard) ->
+        SimpleScore.manager.scoreboards.forEach { (_, scoreboard) ->
             scoreboard.titles.tick()
             scoreboard.scores.forEach { score ->
                 score.lines.tick()
@@ -25,7 +25,7 @@ class ScoreboardTask : BukkitRunnable() {
         for (world in Bukkit.getWorlds()) {
             val players = world.players.filter {
                 // No need to waste power computing scoreboards for players that won't see it
-                val playerData = SimpleScore.scoreboardManager.playersData.get(it)
+                val playerData = SimpleScore.manager.playersData.get(it)
                 return@filter !playerData.isHidden && !playerData.isDisabled
             }.toMutableList()
             if (players.size == 0) continue
@@ -36,7 +36,7 @@ class ScoreboardTask : BukkitRunnable() {
                     val flag = WorldGuardAPI.getFlag(player)
                     if (flag.isNotEmpty()) {
                         for (boardName in flag) {
-                            val regionBoard = SimpleScore.scoreboardManager.scoreboards.get(boardName)
+                            val regionBoard = SimpleScore.manager.scoreboards.get(boardName)
                             if (regionBoard != null && regionBoard.canSee(player)) {
                                 playerBoards[player] = getPlayerBoard(regionBoard, player)
                                 iterator.remove()
@@ -47,7 +47,7 @@ class ScoreboardTask : BukkitRunnable() {
                 }
             }
 
-            SimpleScore.scoreboardManager.scoreboards.getForWorld(world).forEach { worldBoard ->
+            SimpleScore.manager.scoreboards.getForWorld(world).forEach { worldBoard ->
                 if (players.size == 0) return@forEach
 
                 val iterator = players.iterator()
@@ -67,7 +67,7 @@ class ScoreboardTask : BukkitRunnable() {
                         val tmp = applyPlaceholders(board.first, board.second, player)
                         applyVariables(tmp.first, tmp.second, player)
                     } else applyVariables(board.first, board.second, player)
-                    SimpleScore.scoreboardManager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
+                    SimpleScore.manager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
                 }
             }
         }
@@ -107,13 +107,13 @@ class ScoreboardTask : BukkitRunnable() {
         val toDisplayScores = HashMap<Int, String>()
 
         toDisplayTitle = VariablesReplacer.replace(title, player)
-        if (SimpleScore.scoreboardManager.hasLineLengthLimit() && toDisplayTitle.length > 32) {
+        if (SimpleScore.manager.hasLineLengthLimit() && toDisplayTitle.length > 32) {
             toDisplayTitle = toDisplayTitle.substring(0..31)
         }
 
         scores.forEach { (score, ogValue) ->
             var value = preventDuplicates(VariablesReplacer.replace(ogValue, player), toDisplayScores.values)
-            if (SimpleScore.scoreboardManager.hasLineLengthLimit() && value.length > 40) {
+            if (SimpleScore.manager.hasLineLengthLimit() && value.length > 40) {
                 value = value.substring(0..39)
             }
             toDisplayScores[score] = value

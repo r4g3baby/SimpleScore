@@ -35,7 +35,7 @@ class SimpleScore : JavaPlugin() {
     }
 
     override fun onDisable() {
-        scoreboardManager.playersData.save()
+        manager.playersData.save()
     }
 
     companion object Api {
@@ -49,8 +49,11 @@ class SimpleScore : JavaPlugin() {
             private set
         lateinit var i18n: I18n
             private set
-        lateinit var scoreboardManager: ScoreboardManager
+        lateinit var manager: ScoreboardManager
             private set
+
+        @Deprecated("Use new manager variable", ReplaceWith("manager"))
+        val scoreboardManager get() = manager
 
         internal fun init(plugin: SimpleScore) {
             check(!this::plugin.isInitialized) { "SimpleScore has already been initialized." }
@@ -62,13 +65,13 @@ class SimpleScore : JavaPlugin() {
             useMVdWPlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
             config = MainConfig(plugin)
             i18n = I18n(config.language, plugin)
-            scoreboardManager = ScoreboardManager()
+            manager = ScoreboardManager()
         }
 
         fun reload() {
             config = MainConfig(plugin)
             i18n.loadTranslations(config.language)
-            scoreboardManager.reload()
+            manager.reload()
         }
     }
 }

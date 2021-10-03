@@ -12,16 +12,16 @@ import org.bukkit.event.player.PlayerQuitEvent
 class McMMOListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onMcMMOScoreboardObjective(e: McMMOScoreboardObjectiveEvent) {
-        SimpleScore.scoreboardManager.playersData.setDisabled(mcMMO.p, e.targetPlayer, true)
+        SimpleScore.manager.playersData.setDisabled(mcMMO.p, e.targetPlayer, true)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onMcMMOScoreboardRevert(e: McMMOScoreboardRevertEvent) {
-        SimpleScore.scoreboardManager.playersData.setDisabled(mcMMO.p, e.targetPlayer, false)
+        SimpleScore.manager.playersData.setDisabled(mcMMO.p, e.targetPlayer, false)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerQuit(e: PlayerQuitEvent) {
-        SimpleScore.scoreboardManager.playersData.setDisabled(mcMMO.p, e.player, false)
+        SimpleScore.manager.playersData.setDisabled(mcMMO.p, e.player, false)
     }
 }

@@ -184,7 +184,7 @@ class ScoreboardManager {
             get(player).takeIf { it.isForceHidden != hidden }?.also { playerData ->
                 playerData.isForceHidden = hidden
                 if (playerData.isForceHidden) {
-                    SimpleScore.scoreboardManager.clearScoreboard(player)
+                    SimpleScore.manager.clearScoreboard(player)
                 }
             }
         }
@@ -193,7 +193,7 @@ class ScoreboardManager {
             return get(player).let { playerData ->
                 playerData.isForceHidden = !playerData.isForceHidden
                 if (playerData.isForceHidden) {
-                    SimpleScore.scoreboardManager.clearScoreboard(player)
+                    SimpleScore.manager.clearScoreboard(player)
                 }
                 return@let playerData.isForceHidden
             }
@@ -207,8 +207,8 @@ class ScoreboardManager {
             get(player).takeIf { it.isForceDisabled != disabled }?.also { playerData ->
                 playerData.isForceDisabled = disabled
                 if (playerData.isForceDisabled) {
-                    SimpleScore.scoreboardManager.removeScoreboard(player)
-                } else SimpleScore.scoreboardManager.createScoreboard(player)
+                    SimpleScore.manager.removeScoreboard(player)
+                } else SimpleScore.manager.createScoreboard(player)
             }
         }
 
@@ -216,8 +216,8 @@ class ScoreboardManager {
             return get(player).let { playerData ->
                 playerData.isForceDisabled = !playerData.isForceDisabled
                 if (playerData.isForceDisabled) {
-                    SimpleScore.scoreboardManager.removeScoreboard(player)
-                } else SimpleScore.scoreboardManager.createScoreboard(player)
+                    SimpleScore.manager.removeScoreboard(player)
+                } else SimpleScore.manager.createScoreboard(player)
                 return@let playerData.isForceDisabled
             }
         }
@@ -234,7 +234,7 @@ class ScoreboardManager {
             get(player).also { playerData ->
                 if (hidden) {
                     if (playerData.hide(plugin)) {
-                        SimpleScore.scoreboardManager.clearScoreboard(player)
+                        SimpleScore.manager.clearScoreboard(player)
                     }
                 } else playerData.show(plugin)
             }
@@ -244,7 +244,7 @@ class ScoreboardManager {
             return get(player).let { playerData ->
                 if (!playerData.show(plugin)) {
                     playerData.hide(plugin)
-                    SimpleScore.scoreboardManager.clearScoreboard(player)
+                    SimpleScore.manager.clearScoreboard(player)
                     return@let false
                 }
                 return@let true
@@ -263,10 +263,10 @@ class ScoreboardManager {
             get(player).also { playerData ->
                 if (disabled) {
                     if (playerData.disable(plugin)) {
-                        SimpleScore.scoreboardManager.removeScoreboard(player)
+                        SimpleScore.manager.removeScoreboard(player)
                     }
                 } else if (playerData.enable(plugin)) {
-                    SimpleScore.scoreboardManager.createScoreboard(player)
+                    SimpleScore.manager.createScoreboard(player)
                 }
             }
         }
@@ -275,10 +275,10 @@ class ScoreboardManager {
             return get(player).let { playerData ->
                 if (!playerData.enable(plugin)) {
                     playerData.disable(plugin)
-                    SimpleScore.scoreboardManager.removeScoreboard(player)
+                    SimpleScore.manager.removeScoreboard(player)
                     return@let false
                 }
-                SimpleScore.scoreboardManager.createScoreboard(player)
+                SimpleScore.manager.createScoreboard(player)
                 return@let true
             }
         }

@@ -13,14 +13,14 @@ class Toggle : SubCmd("toggle") {
             if (sender.hasPermission("${this.permission}.other")) {
                 val target = Bukkit.getOnlinePlayers().find { it.name.equals(args[0], true) }
                 if (target != null) {
-                    if (SimpleScore.scoreboardManager.playersData.toggleForceHidden(target)) {
+                    if (SimpleScore.manager.playersData.toggleForceHidden(target)) {
                         sender.sendMessage(i18n.t("cmd.toggle.other.hidden", target.name))
                     } else sender.sendMessage(i18n.t("cmd.toggle.other.shown", target.name))
                 } else sender.sendMessage(i18n.t("cmd.notOnline"))
             } else sender.sendMessage(i18n.t("cmd.noPermission"))
         } else {
             if (sender is Player) {
-                if (SimpleScore.scoreboardManager.playersData.toggleForceHidden(sender)) {
+                if (SimpleScore.manager.playersData.toggleForceHidden(sender)) {
                     sender.sendMessage(i18n.t("cmd.toggle.hidden"))
                 } else sender.sendMessage(i18n.t("cmd.toggle.shown"))
             } else sender.sendMessage(i18n.t("cmd.onlyPlayers"))

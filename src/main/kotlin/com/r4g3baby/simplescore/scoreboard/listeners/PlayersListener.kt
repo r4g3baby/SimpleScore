@@ -15,19 +15,16 @@ class PlayersListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(e: PlayerJoinEvent) {
         if (
-            !SimpleScore.scoreboardManager.hasScoreboard(e.player)
-            && (SimpleScore.scoreboardManager.scoreboards.getForWorld(e.player.world).isNotEmpty()
-                || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty())
+            SimpleScore.manager.scoreboards.getForWorld(e.player.world).isNotEmpty()
+            || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty()
         ) {
-            SimpleScore.scoreboardManager.createScoreboard(e.player)
+            SimpleScore.manager.createScoreboard(e.player)
         }
     }
 
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerQuit(e: PlayerQuitEvent) {
-        if (SimpleScore.scoreboardManager.hasScoreboard(e.player)) {
-            SimpleScore.scoreboardManager.removeScoreboard(e.player)
-        }
+        SimpleScore.manager.removeScoreboard(e.player)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -51,22 +48,22 @@ class PlayersListener : Listener {
     }
 
     private fun doScoreboardCheck(player: Player, from: Location?, to: Location) {
-        val toBoards = SimpleScore.scoreboardManager.scoreboards.getForWorld(to.world)
+        val toBoards = SimpleScore.manager.scoreboards.getForWorld(to.world)
         val toFlag = WorldGuardAPI.getFlag(player, to)
-        if (SimpleScore.scoreboardManager.hasScoreboard(player)) {
+        if (SimpleScore.manager.hasScoreboard(player)) {
             if (toBoards.isEmpty() && toFlag.isEmpty()) {
-                SimpleScore.scoreboardManager.removeScoreboard(player)
+                SimpleScore.manager.removeScoreboard(player)
             } else if (from != null) {
-                val fromBoards = SimpleScore.scoreboardManager.scoreboards.getForWorld(from.world)
+                val fromBoards = SimpleScore.manager.scoreboards.getForWorld(from.world)
                 val fromFlag = WorldGuardAPI.getFlag(player, from)
                 if (!fromBoards.isEqual(toBoards) || !fromFlag.isEqual(toFlag)) {
                     Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-                        SimpleScore.scoreboardManager.clearScoreboard(player)
+                        SimpleScore.manager.clearScoreboard(player)
                     }
                 }
             }
         } else if (toBoards.isNotEmpty() || toFlag.isNotEmpty()) {
-            SimpleScore.scoreboardManager.createScoreboard(player)
+            SimpleScore.manager.createScoreboard(player)
         }
     }
 }
