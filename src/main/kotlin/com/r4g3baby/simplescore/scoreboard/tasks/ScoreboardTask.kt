@@ -15,9 +15,9 @@ import java.util.regex.Pattern
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
         SimpleScore.scoreboardManager.scoreboards.forEach { (_, scoreboard) ->
-            scoreboard.titles.next()
+            scoreboard.titles.tick()
             scoreboard.scores.forEach { score ->
-                score.lines.next()
+                score.lines.tick()
             }
         }
 
@@ -74,11 +74,11 @@ class ScoreboardTask : BukkitRunnable() {
     }
 
     private fun getPlayerBoard(scoreboard: Scoreboard, player: Player): Pair<String, Map<Int, String>> {
-        val title = scoreboard.titles.current()
+        val title = scoreboard.titles.currentText ?: ""
         val scores = HashMap<Int, String>()
         scoreboard.scores.forEach { score ->
             if (score.canSee(player)) {
-                scores[score.score] = score.lines.current()
+                scores[score.score] = score.lines.currentText ?: ""
             }
         }
         return if (SimpleScore.config.asyncPlaceholders) {

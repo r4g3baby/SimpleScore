@@ -1,9 +1,6 @@
 package com.r4g3baby.simplescore.configs
 
-import com.r4g3baby.simplescore.scoreboard.models.BoardScore
-import com.r4g3baby.simplescore.scoreboard.models.Condition
-import com.r4g3baby.simplescore.scoreboard.models.ScoreLines
-import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
+import com.r4g3baby.simplescore.scoreboard.models.*
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.plugin.Plugin
@@ -23,9 +20,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                 when {
                     scoreboardSec.isList("titles") -> {
                         scoreboardSec.getList("titles").forEach { line ->
-                            val parsed = parseLine(line, updateTime)?.also { (text, time) ->
-                                titles.add(text, time)
-                            }
+                            val parsed = parseLine(line, updateTime)?.also { titles.add(it) }
                             if (parsed == null) plugin.logger.warning(
                                 "Invalid title value for scoreboard: $scoreboard, value: $line."
                             )
@@ -53,9 +48,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                 when {
                                     scoresSec.isList("lines") -> {
                                         scoreSec.getList("lines").forEach { line ->
-                                            val parsed = parseLine(line, updateTime)?.also { (text, time) ->
-                                                scoreLines.add(text, time)
-                                            }
+                                            val parsed = parseLine(line, updateTime)?.also { scoreLines.add(it) }
                                             if (parsed == null) plugin.logger.warning(
                                                 "Invalid line value for scoreboard: $scoreboard, score: $score, value: $line."
                                             )
@@ -76,9 +69,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                             scoresSec.isList(score.toString()) -> {
                                 val scoreLines = ScoreLines()
                                 scoresSec.getList(score.toString()).forEach { line ->
-                                    val parsed = parseLine(line, updateTime)?.also { (text, time) ->
-                                        scoreLines.add(text, time)
-                                    }
+                                    val parsed = parseLine(line, updateTime)?.also { scoreLines.add(it) }
                                     if (parsed == null) plugin.logger.warning(
                                         "Invalid line value for scoreboard: $scoreboard, score: $score, value: $line."
                                     )
@@ -108,10 +99,10 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
         }
     }
 
-    private fun parseLine(line: Any?, updateTime: Int): Pair<String, Int>? {
+    private fun parseLine(line: Any?, updateTime: Int): ScoreLine? {
         return when (line) {
-            is String -> line to updateTime
-            is Map<*, *> -> line["text"] as String to line.getOrDefault("time", updateTime) as Int
+            is String -> ScoreLine(line, updateTime)
+            is Map<*, *> ->  ScoreLine(line["text"] as String, line.getOrDefault("time", updateTime) as Int)
             else -> null
         }
     }
