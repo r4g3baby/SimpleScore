@@ -5,8 +5,8 @@ import org.bukkit.plugin.Plugin
 data class PlayerData(
     var isForceHidden: Boolean = false,
     var isForceDisabled: Boolean = false,
-    val pluginsHiding: HashSet<Plugin> = HashSet(),
-    val pluginsDisabling: HashSet<Plugin> = HashSet()
+    val pluginsHiding: MutableSet<Plugin> = HashSet(),
+    val pluginsDisabling: MutableSet<Plugin> = HashSet()
 ) {
     val isHidden get() = isForceHidden || pluginsHiding.size > 0
     val isDisabled get() = isForceDisabled || pluginsDisabling.size > 0

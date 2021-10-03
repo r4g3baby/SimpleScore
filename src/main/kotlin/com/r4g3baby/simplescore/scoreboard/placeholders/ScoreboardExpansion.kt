@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.scoreboard.placeholders
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.SimpleScore.Api.scoreboardManager
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.entity.Player
 
@@ -24,11 +25,9 @@ class ScoreboardExpansion(private val plugin: SimpleScore) : PlaceholderExpansio
     override fun onPlaceholderRequest(player: Player?, identifier: String?): String? {
         if (player != null && identifier != null) {
             if (identifier == "hidden") {
-                val playerData = SimpleScore.scoreboardManager.playersData.get(player)
-                return playerData.isHidden.toString()
+                return scoreboardManager.playersData.isHidden(player).toString()
             } else if (identifier == "disabled") {
-                val playerData = SimpleScore.scoreboardManager.playersData.get(player)
-                return playerData.isDisabled.toString()
+                return scoreboardManager.playersData.isDisabled(player).toString()
             }
         }
         return null

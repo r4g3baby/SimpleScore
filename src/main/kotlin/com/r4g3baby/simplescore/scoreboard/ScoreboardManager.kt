@@ -176,6 +176,10 @@ class ScoreboardManager {
             }
         }
 
+        fun isForceHidden(player: Player): Boolean {
+            return get(player).isForceHidden
+        }
+
         fun setForceHidden(player: Player, hidden: Boolean) {
             get(player).takeIf { it.isForceHidden != hidden }?.also { playerData ->
                 playerData.isForceHidden = hidden
@@ -193,6 +197,10 @@ class ScoreboardManager {
                 }
                 return@let playerData.isForceHidden
             }
+        }
+
+        fun isForceDisabled(player: Player): Boolean {
+            return get(player).isForceDisabled
         }
 
         fun setForceDisabled(player: Player, disabled: Boolean) {
@@ -214,6 +222,14 @@ class ScoreboardManager {
             }
         }
 
+        fun isHidden(player: Player): Boolean {
+            return get(player).isHidden
+        }
+
+        fun isHiding(plugin: Plugin, player: Player): Boolean {
+            return get(player).isHiding(plugin)
+        }
+
         fun setHidden(plugin: Plugin, player: Player, hidden: Boolean) {
             get(player).also { playerData ->
                 if (hidden) {
@@ -233,6 +249,14 @@ class ScoreboardManager {
                 }
                 return@let true
             }
+        }
+
+        fun isDisabled(player: Player): Boolean {
+            return get(player).isDisabled
+        }
+
+        fun isDisabling(plugin: Plugin, player: Player): Boolean {
+            return get(player).isDisabling(plugin)
         }
 
         fun setDisabled(plugin: Plugin, player: Player, disabled: Boolean) {
