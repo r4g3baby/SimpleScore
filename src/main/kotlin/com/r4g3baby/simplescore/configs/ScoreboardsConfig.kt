@@ -1,8 +1,8 @@
 package com.r4g3baby.simplescore.configs
 
+import com.r4g3baby.simplescore.scoreboard.models.BoardScore
 import com.r4g3baby.simplescore.scoreboard.models.Condition
 import com.r4g3baby.simplescore.scoreboard.models.ScoreLines
-import com.r4g3baby.simplescore.scoreboard.models.BoardScore
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.configuration.ConfigurationSection
@@ -20,16 +20,25 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                 val updateTime = scoreboardSec.getInt("updateTime", 20)
 
                 val titles = ScoreLines()
-                scoreboardSec.getList("titles").forEach {
-                    when (it) {
-                        is String -> titles.add(it, updateTime)
-                        is Map<*, *> -> titles.add(
-                            it["text"] as String,
-                            it.getOrDefault("time", updateTime) as Int
-                        )
-                        else -> {
-                            plugin.logger.warning("Failed to parse titles expected String or Map but got ${it!!::class.java} instead.")
+                when {
+                    scoreboardSec.isList("titles") -> {
+                        scoreboardSec.getList("titles").forEach { line ->
+                            val parsed = parseLine(line, updateTime)?.also { (text, time) ->
+                                titles.add(text, time)
+                            }
+                            if (parsed == null) plugin.logger.warning(
+                                "Invalid title value for scoreboard: $scoreboard, value: $line."
+                            )
                         }
+                    }
+                    scoreboardSec.isString("titles") -> {
+                        titles.add(scoreboardSec.getString("titles"), updateTime)
+                    }
+                    else -> {
+                        val titlesValue = scoreboardSec.get("titles")
+                        plugin.logger.warning(
+                            "Invalid titles value for scoreboard: $scoreboard, value: $titlesValue."
+                        )
                     }
                 }
 
@@ -41,18 +50,25 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                             scoresSec.isConfigurationSection(score.toString()) -> {
                                 val scoreSec = scoresSec.getConfigurationSection(score.toString())
                                 val scoreLines = ScoreLines()
-                                scoreSec.getList("lines").forEach { line ->
-                                    when (line) {
-                                        is String -> scoreLines.add(line, updateTime)
-                                        is Map<*, *> -> scoreLines.add(
-                                            line["text"] as String,
-                                            line.getOrDefault("time", updateTime) as Int
-                                        )
-                                        else -> {
-                                            plugin.logger.warning(
-                                                "Failed to parse lines for score \"$score\" expected String or Map but got ${line!!::class.java} instead."
+                                when {
+                                    scoresSec.isList("lines") -> {
+                                        scoreSec.getList("lines").forEach { line ->
+                                            val parsed = parseLine(line, updateTime)?.also { (text, time) ->
+                                                scoreLines.add(text, time)
+                                            }
+                                            if (parsed == null) plugin.logger.warning(
+                                                "Invalid line value for scoreboard: $scoreboard, score: $score, value: $line."
                                             )
                                         }
+                                    }
+                                    scoresSec.isString("lines") -> {
+                                        scoreLines.add(scoresSec.getString("lines"), updateTime)
+                                    }
+                                    else -> {
+                                        val linesValue = scoresSec.get("lines")
+                                        plugin.logger.warning(
+                                            "Invalid lines value for scoreboard: $scoreboard, score: $score, value: $linesValue."
+                                        )
                                     }
                                 }
                                 BoardScore(score, scoreLines, getConditions(scoreSec))
@@ -60,25 +76,24 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                             scoresSec.isList(score.toString()) -> {
                                 val scoreLines = ScoreLines()
                                 scoresSec.getList(score.toString()).forEach { line ->
-                                    when (line) {
-                                        is String -> scoreLines.add(line, updateTime)
-                                        is Map<*, *> -> scoreLines.add(
-                                            line["text"] as String,
-                                            line.getOrDefault("time", updateTime) as Int
-                                        )
-                                        else -> {
-                                            plugin.logger.warning(
-                                                "Failed to parse lines for score \"$score\" expected String or Map but got ${line!!::class.java} instead."
-                                            )
-                                        }
+                                    val parsed = parseLine(line, updateTime)?.also { (text, time) ->
+                                        scoreLines.add(text, time)
                                     }
+                                    if (parsed == null) plugin.logger.warning(
+                                        "Invalid line value for scoreboard: $scoreboard, score: $score, value: $line."
+                                    )
                                 }
                                 BoardScore(score, scoreLines)
+                            }
+                            scoresSec.isString(score.toString()) -> {
+                                BoardScore(score, ScoreLines().apply {
+                                    add(scoresSec.getString(score.toString()), updateTime)
+                                })
                             }
                             else -> {
                                 val scoreValue = scoresSec.get(score.toString())
                                 plugin.logger.warning(
-                                    "Failed to parse score \"$score\", expected a Map or List but got ${scoreValue::class.java} instead."
+                                    "Invalid score value for scoreboard: $scoreboard, score: $score, value: $scoreValue."
                                 )
                                 null
                             }
@@ -86,9 +101,18 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                     }
                 }
 
-                val name = scoreboard.lowercase()
-                scoreboards[name] = Scoreboard(name, titles, scores, getConditions(scoreboardSec))
+                scoreboards[scoreboard.lowercase()] = Scoreboard(
+                    scoreboard, titles, scores, getConditions(scoreboardSec)
+                )
             }
+        }
+    }
+
+    private fun parseLine(line: Any?, updateTime: Int): Pair<String, Int>? {
+        return when (line) {
+            is String -> line to updateTime
+            is Map<*, *> -> line["text"] as String to line.getOrDefault("time", updateTime) as Int
+            else -> null
         }
     }
 
