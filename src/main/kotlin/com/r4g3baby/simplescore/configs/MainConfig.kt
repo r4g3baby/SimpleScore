@@ -20,18 +20,15 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     init {
         if (config.isConfigurationSection("worlds")) {
             val worldsSec = config.getConfigurationSection("worlds")
-            for (world in worldsSec.getKeys(false)) {
+            worldsSec.getKeys(false).forEach { world ->
                 val pattern = Pattern.compile("^${world}$", Pattern.CASE_INSENSITIVE)
-                val scoreboards = worldsSec.get(world)
-                worlds[pattern.asPredicate()] = when (scoreboards) {
-                    is List<*> -> mutableListOf<String>().also { list ->
-                        scoreboards.forEach {
-                            if (it is String) {
-                                list.add(it.lowercase())
-                            }
+                worlds[pattern.asPredicate()] = when {
+                    worldsSec.isList(world) -> mutableListOf<String>().also { list ->
+                        worldsSec.getStringList(world).forEach { scoreboard ->
+                            list.add(scoreboard)
                         }
                     }.toList()
-                    is String -> listOf(scoreboards.lowercase())
+                    worldsSec.isString(world) -> listOf(worldsSec.getString(world))
                     else -> emptyList()
                 }
             }

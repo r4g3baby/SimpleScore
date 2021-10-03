@@ -94,11 +94,8 @@ class ScoreboardManager {
                 mutableListOf<Scoreboard>().also { list ->
                     SimpleScore.config.worlds.forEach { (predicate, scoreboards) ->
                         if (predicate.test(world)) {
-                            scoreboards.forEach {
-                                val scoreboard = SimpleScore.config.scoreboards[it]
-                                if (scoreboard != null) {
-                                    list.add(scoreboard)
-                                }
+                            scoreboards.mapNotNull { get(it) }.forEach { scoreboard ->
+                                list.add(scoreboard)
                             }
                             return@forEach
                         }
