@@ -58,7 +58,7 @@ class ConfigUpdater(plugin: Plugin) {
                             conditionsConfig.createSection(
                                 condition, mapOf(
                                     "type" to "HAS_PERMISSION",
-                                    "perm" to "simplescore.${scoreboard.lowercase()}"
+                                    "permission" to "simplescore.${scoreboard.lowercase()}"
                                 )
                             )
 
