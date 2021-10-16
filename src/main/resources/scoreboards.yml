@@ -1,93 +1,78 @@
 ## Scoreboards (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/scoreboards.yml)
-# This is where you create your scoreboards to be displayed
+# This is where you create your scoreboards to be displayed.
 
 # You can create a scoreboard by creating a node with the scoreboard name and
 # then specifying a default "updateTime" and a list of "titles" and "scores".
 #
 # "updateTime": the default update time in ticks (optional and defaults to 20 ticks/1 second)
-# "titles": a list of lines*
-# "scores": a list of scores*
-# *scores: the score number/value followed by a list of lines* or a map with the
-#  "conditions" (list of conditions) and "lines" (list of lines*) attributes
+# "titles": text to display or a list of lines*
+# "scores": the score number/value followed by the text to display or a list of lines* or a
+#  map with the "conditions" (list of conditions) and "lines" (list of lines*) attributes
 # *lines: is a list of strings or list of maps with the "text" (text to display) and
 #  "time" (time to stay visible, optional and defaults to "updateTime") attributes
 #
-# Check out the examples bellow for more information
+# Check out the examples bellow for more information.
 
-example:
-  titles:
-    - "&7&LYour&6&lServer"
+# This is a simple scoreboard with only the top and bottom lines animated
+simple:
+  titles: '&7&LYour&6&lServer'
   scores:
     13:
-      - "&7&m+----------------+"
-      - "&7&m------------------"
-    12:
-      - "&7» &6&lPlayer"
-    11:
-      - "    &7%player%"
-    10:
-      - ""
-    9:
-      - "&7» &6&lHealth"
-    8:
-      - "    %hearts%"
-    7:
-      - ""
-    6:
-      - "&7» &6&lWorld"
-    5:
-      - "    &7%world%"
-    4:
-      - ""
-    3:
-      - "&7» &6&lOnline Players"
-    2:
-      - "    &7%online% &6players"
+      - '&7&m+----------------+'
+      - '&7&m------------------'
+    12: '&7» &6&lPlayer'
+    11: '    &7%player%'
+    10: ''
+    9: '&7» &6&lHealth'
+    8: '    %hearts%'
+    7: ''
+    6: '&7» &6&lWorld'
+    5: '    &7%world%'
+    4: ''
+    3: '&7» &6&lOnline Players'
+    2: '    &7%online% &6players'
     1:
-      - "&7&m+----------------+"
-      - "&7&m------------------"
+      - '&7&m+----------------+'
+      - '&7&m------------------'
 
-customTime:
+# Scoreboard with a basic timing example
+customTiming:
+  updateTime: 100 # any title or score without a specified time will default to this
   titles:
-    - text: "&c100 ticks title"
-      time: 100
-    - text: "&a50 ticks title"
-      time: 50
+    - text: '&c200 ticks/10 seconds title'
+      time: 200
+    - text: '&a100 ticks/5 seconds title'
   scores:
-    6:
-      - "&7You can set a per title or score time"
-    5:
-      - "&7instead of using the default value"
-    4:
-      - ""
+    6: '&7You can set a per title and score time'
+    5: '&7instead of using the default value'
+    4: ''
     3:
-      - text: "&7This will last for &810 seconds"
+      - text: '&7This will last for &810 seconds'
         time: 200
-      - text: "&7while this only lasts for &85 seconds"
-        time: 100
-    2:
-      - ""
+      - text: '&7while this only lasts for &85 seconds'
+    2: ''
     1:
-      - "&aYour current world: &6%world%"
+      - text: '&6Your current world is &7%world%&6.'
+        time: 60
+      - text: '&6There are &7%online% &6players online.'
+        time: 60
 
-restricted:
-  conditions: [ "hasPermissionExample" ]
-  titles:
-    - "&cRestricted Scoreboard"
+# Scoreboard showing how conditions work
+conditional:
+  updateTime: 60
+  conditions: [ 'hasPermissionExample' ]
+  titles: '&cRestricted Scoreboard'
   scores:
-    8:
-      - ""
-    7:
-      - "&7Scoreboards with a specified permission require"
-    6:
-      - "&7the &6simplescore.<permission> &7permission."
-    5:
-      - ""
-    4:
-      - "&7You can see this scoreboard because"
-    3:
-      - "&7you have the following permission:"
+    9: ''
+    8: '&7Scoreboards with a list of conditions require'
+    7: '&7that the player passes all of them.'
+    6: ''
+    5: '&7You can see this scoreboard because you'
+    4: '&7passed the &8hasPermissionExample &7condition.'
+    3: ''
     2:
-      - "&6simplescore.mypermission"
-    1:
-      - ""
+      conditions: [ 'equalsOperationExample' ]
+      lines:
+        - '&7You can see this line because you passed..'
+        - '&7the &8equalsOperationExample &7condition.'
+    1: ''
