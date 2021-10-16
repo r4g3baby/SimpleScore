@@ -283,29 +283,4 @@ class ScoreboardManager {
             }
         }
     }
-
-    @Deprecated("Use new playersData class", ReplaceWith("playersData.toggleForceHidden(player)"))
-    fun toggleScoreboard(player: Player): Boolean {
-        return playersData.toggleForceHidden(player)
-    }
-
-    @Deprecated("Use new playersData class", ReplaceWith("playersData.get(player).isHidden"))
-    fun isScoreboardDisabled(player: Player): Boolean {
-        return playersData.get(player).isHidden
-    }
-
-    @Deprecated("Use new scoreboards class", ReplaceWith("scoreboards.getForWorld(world)"))
-    fun getWorldScoreboards(world: World): List<Scoreboard> {
-        return scoreboards.getForWorld(world)
-    }
-
-    @Deprecated("Use new scoreboards class", ReplaceWith("scoreboards.get(scoreboard)"))
-    fun getScoreboard(scoreboard: String): Scoreboard? {
-        return scoreboards.get(scoreboard)
-    }
-
-    @Deprecated("Use new scoreboards class", ReplaceWith("scoreboards.map { it.value }"))
-    fun getScoreboards(): List<Scoreboard> {
-        return scoreboards.map { it.value }
-    }
 }

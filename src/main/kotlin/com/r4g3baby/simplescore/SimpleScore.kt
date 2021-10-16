@@ -52,9 +52,6 @@ class SimpleScore : JavaPlugin() {
         lateinit var manager: ScoreboardManager
             private set
 
-        @Deprecated("Use new manager variable", ReplaceWith("manager"))
-        val scoreboardManager get() = manager
-
         internal fun init(plugin: SimpleScore) {
             check(!this::plugin.isInitialized) { "SimpleScore has already been initialized." }
             this.plugin = plugin
