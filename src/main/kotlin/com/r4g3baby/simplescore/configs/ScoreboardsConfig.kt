@@ -46,7 +46,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                 val scoreSec = scoresSec.getConfigurationSection(score.toString())
                                 val scoreLines = ScoreLines()
                                 when {
-                                    scoresSec.isList("lines") -> {
+                                    scoreSec.isList("lines") -> {
                                         scoreSec.getList("lines").forEach { line ->
                                             val parsed = parseLine(line, updateTime)?.also { scoreLines.add(it) }
                                             if (parsed == null) plugin.logger.warning(
@@ -54,11 +54,11 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                             )
                                         }
                                     }
-                                    scoresSec.isString("lines") -> {
-                                        scoreLines.add(scoresSec.getString("lines"), updateTime)
+                                    scoreSec.isString("lines") -> {
+                                        scoreLines.add(scoreSec.getString("lines"), updateTime)
                                     }
                                     else -> {
-                                        val linesValue = scoresSec.get("lines")
+                                        val linesValue = scoreSec.get("lines")
                                         plugin.logger.warning(
                                             "Invalid lines value for scoreboard: $scoreboard, score: $score, value: $linesValue."
                                         )
@@ -102,7 +102,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
     private fun parseLine(line: Any?, updateTime: Int): ScoreLine? {
         return when (line) {
             is String -> ScoreLine(line, updateTime)
-            is Map<*, *> ->  ScoreLine(line["text"] as String, line.getOrDefault("time", updateTime) as Int)
+            is Map<*, *> -> ScoreLine(line["text"] as String, line.getOrDefault("time", updateTime) as Int)
             else -> null
         }
     }
