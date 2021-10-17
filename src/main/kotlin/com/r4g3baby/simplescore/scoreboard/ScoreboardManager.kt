@@ -180,16 +180,20 @@ class ScoreboardManager {
             }
         }
 
-        fun hasScoreboard(player: Player): Boolean {
-            return get(player).hasScoreboard
+        fun getScoreboards(player: Player): List<Scoreboard> {
+            return get(player).scoreboards
         }
 
-        fun getScoreboard(player: Player): Scoreboard? {
-            return get(player).scoreboard
+        fun hasScoreboards(player: Player): Boolean {
+            return get(player).hasScoreboards
         }
 
-        fun setScoreboard(player: Player, scoreboard: Scoreboard?) {
-            get(player).scoreboard = scoreboard
+        fun getScoreboard(plugin: Plugin, player: Player): Scoreboard? {
+            return get(player).getScoreboard(plugin)
+        }
+
+        fun setScoreboard(plugin: Plugin, player: Player, scoreboard: Scoreboard?) {
+            get(player).setScoreboard(plugin, scoreboard)
         }
 
         fun isHidden(player: Player): Boolean {

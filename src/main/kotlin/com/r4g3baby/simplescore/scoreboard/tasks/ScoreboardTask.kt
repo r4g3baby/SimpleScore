@@ -29,11 +29,15 @@ class ScoreboardTask : BukkitRunnable() {
                 if (playerData.isHidden || playerData.isDisabled) return@filter false
 
                 // Check if player has a valid scoreboard and if so use it
-                playerData.scoreboard?.also { scoreboard ->
-                    playerBoards[player] = getPlayerBoard(scoreboard, player)
-                    return@filter false
+                playerData.scoreboards.forEach { scoreboard ->
+                    if (scoreboard.canSee(player)) {
+                        playerBoards[player] = getPlayerBoard(scoreboard, player)
+                        return@filter false
+                    }
                 }
-                return@filter true
+
+                // Player scoreboards override world scoreboards
+                return@filter !playerData.hasScoreboards
             }.toMutableList()
             if (players.size == 0) continue
 

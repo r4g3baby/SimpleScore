@@ -17,7 +17,7 @@ class PlayersListener : Listener {
         if (
             SimpleScore.manager.scoreboards.getForWorld(e.player.world).isNotEmpty()
             || WorldGuardAPI.getFlag(e.player, e.player.location).isNotEmpty()
-            || SimpleScore.manager.playersData.hasScoreboard(e.player)
+            || SimpleScore.manager.playersData.hasScoreboards(e.player)
         ) {
             SimpleScore.manager.createScoreboard(e.player)
         }
@@ -53,7 +53,7 @@ class PlayersListener : Listener {
         val toBoards = SimpleScore.manager.scoreboards.getForWorld(to.world)
         val toFlag = WorldGuardAPI.getFlag(player, to)
         if (SimpleScore.manager.hasScoreboard(player)) {
-            if (playerData.isDisabled || (toBoards.isEmpty() && toFlag.isEmpty() && !playerData.hasScoreboard)) {
+            if (playerData.isDisabled || (toBoards.isEmpty() && toFlag.isEmpty() && !playerData.hasScoreboards)) {
                 SimpleScore.manager.removeScoreboard(player)
             } else if (from != null) {
                 val fromBoards = SimpleScore.manager.scoreboards.getForWorld(from.world)
@@ -64,7 +64,7 @@ class PlayersListener : Listener {
                     }
                 }
             }
-        } else if (toBoards.isNotEmpty() || toFlag.isNotEmpty() || playerData.hasScoreboard) {
+        } else if (toBoards.isNotEmpty() || toFlag.isNotEmpty() || playerData.hasScoreboards) {
             SimpleScore.manager.createScoreboard(player)
         }
     }
