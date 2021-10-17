@@ -7,7 +7,7 @@ abstract class SubCmd(val name: String) {
 
     abstract fun run(sender: CommandSender, args: Array<out String>)
 
-    open fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
-        return mutableListOf()
+    open fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {
+        return emptyList()
     }
 }

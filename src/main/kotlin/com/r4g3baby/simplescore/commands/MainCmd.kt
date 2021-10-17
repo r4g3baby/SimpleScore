@@ -30,7 +30,7 @@ class MainCmd : CommandExecutor, TabExecutor {
         return true
     }
 
-    override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): List<String> {
         return when {
             args.size == 1 -> {
                 subCmds.filter {
@@ -39,9 +39,9 @@ class MainCmd : CommandExecutor, TabExecutor {
             }
             args.size > 1 -> {
                 val subCmd = subCmds.firstOrNull { it.name.equals(args[0], true) }
-                subCmd?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: mutableListOf()
+                subCmd?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: emptyList()
             }
-            else -> mutableListOf()
+            else -> emptyList()
         }
     }
 }
