@@ -23,10 +23,17 @@ class ScoreboardTask : BukkitRunnable() {
 
         val playerBoards = HashMap<Player, Pair<String, Map<Int, String>>>()
         for (world in Bukkit.getWorlds()) {
-            val players = world.players.filter {
+            val players = world.players.filter { player ->
+                val playerData = SimpleScore.manager.playersData.get(player)
                 // No need to waste power computing scoreboards for players that won't see it
-                val playerData = SimpleScore.manager.playersData.get(it)
-                return@filter !playerData.isHidden && !playerData.isDisabled
+                if (playerData.isHidden || playerData.isDisabled) return@filter false
+
+                // Check if player has a valid scoreboard and if so use it
+                playerData.scoreboard?.also { scoreboard ->
+                    playerBoards[player] = getPlayerBoard(scoreboard, player)
+                    return@filter false
+                }
+                return@filter true
             }.toMutableList()
             if (players.size == 0) continue
 

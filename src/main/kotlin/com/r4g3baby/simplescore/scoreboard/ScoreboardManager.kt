@@ -129,8 +129,8 @@ class ScoreboardManager {
                     getKeys(false).forEach { uniqueId ->
                         val playerSection = getConfigurationSection(uniqueId)
                         playersData[UUID.fromString(uniqueId)] = PlayerData(
-                            playerSection.getBoolean("isForceHidden", false),
-                            playerSection.getBoolean("isForceDisabled", false)
+                            isForceHidden = playerSection.getBoolean("isForceHidden", false),
+                            isForceDisabled = playerSection.getBoolean("isForceDisabled", false)
                         )
                     }
                 }
@@ -174,6 +174,18 @@ class ScoreboardManager {
             return playersData.getOrPut(uniqueId) {
                 return@getOrPut PlayerData()
             }
+        }
+
+        fun hasScoreboard(player: Player): Boolean {
+            return get(player).hasScoreboard
+        }
+
+        fun getScoreboard(player: Player): Scoreboard? {
+            return get(player).scoreboard
+        }
+
+        fun setScoreboard(player: Player, scoreboard: Scoreboard?) {
+            get(player).scoreboard = scoreboard
         }
 
         fun isForceHidden(player: Player): Boolean {

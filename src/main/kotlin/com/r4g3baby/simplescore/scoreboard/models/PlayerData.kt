@@ -3,11 +3,14 @@ package com.r4g3baby.simplescore.scoreboard.models
 import org.bukkit.plugin.Plugin
 
 data class PlayerData(
+    var scoreboard: Scoreboard? = null,
     var isForceHidden: Boolean = false,
     var isForceDisabled: Boolean = false,
     val pluginsHiding: MutableSet<Plugin> = HashSet(),
     val pluginsDisabling: MutableSet<Plugin> = HashSet()
 ) {
+    val hasScoreboard get() = scoreboard != null
+
     val isHidden get() = isForceHidden || pluginsHiding.size > 0
     val isDisabled get() = isForceDisabled || pluginsDisabling.size > 0
 
