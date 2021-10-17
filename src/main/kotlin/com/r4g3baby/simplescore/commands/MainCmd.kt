@@ -32,15 +32,12 @@ class MainCmd : CommandExecutor, TabExecutor {
 
     override fun onTabComplete(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): List<String> {
         return when {
-            args.size == 1 -> {
-                subCmds.filter {
-                    it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
-                }.map { it.name }.toMutableList()
-            }
-            args.size > 1 -> {
-                val subCmd = subCmds.firstOrNull { it.name.equals(args[0], true) }
-                subCmd?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: emptyList()
-            }
+            args.size == 1 -> subCmds.filter {
+                it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
+            }.map { it.name }
+            args.size > 1 -> subCmds.firstOrNull {
+                it.name.equals(args[0], true) && sender.hasPermission(it.permission)
+            }?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: emptyList()
             else -> emptyList()
         }
     }
