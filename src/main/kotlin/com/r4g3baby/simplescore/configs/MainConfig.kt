@@ -15,7 +15,7 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
 
     private val scoreboardsConfig = ScoreboardsConfig(plugin)
     val scoreboards get() = scoreboardsConfig.scoreboards
-    val worlds = HashMap<Predicate<String>, List<String>>()
+    val worlds = LinkedHashMap<Predicate<String>, List<String>>()
 
     init {
         if (config.isConfigurationSection("worlds")) {
