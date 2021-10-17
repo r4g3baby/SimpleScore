@@ -215,9 +215,9 @@ class ScoreboardManager {
                 if (!playerData.show(plugin)) {
                     playerData.hide(plugin)
                     SimpleScore.manager.clearScoreboard(player)
-                    return@let false
+                    return@let true
                 }
-                return@let true
+                return@let false
             }
         }
 
@@ -246,10 +246,10 @@ class ScoreboardManager {
                 if (!playerData.enable(plugin)) {
                     playerData.disable(plugin)
                     SimpleScore.manager.removeScoreboard(player)
-                    return@let false
+                    return@let true
                 }
                 SimpleScore.manager.createScoreboard(player)
-                return@let true
+                return@let false
             }
         }
     }
