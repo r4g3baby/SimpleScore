@@ -128,9 +128,11 @@ class ScoreboardManager {
                 playersDataFile.config.apply {
                     getKeys(false).forEach { uniqueId ->
                         val playerSection = getConfigurationSection(uniqueId)
+                        val isHidden = playerSection.getBoolean("isHidden", false)
+                        val isDisabled = playerSection.getBoolean("isDisabled", false)
                         playersData[UUID.fromString(uniqueId)] = PlayerData(
-                            isForceHidden = playerSection.getBoolean("isForceHidden", false),
-                            isForceDisabled = playerSection.getBoolean("isForceDisabled", false)
+                            pluginsHiding = if (isHidden) mutableSetOf(SimpleScore.plugin) else mutableSetOf(),
+                            pluginsDisabling = if (isDisabled) mutableSetOf(SimpleScore.plugin) else mutableSetOf()
                         )
                     }
                 }
@@ -148,11 +150,13 @@ class ScoreboardManager {
                     getKeys(false).forEach { set(it, null) }
 
                     playersData.forEach { (uniqueId, playerData) ->
-                        if (playerData.isForceHidden || playerData.isForceDisabled) {
+                        val isHidden = playerData.isHiding(SimpleScore.plugin)
+                        val isDisabled = playerData.isDisabling(SimpleScore.plugin)
+                        if (isHidden || isDisabled) {
                             createSection(
                                 uniqueId.toString(), mapOf(
-                                    "isForceHidden" to playerData.isForceHidden,
-                                    "isForceDisabled" to playerData.isForceDisabled
+                                    "isHidden" to isHidden,
+                                    "isDisabled" to isDisabled
                                 )
                             )
                         }
@@ -186,52 +190,6 @@ class ScoreboardManager {
 
         fun setScoreboard(player: Player, scoreboard: Scoreboard?) {
             get(player).scoreboard = scoreboard
-        }
-
-        fun isForceHidden(player: Player): Boolean {
-            return get(player).isForceHidden
-        }
-
-        fun setForceHidden(player: Player, hidden: Boolean) {
-            get(player).takeIf { it.isForceHidden != hidden }?.also { playerData ->
-                playerData.isForceHidden = hidden
-                if (playerData.isForceHidden) {
-                    SimpleScore.manager.clearScoreboard(player)
-                }
-            }
-        }
-
-        fun toggleForceHidden(player: Player): Boolean {
-            return get(player).let { playerData ->
-                playerData.isForceHidden = !playerData.isForceHidden
-                if (playerData.isForceHidden) {
-                    SimpleScore.manager.clearScoreboard(player)
-                }
-                return@let playerData.isForceHidden
-            }
-        }
-
-        fun isForceDisabled(player: Player): Boolean {
-            return get(player).isForceDisabled
-        }
-
-        fun setForceDisabled(player: Player, disabled: Boolean) {
-            get(player).takeIf { it.isForceDisabled != disabled }?.also { playerData ->
-                playerData.isForceDisabled = disabled
-                if (playerData.isForceDisabled) {
-                    SimpleScore.manager.removeScoreboard(player)
-                } else SimpleScore.manager.createScoreboard(player)
-            }
-        }
-
-        fun toggleForceDisabled(player: Player): Boolean {
-            return get(player).let { playerData ->
-                playerData.isForceDisabled = !playerData.isForceDisabled
-                if (playerData.isForceDisabled) {
-                    SimpleScore.manager.removeScoreboard(player)
-                } else SimpleScore.manager.createScoreboard(player)
-                return@let playerData.isForceDisabled
-            }
         }
 
         fun isHidden(player: Player): Boolean {

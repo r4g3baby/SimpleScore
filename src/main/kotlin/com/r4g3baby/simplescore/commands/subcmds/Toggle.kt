@@ -14,16 +14,16 @@ class Toggle : SubCmd("toggle") {
         if (sender is Player) {
             if (args.isNotEmpty()) {
                 if (args[0].equals("on", true)) {
-                    SimpleScore.manager.playersData.setForceHidden(sender, false)
+                    SimpleScore.manager.playersData.setHidden(SimpleScore.plugin, sender, false)
                     sender.sendMessage(i18n.t("cmd.toggle.shown"))
                 } else if (args[0].equals("off", true)) {
-                    SimpleScore.manager.playersData.setForceHidden(sender, true)
+                    SimpleScore.manager.playersData.setHidden(SimpleScore.plugin, sender, true)
                     sender.sendMessage(i18n.t("cmd.toggle.hidden"))
                 } else if (sender.hasPermission(otherPermission)) {
                     targetOther(sender, args)
                 } else sender.sendMessage(i18n.t("cmd.toggle.usage.player"))
             } else {
-                if (SimpleScore.manager.playersData.toggleForceHidden(sender)) {
+                if (SimpleScore.manager.playersData.toggleHidden(SimpleScore.plugin, sender)) {
                     sender.sendMessage(i18n.t("cmd.toggle.hidden"))
                 } else sender.sendMessage(i18n.t("cmd.toggle.shown"))
             }
@@ -43,7 +43,7 @@ class Toggle : SubCmd("toggle") {
                 ))
             ) {
                 run(target, args.sliceArray(1..args.lastIndex))
-                if (SimpleScore.manager.playersData.isForceHidden(target)) {
+                if (SimpleScore.manager.playersData.isHiding(SimpleScore.plugin, target)) {
                     sender.sendMessage(i18n.t("cmd.toggle.other.hidden", target.name))
                 } else sender.sendMessage(i18n.t("cmd.toggle.other.shown", target.name))
             } else {

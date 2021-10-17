@@ -4,15 +4,13 @@ import org.bukkit.plugin.Plugin
 
 data class PlayerData(
     var scoreboard: Scoreboard? = null,
-    var isForceHidden: Boolean = false,
-    var isForceDisabled: Boolean = false,
     val pluginsHiding: MutableSet<Plugin> = HashSet(),
     val pluginsDisabling: MutableSet<Plugin> = HashSet()
 ) {
     val hasScoreboard get() = scoreboard != null
 
-    val isHidden get() = isForceHidden || pluginsHiding.size > 0
-    val isDisabled get() = isForceDisabled || pluginsDisabling.size > 0
+    val isHidden get() = pluginsHiding.size > 0
+    val isDisabled get() = pluginsDisabling.size > 0
 
     fun hide(plugin: Plugin): Boolean {
         return pluginsHiding.add(plugin)
