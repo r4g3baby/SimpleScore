@@ -69,7 +69,9 @@ conditional:
     6: ''
     5: '&7You can see this scoreboard because you'
     4: '&7passed the &8hasPermissionExample &7condition.'
-    3: ''
+    3:
+      conditions: [ 'equalsOperationExample' ]
+      lines: ''
     2:
       conditions: [ 'equalsOperationExample' ]
       lines:
