@@ -5,13 +5,13 @@ import org.bukkit.plugin.Plugin
 data class PlayerData(
     val pluginsHiding: MutableSet<Plugin> = HashSet(),
     val pluginsDisabling: MutableSet<Plugin> = HashSet(),
-    val pluginsScoreboard: LinkedHashMap<Plugin, Scoreboard> = LinkedHashMap()
+    val pluginsScoreboard: MutableMap<Plugin, Scoreboard> = LinkedHashMap()
 ) {
     val scoreboards get() = pluginsScoreboard.map { it.value }
 
-    val isHidden get() = pluginsHiding.size > 0
-    val isDisabled get() = pluginsDisabling.size > 0
-    val hasScoreboards get() = pluginsScoreboard.size > 0
+    val isHidden get() = pluginsHiding.isNotEmpty()
+    val isDisabled get() = pluginsDisabling.isNotEmpty()
+    val hasScoreboards get() = pluginsScoreboard.isNotEmpty()
 
     fun hide(plugin: Plugin): Boolean {
         return pluginsHiding.add(plugin)
