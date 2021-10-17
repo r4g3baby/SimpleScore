@@ -130,9 +130,16 @@ class ScoreboardManager {
                         val playerSection = getConfigurationSection(uniqueId)
                         val isHidden = playerSection.getBoolean("isHidden", false)
                         val isDisabled = playerSection.getBoolean("isDisabled", false)
+                        val scoreboard = playerSection.getString("scoreboard", null)?.let { scoreboard ->
+                            SimpleScore.config.scoreboards[scoreboard.lowercase()]
+                        }
+
                         playersData[UUID.fromString(uniqueId)] = PlayerData(
-                            pluginsHiding = if (isHidden) mutableSetOf(SimpleScore.plugin) else mutableSetOf(),
-                            pluginsDisabling = if (isDisabled) mutableSetOf(SimpleScore.plugin) else mutableSetOf()
+                            if (isHidden) mutableSetOf(SimpleScore.plugin) else mutableSetOf(),
+                            if (isDisabled) mutableSetOf(SimpleScore.plugin) else mutableSetOf(),
+                            if (scoreboard != null) LinkedHashMap(
+                                mapOf(SimpleScore.plugin to scoreboard)
+                            ) else LinkedHashMap()
                         )
                     }
                 }
@@ -152,11 +159,14 @@ class ScoreboardManager {
                     playersData.forEach { (uniqueId, playerData) ->
                         val isHidden = playerData.isHiding(SimpleScore.plugin)
                         val isDisabled = playerData.isDisabling(SimpleScore.plugin)
-                        if (isHidden || isDisabled) {
+                        val scoreboard = playerData.getScoreboard(SimpleScore.plugin)
+
+                        if (isHidden || isDisabled || scoreboard != null) {
                             createSection(
                                 uniqueId.toString(), mapOf(
-                                    "isHidden" to isHidden,
-                                    "isDisabled" to isDisabled
+                                    "isHidden" to if (isHidden) true else null,
+                                    "isDisabled" to if (isDisabled) true else null,
+                                    "scoreboard" to scoreboard?.name
                                 )
                             )
                         }
