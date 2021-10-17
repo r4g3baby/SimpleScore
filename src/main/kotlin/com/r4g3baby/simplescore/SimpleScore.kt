@@ -25,10 +25,10 @@ class SimpleScore : JavaPlugin() {
 
         @Suppress("RedundantCompanionReference")
         if (Api.config.checkForUpdates) {
-            UpdateChecker(this, 23243) { hasUpdate, newVersion ->
+            UpdateChecker(this, pluginId) { hasUpdate, newVersion ->
                 if (hasUpdate) {
                     logger.warning("New version (v$newVersion) available, download at:")
-                    logger.warning("https://www.spigotmc.org/resources/simplescore.23243/")
+                    logger.warning("https://www.spigotmc.org/resources/$pluginId/")
                 }
             }
         }
@@ -39,6 +39,8 @@ class SimpleScore : JavaPlugin() {
     }
 
     companion object Api {
+        const val pluginId = 23243
+
         lateinit var plugin: SimpleScore
             private set
         var usePlaceholderAPI = false

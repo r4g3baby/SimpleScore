@@ -10,9 +10,9 @@ class Version : SubCmd("version") {
     override fun run(sender: CommandSender, args: Array<out String>) {
         val version = SimpleScore.plugin.description.version
         sender.sendMessage(i18n.t("cmd.version.checking", version))
-        UpdateChecker(SimpleScore.plugin, 23243) { hasUpdate, newVersion ->
+        UpdateChecker(SimpleScore.plugin, SimpleScore.pluginId) { hasUpdate, newVersion ->
             if (hasUpdate) {
-                val downloadUrl = "https://www.spigotmc.org/resources/simplescore.23243/"
+                val downloadUrl = "https://www.spigotmc.org/resources/${SimpleScore.pluginId}/"
                 sender.sendMessage(i18n.t("cmd.version.foundUpdate", newVersion, downloadUrl))
             } else sender.sendMessage(i18n.t("cmd.version.runningLatest"))
         }
