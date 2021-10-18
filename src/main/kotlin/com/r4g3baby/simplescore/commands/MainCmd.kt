@@ -24,7 +24,10 @@ class MainCmd : CommandExecutor, TabExecutor {
                     return true
                 }
             }
-            sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
+
+            if (args[0].equals("help", true)) {
+                sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
+            } else sender.sendMessage(i18n.t("cmd.notFound"))
         } else sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
 
         return true
@@ -35,7 +38,7 @@ class MainCmd : CommandExecutor, TabExecutor {
             args.size == 1 -> subCmds.filter {
                 it.name.startsWith(args[0], true) && sender.hasPermission(it.permission)
             }.map { it.name }
-            args.size > 1 -> subCmds.firstOrNull {
+            args.size > 1 -> subCmds.find {
                 it.name.equals(args[0], true) && sender.hasPermission(it.permission)
             }?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: emptyList()
             else -> emptyList()
