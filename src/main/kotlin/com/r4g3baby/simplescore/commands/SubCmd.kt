@@ -1,6 +1,8 @@
 package com.r4g3baby.simplescore.commands
 
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 abstract class SubCmd(val name: String) {
     val permission = "simplescore.$name"
@@ -9,5 +11,13 @@ abstract class SubCmd(val name: String) {
 
     open fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {
         return emptyList()
+    }
+
+    protected fun targetsFor(sender: CommandSender): List<String> {
+        var players = Bukkit.getOnlinePlayers()
+        if (sender is Player) {
+            players = players.filter { sender != it && sender.canSee(it) }
+        }
+        return players.map { it.name }
     }
 }

@@ -54,14 +54,7 @@ class Toggle : SubCmd("toggle") {
         return when (args.size) {
             1 -> mutableListOf("on", "off").apply {
                 if (sender !is Player) clear()
-
-                if (sender.hasPermission(otherPermission)) {
-                    var players = Bukkit.getOnlinePlayers()
-                    if (sender is Player) {
-                        players = players.filter { sender != it && sender.canSee(it) }
-                    }
-                    addAll(players.map { it.name })
-                }
+                if (sender.hasPermission(otherPermission)) addAll(targetsFor(sender))
             }.filter { it.startsWith(args[0], true) }
             2 -> mutableListOf("on", "off").apply {
                 if (args[0].equals("on", true) || args[0].equals("off", true)) clear()
