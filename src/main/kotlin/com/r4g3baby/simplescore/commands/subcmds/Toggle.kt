@@ -35,23 +35,19 @@ class Toggle : SubCmd("toggle") {
     }
 
     private fun targetOther(sender: CommandSender, args: Array<out String>) {
-        val target = Bukkit.getOnlinePlayers().find { it.name.equals(args[0], true) }
-        if (target != null) {
-            if (
-                args.size == 1 || (args.size > 1 && (
-                    args[1].equals("on", true) || args[1].equals("off", true)
-                ))
-            ) {
+        if (args.size == 1 || (args.size > 1 && (args[1].equals("on", true) || args[1].equals("off", true)))) {
+            val target = Bukkit.getOnlinePlayers().find { it.name.equals(args[0], true) }
+            if (target != null) {
                 run(target, args.sliceArray(1..args.lastIndex))
                 if (SimpleScore.manager.playersData.isHiding(SimpleScore.plugin, target)) {
                     sender.sendMessage(i18n.t("cmd.toggle.other.hidden", target.name))
                 } else sender.sendMessage(i18n.t("cmd.toggle.other.shown", target.name))
-            } else {
-                if (sender is Player) {
-                    sender.sendMessage(i18n.t("cmd.toggle.usage.admin"))
-                } else sender.sendMessage(i18n.t("cmd.toggle.usage.console"))
-            }
-        } else sender.sendMessage(i18n.t("cmd.notOnline"))
+            } else sender.sendMessage(i18n.t("cmd.notOnline"))
+        } else {
+            if (sender is Player) {
+                sender.sendMessage(i18n.t("cmd.toggle.usage.admin"))
+            } else sender.sendMessage(i18n.t("cmd.toggle.usage.console"))
+        }
     }
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {
