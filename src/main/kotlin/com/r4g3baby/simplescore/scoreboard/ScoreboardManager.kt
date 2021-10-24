@@ -203,7 +203,13 @@ class ScoreboardManager {
         }
 
         fun setScoreboard(plugin: Plugin, player: Player, scoreboard: Scoreboard?) {
-            get(player).setScoreboard(plugin, scoreboard)
+            get(player).also { playerData ->
+                playerData.setScoreboard(plugin, scoreboard)
+                SimpleScore.manager.clearScoreboard(player)
+                if (playerData.scoreboards.isEmpty()) {
+                    SimpleScore.manager.removeScoreboard(player)
+                } else SimpleScore.manager.createScoreboard(player)
+            }
         }
 
         fun isHidden(player: Player): Boolean {
