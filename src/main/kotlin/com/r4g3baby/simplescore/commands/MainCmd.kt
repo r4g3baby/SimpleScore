@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.commands
 
 import com.r4g3baby.simplescore.SimpleScore.Api.i18n
+import com.r4g3baby.simplescore.commands.subcmds.Force
 import com.r4g3baby.simplescore.commands.subcmds.Reload
 import com.r4g3baby.simplescore.commands.subcmds.Toggle
 import com.r4g3baby.simplescore.commands.subcmds.Version
@@ -11,7 +12,7 @@ import org.bukkit.command.TabExecutor
 
 class MainCmd : CommandExecutor, TabExecutor {
     private val subCmds = listOf(
-        Reload(), Toggle(), Version()
+        Force(), Reload(), Toggle(), Version()
     )
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
