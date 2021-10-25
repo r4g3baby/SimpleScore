@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 abstract class SubCmd(val name: String) {
-    val permission = "simplescore.$name"
+    val permission = "simplescore.cmd.$name"
 
     abstract fun run(sender: CommandSender, args: Array<out String>)
 
