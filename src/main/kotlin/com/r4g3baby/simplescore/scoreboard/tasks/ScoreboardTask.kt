@@ -72,13 +72,18 @@ class ScoreboardTask : BukkitRunnable() {
         }
 
         Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-            playerBoards.forEach { (player, board) ->
-                if (player.isOnline) {
+            playerBoards.filter { it.key.isOnline }.forEach { (player, board) ->
+                val playerData = SimpleScore.manager.playersData.get(player)
+                // Check if our player didn't hide/disable the scoreboard
+                if (!playerData.isHidden && !playerData.isDisabled) {
                     val updatedBoard = if (!SimpleScore.config.asyncPlaceholders) {
                         val tmp = applyPlaceholders(board.first, board.second, player)
                         applyVariables(tmp.first, tmp.second, player)
                     } else applyVariables(board.first, board.second, player)
-                    SimpleScore.manager.updateScoreboard(updatedBoard.first, updatedBoard.second, player)
+
+                    with(SimpleScore.manager.scoreboardHandler) {
+                        updateScoreboard(updatedBoard.first, updatedBoard.second, player)
+                    }
                 }
             }
         }
@@ -118,13 +123,13 @@ class ScoreboardTask : BukkitRunnable() {
         val toDisplayScores = HashMap<Int, String>()
 
         toDisplayTitle = VariablesReplacer.replace(title, player)
-        if (SimpleScore.manager.hasLineLengthLimit() && toDisplayTitle.length > 32) {
+        if (SimpleScore.manager.scoreboardHandler.hasLineLengthLimit() && toDisplayTitle.length > 32) {
             toDisplayTitle = toDisplayTitle.substring(0..31)
         }
 
         scores.forEach { (score, ogValue) ->
             var value = preventDuplicates(VariablesReplacer.replace(ogValue, player), toDisplayScores.values)
-            if (SimpleScore.manager.hasLineLengthLimit() && value.length > 40) {
+            if (SimpleScore.manager.scoreboardHandler.hasLineLengthLimit() && value.length > 40) {
                 value = value.substring(0..39)
             }
             toDisplayScores[score] = value
