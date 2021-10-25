@@ -23,7 +23,11 @@ class Force : SubCmd("force") {
                 } else if (sender.hasPermission(otherPermission)) {
                     targetOther(sender, args)
                 } else sender.sendMessage(i18n.t("cmd.force.notFound", args[0]))
-            } else sender.sendMessage(i18n.t("cmd.force.usage.player"))
+            } else {
+                if (sender.hasPermission(otherPermission)) {
+                    sender.sendMessage(i18n.t("cmd.force.usage.admin"))
+                } else sender.sendMessage(i18n.t("cmd.force.usage.player"))
+            }
         } else {
             if (args.isNotEmpty()) {
                 targetOther(sender, args)
