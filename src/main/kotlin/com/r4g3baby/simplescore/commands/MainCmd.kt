@@ -26,10 +26,10 @@ class MainCmd : CommandExecutor, TabExecutor {
                 }
             }
 
-            if (args[0].equals("help", true)) {
-                sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
-            } else sender.sendMessage(i18n.t("cmd.notFound"))
-        } else sender.sendMessage(i18n.t("cmd.help.show", prefixed = false))
+            if (!args[0].equals("help", true)) {
+                sender.sendMessage(i18n.t("cmd.notFound"))
+            } else showHelp(sender)
+        } else showHelp(sender)
 
         return true
     }
@@ -44,5 +44,16 @@ class MainCmd : CommandExecutor, TabExecutor {
             }?.onTabComplete(sender, args.sliceArray(1..args.lastIndex)) ?: emptyList()
             else -> emptyList()
         }
+    }
+
+    private fun showHelp(sender: CommandSender) {
+        val commands = subCmds.filter { sender.hasPermission(it.permission) }
+        if (commands.isNotEmpty()) {
+            val builder = StringBuilder(i18n.t("cmd.help.header"))
+            commands.forEach { cmd ->
+                builder.appendLine().append(i18n.t("cmd.help.cmd", cmd.name, cmd.description, prefixed = false))
+            }
+            sender.sendMessage(builder.toString())
+        } else sender.sendMessage(i18n.t("cmd.help.noCommands"))
     }
 }
