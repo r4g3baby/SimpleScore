@@ -50,10 +50,12 @@ class ScoreboardTask : BukkitRunnable() {
                             val regionBoard = SimpleScore.manager.scoreboards.get(boardName)
                             if (regionBoard != null && regionBoard.canSee(player)) {
                                 playerBoards[player] = getPlayerBoard(regionBoard, player)
-                                iterator.remove()
                                 break
                             }
                         }
+
+                        // Region boards override world boards
+                        iterator.remove()
                     }
                 }
             }
