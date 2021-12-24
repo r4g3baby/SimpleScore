@@ -52,6 +52,13 @@ class ScoreboardManager {
         if (!SimpleScore.config.savePlayerData) {
             playersData.clearPlayerData()
         }
+
+        playersData.forEach { (_, playerData) ->
+            playerData.getScoreboard(SimpleScore.plugin)?.let { scoreboard ->
+                playerData.setScoreboard(SimpleScore.plugin, scoreboards.get(scoreboard.name))
+            }
+        }
+
         Bukkit.getOnlinePlayers().forEach { scoreboardHandler.clearScoreboard(it) }
     }
 
