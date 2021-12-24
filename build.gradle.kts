@@ -46,15 +46,17 @@ tasks {
 
     processResources {
         filteringCharset = "UTF-8"
-        filter<org.apache.tools.ant.filters.ReplaceTokens>(
-            "tokens" to mapOf(
-                Pair("name", project.name),
-                Pair("description", "A simple animated scoreboard plugin for your server."),
-                Pair("url", "https://r4g3baby.com"),
-                Pair("package", "${project.group}.${project.name.toLowerCase()}"),
-                Pair("version", project.version)
+        filesMatching("**plugin.yml") {
+            filter<org.apache.tools.ant.filters.ReplaceTokens>(
+                "tokens" to mapOf(
+                    "name" to project.name,
+                    "version" to project.version,
+                    "description" to "A simple animated scoreboard plugin for your server.",
+                    "package" to "${project.group}.${project.name.toLowerCase()}",
+                    "website" to "https://r4g3baby.com"
+                )
             )
-        )
+        }
     }
 
     shadowJar {

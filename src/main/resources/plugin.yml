@@ -4,7 +4,7 @@ main: @package@.@name@
 softdepend: [ProtocolLib, WorldGuard, PlaceholderAPI, MVdWPlaceholderAPI, mcMMO]
 authors: [R4G3_BABY]
 description: "@description@"
-website: @url@
+website: @website@
 api-version: "1.13"
 
 commands:
