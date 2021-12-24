@@ -1,39 +1,39 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
 data class ScoreLines(
-    private val lines: MutableList<ScoreLine> = ArrayList()
-) : Iterable<ScoreLine> {
+    private val frames: MutableList<ScoreFrame> = ArrayList()
+) : Iterable<ScoreFrame> {
     private var currentIndex = 0
     private var currentTick = 0
 
     val currentText: String?
         get() {
-            if (lines.isEmpty()) return null
-            return lines[currentIndex].text
+            if (frames.isEmpty()) return null
+            return frames[currentIndex].text
         }
 
     val currentTime: Int?
         get() {
-            if (lines.isEmpty()) return null
-            return lines[currentIndex].time
+            if (frames.isEmpty()) return null
+            return frames[currentIndex].time
         }
 
-    fun add(text: String, time: Int) = add(ScoreLine(text, time))
-    fun add(line: ScoreLine) {
-        lines.add(line)
+    fun addFrame(text: String, time: Int) = addFrame(ScoreFrame(text, time))
+    fun addFrame(line: ScoreFrame) {
+        frames.add(line)
     }
 
     fun tick() {
-        if (lines.isEmpty()) return
-        if (currentTick++ >= lines[currentIndex].time) {
-            if (currentIndex++ >= (lines.size - 1)) {
+        if (frames.isEmpty()) return
+        if (currentTick++ >= frames[currentIndex].time) {
+            if (currentIndex++ >= (frames.size - 1)) {
                 currentIndex = 0
             }
             currentTick = 1
         }
     }
 
-    override fun iterator(): Iterator<ScoreLine> {
-        return lines.iterator()
+    override fun iterator(): Iterator<ScoreFrame> {
+        return frames.iterator()
     }
 }

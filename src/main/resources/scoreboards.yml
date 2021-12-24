@@ -5,10 +5,10 @@
 # then specifying a default "updateTime" and a list of "titles" and "scores".
 #
 # "updateTime": the default update time in ticks (optional and defaults to 20 ticks/1 second)
-# "titles": text to display or a list of lines*
-# "scores": the score number/value followed by the text to display or a list of lines* or a
-#  map with the "conditions" (list of conditions) and "lines" (list of lines*) attributes
-# *lines: is a list of strings or list of maps with the "text" (text to display) and
+# "titles": text to display or a list of frames*
+# "scores": the score number/value followed by the text to display or a list of frames* or a
+#  map with the "conditions" (list of conditions) and "frames" (list of frames*) attributes
+# *frames: is a list of strings or list of maps with the "text" (text to display) and
 #  "time" (time to stay visible, optional and defaults to "updateTime") attributes
 #
 # Check out the examples bellow for more information.
@@ -37,7 +37,7 @@ simple:
 
 # Scoreboard with a basic timing example
 customTiming:
-  updateTime: 100 # any title or score without a specified time will default to this
+  updateTime: 100 # Any title or frame without a specified time will default to this
   titles:
     - text: '&c200 ticks/10 seconds title'
       time: 200
@@ -71,10 +71,10 @@ conditional:
     4: '&7passed the &8hasPermissionExample &7condition.'
     3:
       conditions: [ 'equalsOperationExample' ]
-      lines: ''
+      frames: ''
     2:
       conditions: [ 'equalsOperationExample' ]
-      lines:
+      frames:
         - '&7You can see this line because you passed..'
         - '&7the &8equalsOperationExample &7condition.'
     1: ''
