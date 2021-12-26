@@ -14,7 +14,14 @@ class PlayersListener : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerQuit(e: PlayerQuitEvent) {
-        SimpleScore.manager.scoreboardHandler.removeScoreboard(e.player)
+        try {
+            SimpleScore.manager.scoreboardHandler.removeScoreboard(e.player)
+        } catch (ex: IllegalArgumentException) {
+            // For some strange reason the channel will already be closed when a player is kicked
+            if (ex.message != "cannot send packets to a closed channel") {
+                throw ex
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
