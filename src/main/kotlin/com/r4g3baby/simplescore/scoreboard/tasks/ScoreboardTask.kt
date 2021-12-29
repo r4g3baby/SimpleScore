@@ -17,7 +17,7 @@ class ScoreboardTask : BukkitRunnable() {
         SimpleScore.manager.scoreboards.forEach { (_, scoreboard) ->
             scoreboard.titles.tick()
             scoreboard.scores.forEach { score ->
-                score.lines.tick()
+                score.frames.tick()
             }
         }
 
@@ -92,11 +92,11 @@ class ScoreboardTask : BukkitRunnable() {
     }
 
     private fun getPlayerBoard(scoreboard: Scoreboard, player: Player): Pair<String, Map<Int, String>> {
-        val title = scoreboard.titles.currentText ?: ""
+        val title = scoreboard.titles.current?.text ?: ""
         val scores = HashMap<Int, String>()
         scoreboard.scores.forEach { score ->
             if (score.canSee(player)) {
-                scores[score.score] = score.lines.currentText ?: ""
+                scores[score.score] = score.frames.current?.text ?: ""
             }
         }
         return if (SimpleScore.config.asyncPlaceholders) {

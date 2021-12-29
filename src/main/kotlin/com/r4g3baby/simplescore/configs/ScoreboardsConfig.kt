@@ -16,7 +16,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                 val scoreboardSec = config.getConfigurationSection(scoreboard)
                 val updateTime = scoreboardSec.getInt("updateTime", 20)
 
-                val titles = ScoreLines()
+                val titles = ScoreFrames()
                 when {
                     scoreboardSec.isList("titles") -> {
                         scoreboardSec.getList("titles").forEach { frame ->
@@ -44,18 +44,18 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                         when {
                             scoresSec.isConfigurationSection(score.toString()) -> {
                                 val scoreSec = scoresSec.getConfigurationSection(score.toString())
-                                val scoreLines = ScoreLines()
+                                val scoreFrames = ScoreFrames()
                                 when {
                                     scoreSec.isList("frames") -> {
                                         scoreSec.getList("frames").forEach { line ->
-                                            val parsed = parseFrame(line, updateTime)?.also { scoreLines.addFrame(it) }
+                                            val parsed = parseFrame(line, updateTime)?.also { scoreFrames.addFrame(it) }
                                             if (parsed == null) plugin.logger.warning(
                                                 "Invalid frame value for scoreboard: $scoreboard, score: $score, value: $line."
                                             )
                                         }
                                     }
                                     scoreSec.isString("frames") -> {
-                                        scoreLines.addFrame(scoreSec.getString("frames"), updateTime)
+                                        scoreFrames.addFrame(scoreSec.getString("frames"), updateTime)
                                     }
                                     else -> {
                                         val framesValue = scoreSec.get("frames")
@@ -64,20 +64,20 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                         )
                                     }
                                 }
-                                BoardScore(score, scoreLines, getConditions(scoreSec))
+                                BoardScore(score, scoreFrames, getConditions(scoreSec))
                             }
                             scoresSec.isList(score.toString()) -> {
-                                val scoreLines = ScoreLines()
+                                val scoreFrames = ScoreFrames()
                                 scoresSec.getList(score.toString()).forEach { frame ->
-                                    val parsed = parseFrame(frame, updateTime)?.also { scoreLines.addFrame(it) }
+                                    val parsed = parseFrame(frame, updateTime)?.also { scoreFrames.addFrame(it) }
                                     if (parsed == null) plugin.logger.warning(
                                         "Invalid frame value for scoreboard: $scoreboard, score: $score, value: $frame."
                                     )
                                 }
-                                BoardScore(score, scoreLines)
+                                BoardScore(score, scoreFrames)
                             }
                             scoresSec.isString(score.toString()) -> {
-                                BoardScore(score, ScoreLines().apply {
+                                BoardScore(score, ScoreFrames().apply {
                                     addFrame(scoresSec.getString(score.toString()), updateTime)
                                 })
                             }

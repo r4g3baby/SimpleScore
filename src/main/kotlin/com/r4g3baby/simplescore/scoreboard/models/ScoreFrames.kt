@@ -1,21 +1,15 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
-data class ScoreLines(
+data class ScoreFrames(
     private val frames: MutableList<ScoreFrame> = ArrayList()
 ) : Iterable<ScoreFrame> {
     private var currentIndex = 0
     private var currentTick = 0
 
-    val currentText: String?
+    val current: ScoreFrame?
         get() {
             if (frames.isEmpty()) return null
-            return frames[currentIndex].text
-        }
-
-    val currentTime: Int?
-        get() {
-            if (frames.isEmpty()) return null
-            return frames[currentIndex].time
+            return frames[currentIndex]
         }
 
     fun addFrame(text: String, time: Int) = addFrame(ScoreFrame(text, time))

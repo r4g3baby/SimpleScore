@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 
 data class Scoreboard(
     val name: String,
-    val titles: ScoreLines,
+    val titles: ScoreFrames,
     val scores: List<BoardScore>,
     val conditions: List<Condition> = emptyList()
 ) {
