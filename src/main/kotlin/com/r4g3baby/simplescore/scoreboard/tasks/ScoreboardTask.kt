@@ -5,12 +5,12 @@ import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderReplacer
 import com.r4g3baby.simplescore.scoreboard.placeholders.VariablesReplacer
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
+import com.r4g3baby.simplescore.utils.translateHexColorCodes
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.regex.Pattern
 
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
@@ -144,23 +144,5 @@ class ScoreboardTask : BukkitRunnable() {
         return if (values.contains(text)) {
             preventDuplicates(text + ChatColor.RESET, values)
         } else text
-    }
-
-    private val hexPattern: Pattern = Pattern.compile("&?#([A-Fa-f0-9]{6})|\\{#([A-Fa-f0-9]{6})}")
-    private fun translateHexColorCodes(text: String): String {
-        val matcher = hexPattern.matcher(text)
-        val buffer = StringBuffer(text.length + 4 * 8)
-        while (matcher.find()) {
-            var group = matcher.group(1)
-            if (group == null) group = matcher.group(2)
-
-            matcher.appendReplacement(
-                buffer, ChatColor.COLOR_CHAR.toString() + "x"
-                    + ChatColor.COLOR_CHAR + group[0] + ChatColor.COLOR_CHAR + group[1]
-                    + ChatColor.COLOR_CHAR + group[2] + ChatColor.COLOR_CHAR + group[3]
-                    + ChatColor.COLOR_CHAR + group[4] + ChatColor.COLOR_CHAR + group[5]
-            )
-        }
-        return matcher.appendTail(buffer).toString()
     }
 }

@@ -1,5 +1,6 @@
 package com.r4g3baby.simplescore.configs.lang
 
+import com.r4g3baby.simplescore.utils.translateHexColorCodes
 import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.plugin.Plugin
 import java.io.File
@@ -33,17 +34,19 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
 
     fun t(key: String, vararg args: Any, prefixed: Boolean = true) = trans(key, *args, prefixed = prefixed)
     fun trans(key: String, vararg args: Any, prefixed: Boolean = true): String {
-        val translation = translateAlternateColorCodes(
-            '&', (if (prefixed) "${t("prefix", prefixed = false)} " else "") + try {
-                try {
-                    customBundle.getString(key)
+        val translation = translateHexColorCodes(
+            translateAlternateColorCodes(
+                '&', (if (prefixed) "${t("prefix", prefixed = false)} " else "") + try {
+                    try {
+                        customBundle.getString(key)
+                    } catch (ex: MissingResourceException) {
+                        defaultBundle.getString(key)
+                    }
                 } catch (ex: MissingResourceException) {
-                    defaultBundle.getString(key)
+                    plugin.logger.log(Level.WARNING, "Missing translation key \"$key\".", ex)
+                    key
                 }
-            } catch (ex: MissingResourceException) {
-                plugin.logger.log(Level.WARNING, "Missing translation key \"$key\".", ex)
-                key
-            }
+            )
         )
 
         if (args.isEmpty()) return translation
@@ -76,7 +79,7 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
             if (file.exists()) {
                 try {
                     return file.toURI().toURL()
-                } catch (ex: MalformedURLException) {
+                } catch (_: MalformedURLException) {
                 }
             }
             return null
@@ -87,7 +90,7 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
             if (file.exists()) {
                 try {
                     return FileInputStream(file)
-                } catch (ex: FileNotFoundException) {
+                } catch (_: FileNotFoundException) {
                 }
             }
             return null
