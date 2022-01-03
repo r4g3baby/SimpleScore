@@ -4,12 +4,8 @@ import com.r4g3baby.simplescore.SimpleScore
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.entity.Player
 
-class ScoreboardExpansion(private val plugin: SimpleScore) : PlaceholderExpansion() {
+class PAPIExpansion(private val plugin: SimpleScore) : PlaceholderExpansion() {
     override fun getIdentifier(): String {
-        return plugin.description.name.lowercase()
-    }
-
-    override fun getPlugin(): String {
         return plugin.description.name
     }
 
@@ -21,11 +17,15 @@ class ScoreboardExpansion(private val plugin: SimpleScore) : PlaceholderExpansio
         return plugin.description.version
     }
 
-    override fun onPlaceholderRequest(player: Player?, identifier: String?): String? {
-        if (player != null && identifier != null) {
-            if (identifier == "hidden") {
+    override fun persist(): Boolean {
+        return true
+    }
+
+    override fun onPlaceholderRequest(player: Player?, params: String): String? {
+        if (player != null) {
+            if (params == "hidden") {
                 return SimpleScore.manager.playersData.isHidden(player).toString()
-            } else if (identifier == "disabled") {
+            } else if (params == "disabled") {
                 return SimpleScore.manager.playersData.isDisabled(player).toString()
             }
         }
