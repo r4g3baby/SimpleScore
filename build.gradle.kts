@@ -29,7 +29,7 @@ dependencies {
     }
 
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
-    implementation("net.swiftzer.semver:semver:1.1.2")
+    implementation("net.swiftzer.semver:semver:1.2.0")
     implementation("org.bstats:bstats-bukkit:2.2.1")
 }
 
