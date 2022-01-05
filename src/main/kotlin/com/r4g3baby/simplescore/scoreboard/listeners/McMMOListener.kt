@@ -10,7 +10,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 
 class McMMOListener : Listener {
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onMcMMOScoreboardObjective(e: McMMOScoreboardObjectiveEvent) {
         SimpleScore.manager.playersData.setDisabled(mcMMO.p, e.targetPlayer, true)
     }
