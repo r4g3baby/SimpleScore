@@ -130,13 +130,11 @@ class ProtocolScoreboard : ScoreboardHandler() {
                         packet.chatComponents.write(2, fromChatMessage(splitText.second)[0]) // Suffix
                     }
 
-                    playerBoard.scores.containsKey(score).also { update ->
-                        // there's no need to create the team again if this line already exists
-                        if (update) {
-                            packet.integers.write(0, 2) // Mode - update team info
-                            protocolManager.sendServerPacket(player, packet)
-                            return@forEach
-                        }
+                    // there's no need to create the team again if this line already exists
+                    if (playerBoard.scores.containsKey(score)) {
+                        packet.integers.write(0, 2) // Mode - update team info
+                        protocolManager.sendServerPacket(player, packet)
+                        return@forEach
                     }
 
                     packet.integers.write(0, 0) // Mode - create team
