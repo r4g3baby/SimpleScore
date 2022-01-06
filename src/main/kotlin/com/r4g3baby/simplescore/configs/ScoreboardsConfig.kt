@@ -38,57 +38,93 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                 }
 
                 val scores = ArrayList<BoardScore>()
-                if (scoreboardSec.isConfigurationSection("scores")) {
-                    val scoresSec = scoreboardSec.getConfigurationSection("scores")
-                    scoresSec.getKeys(false).mapNotNull { it.toIntOrNull() }.forEach { score ->
-                        when {
-                            scoresSec.isConfigurationSection(score.toString()) -> {
-                                val scoreSec = scoresSec.getConfigurationSection(score.toString())
-                                val scoreFrames = ArrayList<ScoreFrame>()
-                                when {
-                                    scoreSec.isList("frames") -> {
-                                        scoreSec.getList("frames").forEach { line ->
-                                            val parsed = parseFrame(line, updateTime)?.also { scoreFrames.add(it) }
-                                            if (parsed == null) plugin.logger.warning(
-                                                "Invalid frame value for scoreboard: $scoreboard, score: $score, value: $line."
+                when {
+                    scoreboardSec.isConfigurationSection("scores") -> {
+                        val scoresSec = scoreboardSec.getConfigurationSection("scores")
+                        scoresSec.getKeys(false).mapNotNull { it.toIntOrNull() }.forEach { score ->
+                            val scoreFrames = ArrayList<ScoreFrame>()
+                            var conditions = emptyList<Condition>()
+
+                            when {
+                                scoresSec.isConfigurationSection(score.toString()) -> {
+                                    val scoreSec = scoresSec.getConfigurationSection(score.toString())
+                                    when {
+                                        scoreSec.isList("frames") -> {
+                                            scoreSec.getList("frames").forEach { line ->
+                                                val parsed = parseFrame(line, updateTime)?.also { scoreFrames.add(it) }
+                                                if (parsed == null) plugin.logger.warning(
+                                                    "Invalid frame value for scoreboard: $scoreboard, score: $score, value: $line."
+                                                )
+                                            }
+                                        }
+                                        scoreSec.isString("frames") -> {
+                                            scoreFrames.add(ScoreFrame(scoreSec.getString("frames"), updateTime))
+                                        }
+                                        else -> {
+                                            val framesValue = scoreSec.get("frames")
+                                            plugin.logger.warning(
+                                                "Invalid frames value for scoreboard: $scoreboard, score: $score, value: $framesValue."
                                             )
                                         }
                                     }
-                                    scoreSec.isString("frames") -> {
-                                        scoreFrames.add(ScoreFrame(scoreSec.getString("frames"), updateTime))
-                                    }
-                                    else -> {
-                                        val framesValue = scoreSec.get("frames")
-                                        plugin.logger.warning(
-                                            "Invalid frames value for scoreboard: $scoreboard, score: $score, value: $framesValue."
+
+                                    conditions = getConditions(scoreSec)
+                                }
+                                scoresSec.isList(score.toString()) -> {
+                                    scoresSec.getList(score.toString()).forEach { frame ->
+                                        val parsed = parseFrame(frame, updateTime)?.also { scoreFrames.add(it) }
+                                        if (parsed == null) plugin.logger.warning(
+                                            "Invalid frame value for scoreboard: $scoreboard, score: $score, value: $frame."
                                         )
                                     }
                                 }
-                                BoardScore(score, ScoreFrames(scoreFrames), getConditions(scoreSec))
+                                scoresSec.isString(score.toString()) -> {
+                                    scoreFrames.add(ScoreFrame(scoresSec.getString(score.toString()), updateTime))
+                                }
+                                else -> {
+                                    val scoreValue = scoresSec.get(score.toString())
+                                    plugin.logger.warning(
+                                        "Invalid score value for scoreboard: $scoreboard, score: $score, value: $scoreValue."
+                                    )
+                                }
                             }
-                            scoresSec.isList(score.toString()) -> {
-                                val scoreFrames = ArrayList<ScoreFrame>()
-                                scoresSec.getList(score.toString()).forEach { frame ->
+
+                            scores.add(BoardScore(score, ScoreFrames(scoreFrames), conditions))
+                        }
+                    }
+                    scoreboardSec.isList("scores") -> {
+                        scoreboardSec.getMapList("scores").forEach { scoreSec ->
+                            val score = scoreSec["score"] as Int
+                            val scoreFrames = ArrayList<ScoreFrame>()
+                            val conditions = if ("conditions" in scoreSec) {
+                                (scoreSec["conditions"] as List<*>).filterIsInstance<String>().mapNotNull {
+                                    conditions[it.lowercase()]
+                                }
+                            } else emptyList()
+
+                            when (val frames = scoreSec["frames"]) {
+                                is List<*> -> for (frame in frames) {
                                     val parsed = parseFrame(frame, updateTime)?.also { scoreFrames.add(it) }
                                     if (parsed == null) plugin.logger.warning(
                                         "Invalid frame value for scoreboard: $scoreboard, score: $score, value: $frame."
                                     )
                                 }
-                                BoardScore(score, ScoreFrames(scoreFrames))
+                                is String -> scoreFrames.add(ScoreFrame(frames, updateTime))
+                                else -> {
+                                    plugin.logger.warning(
+                                        "Invalid frames value for scoreboard: $scoreboard, value: $frames."
+                                    )
+                                }
                             }
-                            scoresSec.isString(score.toString()) -> {
-                                BoardScore(score, ScoreFrames(
-                                    listOf(ScoreFrame(scoresSec.getString(score.toString()), updateTime))
-                                ))
-                            }
-                            else -> {
-                                val scoreValue = scoresSec.get(score.toString())
-                                plugin.logger.warning(
-                                    "Invalid score value for scoreboard: $scoreboard, score: $score, value: $scoreValue."
-                                )
-                                null
-                            }
-                        }?.also { scores.add(it) }
+
+                            scores.add(BoardScore(score, ScoreFrames(scoreFrames), conditions))
+                        }
+                    }
+                    else -> {
+                        val scoresValue = scoreboardSec.get("scores")
+                        plugin.logger.warning(
+                            "Invalid scores value for scoreboard: $scoreboard, value: $scoresValue."
+                        )
                     }
                 }
 
@@ -108,6 +144,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
     }
 
     private fun getConditions(section: ConfigurationSection): List<Condition> {
+        if (!section.isList("conditions")) return emptyList()
         return section.getStringList("conditions").mapNotNull { conditions[it.lowercase()] }
     }
 }
