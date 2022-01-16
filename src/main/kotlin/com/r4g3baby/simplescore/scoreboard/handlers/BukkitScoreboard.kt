@@ -21,13 +21,17 @@ class BukkitScoreboard : ScoreboardHandler() {
     }
 
     override fun removeScoreboard(player: Player) {
+        player.scoreboard?.teams?.forEach { it.unregister() }
         player.scoreboard?.getObjective(getPlayerIdentifier(player))?.unregister()
     }
 
     override fun clearScoreboard(player: Player) {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
-            objective.scoreboard.entries.forEach { objective.scoreboard.resetScores(it) }
+            objective.scoreboard.entries.forEach { scoreName ->
+                objective.scoreboard.getTeam(scoreName).unregister()
+                objective.scoreboard.resetScores(scoreName)
+            }
         }
     }
 
@@ -39,15 +43,31 @@ class BukkitScoreboard : ScoreboardHandler() {
             }
 
             scores.forEach { (score, value) ->
-                val objScore = objective.getScore(value)
+                val scoreName = scoreToName(score)
+
+                var team = objective.scoreboard.getTeam(scoreName)
+                if (team == null) {
+                    team = objective.scoreboard.registerNewTeam(scoreName)
+                    team.addEntry(scoreName)
+                }
+
+                val splitText = splitText(value, lineLengthLimit / 2)
+                team.prefix = splitText.first
+                team.suffix = splitText.second
+
+                val objScore = objective.getScore(scoreName)
                 if (objScore.score != score) {
                     objScore.score = score
                 }
             }
 
-            objective.scoreboard.entries
-                .filter { !scores.values.contains(it) }
-                .forEach { objective.scoreboard.resetScores(it) }
+            objective.scoreboard.entries.forEach { scoreName ->
+                val score = objective.getScore(scoreName).score
+                if (!scores.containsKey(score)) {
+                    objective.scoreboard.getTeam(scoreName).unregister()
+                    objective.scoreboard.resetScores(scoreName)
+                }
+            }
         }
     }
 

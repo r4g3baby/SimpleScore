@@ -9,7 +9,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers
 import com.comphenix.protocol.wrappers.WrappedChatComponent.fromChatMessage
 import com.comphenix.protocol.wrappers.WrappedChatComponent.fromText
 import com.r4g3baby.simplescore.scoreboard.models.PlayerBoard
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -116,7 +115,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Team Name
 
-                    val splitText = splitText(value)
+                    val splitText = splitText(value, lineLengthLimit / 2)
                     if (afterCavesAndCliffsUpdate) {
                         val optStruct: Optional<InternalStructure> = packet.optionalStructures.read(0)
                         if (optStruct.isPresent) {
@@ -188,27 +187,5 @@ class ProtocolScoreboard : ScoreboardHandler() {
 
     override fun hasScoreboard(player: Player): Boolean {
         return player.uniqueId in playerBoards
-    }
-
-    private fun scoreToName(score: Int): String {
-        return score.toString().toCharArray()
-            .joinToString(ChatColor.COLOR_CHAR.toString(), ChatColor.COLOR_CHAR.toString())
-    }
-
-    private fun splitText(text: String): Pair<String, String> {
-        if (text.length > 16) {
-            // Don't split color codes
-            val index = if (text.elementAt(15) == ChatColor.COLOR_CHAR) 15 else 16
-
-            val prefix = text.substring(0, index)
-            val suffix = text.substring(index)
-
-            // Get last colors from prefix
-            val lastColors = ChatColor.getLastColors(prefix)
-
-            return prefix to (lastColors + suffix)
-        }
-        // Return empty suffix
-        return text to ""
     }
 }
