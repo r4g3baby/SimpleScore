@@ -22,15 +22,20 @@ abstract class ScoreboardHandler {
             .joinToString(ChatColor.COLOR_CHAR.toString(), ChatColor.COLOR_CHAR.toString())
     }
 
-    protected fun splitText(text: String, maxLength: Int): Pair<String, String> {
+    protected fun splitScoreLine(text: String): Pair<String, String> {
+        val maxLength = lineLengthLimit / 2
         if (text.length > maxLength) {
             val index = if (text.elementAt(maxLength - 1) == ChatColor.COLOR_CHAR) maxLength - 1 else maxLength
 
             val prefix = text.substring(0, index)
-            val suffix = text.substring(index)
-
             val lastColors = ChatColor.getLastColors(prefix)
-            return prefix to (lastColors + suffix)
+
+            var suffix = lastColors + text.substring(index)
+            if (suffix.length > maxLength) {
+                suffix = suffix.substring(0, maxLength)
+            }
+
+            return prefix to suffix
         }
         return text to ""
     }

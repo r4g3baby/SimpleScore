@@ -39,7 +39,9 @@ class BukkitScoreboard : ScoreboardHandler() {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
             if (objective.displayName != title) {
-                objective.displayName = title
+                if (title.length > titleLengthLimit) {
+                    objective.displayName = title.substring(0, titleLengthLimit)
+                } else objective.displayName = title
             }
 
             scores.forEach { (score, value) ->
@@ -51,7 +53,7 @@ class BukkitScoreboard : ScoreboardHandler() {
                     team.addEntry(scoreName)
                 }
 
-                val splitText = splitText(value, lineLengthLimit / 2)
+                val splitText = splitScoreLine(value)
                 team.prefix = splitText.first
                 team.suffix = splitText.second
 

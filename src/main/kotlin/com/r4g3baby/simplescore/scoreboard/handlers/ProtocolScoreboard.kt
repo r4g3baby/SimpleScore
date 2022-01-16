@@ -77,6 +77,8 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     packet.strings.write(0, scoreName) // Team Name
                     packet.integers.write(0, 1) // Mode - remove team
                     protocolManager.sendServerPacket(player, packet)
+                } else if (scoreName.length > lineLengthLimit) {
+                    scoreName = scoreName.substring(0, lineLengthLimit)
                 }
 
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
@@ -93,13 +95,18 @@ class ProtocolScoreboard : ScoreboardHandler() {
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
         playerBoards[player.uniqueId]?.also { playerBoard ->
             if (playerBoard.title != title) {
+                var displayTitle = title
+                if (displayTitle.length > titleLengthLimit) {
+                    displayTitle = displayTitle.substring(0, titleLengthLimit)
+                }
+
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
                 packet.modifier.writeDefaults()
                 packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
                 packet.integers.write(0, 2) // Mode 2: Update Display Name
                 if (afterAquaticUpdate) {
-                    packet.chatComponents.write(0, fromChatMessage(title)[0]) // Display Name
-                } else packet.strings.write(1, title) // Display Name
+                    packet.chatComponents.write(0, fromChatMessage(displayTitle)[0]) // Display Name
+                } else packet.strings.write(1, displayTitle) // Display Name
                 protocolManager.sendServerPacket(player, packet)
             }
 
@@ -115,7 +122,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Team Name
 
-                    val splitText = splitText(value, lineLengthLimit / 2)
+                    val splitText = splitScoreLine(value)
                     if (afterCavesAndCliffsUpdate) {
                         val optStruct: Optional<InternalStructure> = packet.optionalStructures.read(0)
                         if (optStruct.isPresent) {
@@ -142,6 +149,8 @@ class ProtocolScoreboard : ScoreboardHandler() {
                     packet.integers.write(0, 0) // Mode - create team
                     packet.getSpecificModifier(Collection::class.java).write(0, listOf(scoreName)) // Entities
                     protocolManager.sendServerPacket(player, packet)
+                } else if (scoreName.length > lineLengthLimit) {
+                    scoreName = scoreName.substring(0, lineLengthLimit)
                 }
 
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
@@ -154,21 +163,27 @@ class ProtocolScoreboard : ScoreboardHandler() {
             }
 
             playerBoard.scores.forEach { (score, value) ->
-                var scoreName = value
-                var remove = false
                 if (afterAquaticUpdate && !scores.containsKey(score)) {
-                    scoreName = scoreToName(score)
+                    val scoreName = scoreToName(score)
 
-                    val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
+                    var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_TEAM)
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Team Name
                     packet.integers.write(0, 1) // Mode - remove team
                     protocolManager.sendServerPacket(player, packet)
 
-                    remove = true
-                }
+                    packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+                    packet.modifier.writeDefaults()
+                    packet.strings.write(0, scoreName) // Score Name
+                    packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
+                    packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+                    protocolManager.sendServerPacket(player, packet)
+                } else if (!afterAquaticUpdate && !scores.containsValue(value)) {
+                    var scoreName = value
+                    if (scoreName.length > lineLengthLimit) {
+                        scoreName = scoreName.substring(0, lineLengthLimit)
+                    }
 
-                if (remove || (!afterAquaticUpdate && !scores.containsValue(value))) {
                     val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
                     packet.modifier.writeDefaults()
                     packet.strings.write(0, scoreName) // Score Name

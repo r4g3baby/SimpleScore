@@ -108,8 +108,8 @@ class ScoreboardTask : BukkitRunnable() {
         val toDisplayTitle = replacePlaceholders(title, player)
 
         val toDisplayScores = HashMap<Int, String>()
-        scores.forEach { (score, ogValue) ->
-            toDisplayScores[score] = replacePlaceholders(ogValue, player)
+        scores.forEach { (score, value) ->
+            toDisplayScores[score] = replacePlaceholders(value, player)
         }
 
         return (toDisplayTitle to toDisplayScores)
@@ -121,22 +121,11 @@ class ScoreboardTask : BukkitRunnable() {
     }
 
     private fun applyVariables(title: String, scores: Map<Int, String>, player: Player): Pair<String, Map<Int, String>> {
-        var toDisplayTitle: String
+        val toDisplayTitle: String = VariablesReplacer.replace(title, player)
+
         val toDisplayScores = HashMap<Int, String>()
-
-        val titleLengthLimit = SimpleScore.manager.scoreboardHandler.titleLengthLimit
-        toDisplayTitle = VariablesReplacer.replace(title, player)
-        if (toDisplayTitle.length > titleLengthLimit) {
-            toDisplayTitle = toDisplayTitle.substring(0 until titleLengthLimit)
-        }
-
-        val lineLengthLimit = SimpleScore.manager.scoreboardHandler.lineLengthLimit
-        scores.forEach { (score, ogValue) ->
-            var value = preventDuplicates(VariablesReplacer.replace(ogValue, player), toDisplayScores.values)
-            if (value.length > lineLengthLimit) {
-                value = value.substring(0 until lineLengthLimit)
-            }
-            toDisplayScores[score] = value
+        scores.forEach { (score, value) ->
+            toDisplayScores[score] = preventDuplicates(VariablesReplacer.replace(value, player), toDisplayScores.values)
         }
 
         return (toDisplayTitle to toDisplayScores)
@@ -144,7 +133,7 @@ class ScoreboardTask : BukkitRunnable() {
 
     private fun preventDuplicates(text: String, values: Collection<String>): String {
         return if (values.contains(text)) {
-            preventDuplicates(text + ChatColor.RESET, values)
+            preventDuplicates("${ChatColor.RESET}$text", values)
         } else text
     }
 }
