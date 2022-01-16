@@ -1,7 +1,8 @@
 package com.r4g3baby.simplescore.scoreboard.placeholders
 
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.ChatColor.DARK_RED
+import org.bukkit.ChatColor.GRAY
 import org.bukkit.entity.Player
 import kotlin.math.max
 import kotlin.math.min
@@ -19,7 +20,7 @@ object VariablesReplacer {
             .replace("%displayname%", player.displayName)
             .replace("%health%", player.health.roundToInt().toString())
             .replace("%maxhealth%", player.maxHealth.roundToInt().toString())
-            .replace("%hearts%", "${ChatColor.DARK_RED}❤".repeat(hearts) + "${ChatColor.GRAY}❤".repeat(10 - hearts))
+            .replace("%hearts%", "$DARK_RED${"❤".repeat(hearts)}$GRAY${"❤".repeat(10 - hearts)}")
             .replace("%level%", player.level.toString())
             .replace("%gamemode%", player.gameMode.name.lowercase().replaceFirstChar { it.uppercase() })
     }
