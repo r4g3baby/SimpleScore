@@ -22,6 +22,9 @@ class ProtocolScoreboard : ScoreboardHandler() {
 
     private val playerBoards = HashMap<UUID, PlayerBoard>()
 
+    override val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
+    override val lineLengthLimit = if (afterAquaticUpdate) 128 else 40
+
     override fun createScoreboard(player: Player) {
         playerBoards.computeIfAbsent(player.uniqueId) {
             var packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
@@ -185,10 +188,6 @@ class ProtocolScoreboard : ScoreboardHandler() {
 
     override fun hasScoreboard(player: Player): Boolean {
         return player.uniqueId in playerBoards
-    }
-
-    override fun hasLineLengthLimit(): Boolean {
-        return !afterAquaticUpdate
     }
 
     private fun scoreToName(score: Int): String {

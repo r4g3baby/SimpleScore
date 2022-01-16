@@ -124,15 +124,17 @@ class ScoreboardTask : BukkitRunnable() {
         var toDisplayTitle: String
         val toDisplayScores = HashMap<Int, String>()
 
+        val titleLengthLimit = SimpleScore.manager.scoreboardHandler.titleLengthLimit
         toDisplayTitle = VariablesReplacer.replace(title, player)
-        if (SimpleScore.manager.scoreboardHandler.hasLineLengthLimit() && toDisplayTitle.length > 32) {
-            toDisplayTitle = toDisplayTitle.substring(0..31)
+        if (toDisplayTitle.length > titleLengthLimit) {
+            toDisplayTitle = toDisplayTitle.substring(0 until titleLengthLimit)
         }
 
+        val lineLengthLimit = SimpleScore.manager.scoreboardHandler.lineLengthLimit
         scores.forEach { (score, ogValue) ->
             var value = preventDuplicates(VariablesReplacer.replace(ogValue, player), toDisplayScores.values)
-            if (SimpleScore.manager.scoreboardHandler.hasLineLengthLimit() && value.length > 40) {
-                value = value.substring(0..39)
+            if (value.length > lineLengthLimit) {
+                value = value.substring(0 until lineLengthLimit)
             }
             toDisplayScores[score] = value
         }

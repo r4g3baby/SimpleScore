@@ -1,10 +1,16 @@
 package com.r4g3baby.simplescore.scoreboard.handlers
 
+import com.r4g3baby.simplescore.utils.ServerVersion
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 
 class BukkitScoreboard : ScoreboardHandler() {
+    private val afterAquaticUpdate = ServerVersion("1.13").atOrAbove()
+
+    override val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
+    override val lineLengthLimit = titleLengthLimit
+
     override fun createScoreboard(player: Player) {
         if (player.scoreboard != null && player.scoreboard != Bukkit.getScoreboardManager().mainScoreboard) {
             player.scoreboard.getObjective(getPlayerIdentifier(player))?.unregister()
@@ -48,9 +54,5 @@ class BukkitScoreboard : ScoreboardHandler() {
     override fun hasScoreboard(player: Player): Boolean {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         return objective != null && objective.isModifiable
-    }
-
-    override fun hasLineLengthLimit(): Boolean {
-        return true
     }
 }
