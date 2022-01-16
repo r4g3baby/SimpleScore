@@ -9,7 +9,7 @@ class BukkitScoreboard : ScoreboardHandler() {
     private val afterAquaticUpdate = ServerVersion("1.13").atOrAbove()
 
     override val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
-    override val lineLengthLimit = titleLengthLimit
+    override val teamLengthLimit = titleLengthLimit / 2
 
     override fun createScoreboard(player: Player) {
         if (player.scoreboard != null && player.scoreboard != Bukkit.getScoreboardManager().mainScoreboard) {

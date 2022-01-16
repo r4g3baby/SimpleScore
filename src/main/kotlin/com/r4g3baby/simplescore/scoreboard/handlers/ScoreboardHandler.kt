@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 
 abstract class ScoreboardHandler {
     abstract val titleLengthLimit: Int
-    abstract val lineLengthLimit: Int
+    abstract val teamLengthLimit: Int
 
     abstract fun createScoreboard(player: Player)
     abstract fun removeScoreboard(player: Player)
@@ -23,16 +23,15 @@ abstract class ScoreboardHandler {
     }
 
     protected fun splitScoreLine(text: String): Pair<String, String> {
-        val maxLength = lineLengthLimit / 2
-        if (text.length > maxLength) {
-            val index = if (text.elementAt(maxLength - 1) == ChatColor.COLOR_CHAR) maxLength - 1 else maxLength
+        if (text.length > 16) {
+            val index = if (text.elementAt(15) == ChatColor.COLOR_CHAR) 15 else 16
 
             val prefix = text.substring(0, index)
             val lastColors = ChatColor.getLastColors(prefix)
 
             var suffix = lastColors + text.substring(index)
-            if (suffix.length > maxLength) {
-                suffix = suffix.substring(0, maxLength)
+            if (suffix.length > teamLengthLimit) {
+                suffix = suffix.substring(0, teamLengthLimit)
             }
 
             return prefix to suffix

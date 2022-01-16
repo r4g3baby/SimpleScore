@@ -22,7 +22,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
     private val playerBoards = HashMap<UUID, PlayerBoard>()
 
     override val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
-    override val lineLengthLimit = titleLengthLimit
+    override val teamLengthLimit = titleLengthLimit / 2
 
     override fun createScoreboard(player: Player) {
         playerBoards.computeIfAbsent(player.uniqueId) {
