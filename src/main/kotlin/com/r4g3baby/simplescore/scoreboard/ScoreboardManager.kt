@@ -8,7 +8,7 @@ import com.r4g3baby.simplescore.scoreboard.listeners.McMMOListener
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
-import com.r4g3baby.simplescore.scoreboard.placeholders.PAPIExpansion
+import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderProvider
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardTask
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
@@ -34,9 +34,7 @@ class ScoreboardManager {
             }
         }
 
-        if (SimpleScore.usePlaceholderAPI) {
-            PAPIExpansion(SimpleScore.plugin).register()
-        }
+        PlaceholderProvider()
 
         scoreboardHandler = if (!SimpleScore.config.forceLegacy) {
             if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {

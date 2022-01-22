@@ -8,9 +8,10 @@ object PlaceholderReplacer {
     private var lastException = System.currentTimeMillis()
 
     fun replace(input: String, player: Player): String {
-        var result = if (SimpleScore.usePlaceholderAPI) {
-            applyPlaceholderAPI(input, player)
-        } else input
+        var result = input
+        if (SimpleScore.usePlaceholderAPI) {
+            result = applyPlaceholderAPI(result, player)
+        }
         if (SimpleScore.useMVdWPlaceholderAPI) {
             result = applyMVdWPlaceholderAPI(result, player)
         }
