@@ -5,6 +5,7 @@
 version: 1
 
 # Plugin language (supported: en, pt)
+# To use custom messages read the plugin documentation page
 language: en
 
 # Check for updates when the plugin starts
