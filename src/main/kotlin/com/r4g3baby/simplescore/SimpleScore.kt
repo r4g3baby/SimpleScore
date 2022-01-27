@@ -35,7 +35,7 @@ class SimpleScore : JavaPlugin() {
     }
 
     override fun onDisable() {
-        manager.playersData.save()
+        disable()
     }
 
     companion object Api {
@@ -71,6 +71,12 @@ class SimpleScore : JavaPlugin() {
             config = MainConfig(plugin)
             i18n.loadTranslations(config.language)
             manager.reload()
+        }
+
+        fun disable() {
+            if (this::manager.isInitialized) {
+                manager.playersData.save()
+            }
         }
     }
 }
