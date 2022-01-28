@@ -69,5 +69,7 @@ tasks {
         relocate("org.jetbrains", "$shaded.jetbrains")
         relocate("org.intellij", "$shaded.intellij")
         relocate("kotlin", "$shaded.kotlin")
+
+        minimize()
     }
 }
