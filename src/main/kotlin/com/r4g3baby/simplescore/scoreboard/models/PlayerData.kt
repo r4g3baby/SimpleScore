@@ -5,7 +5,7 @@ import org.bukkit.plugin.Plugin
 data class PlayerData(
     val pluginsHiding: MutableSet<Plugin> = HashSet(),
     val pluginsDisabling: MutableSet<Plugin> = HashSet(),
-    val pluginsScoreboard: MutableMap<Plugin, Scoreboard> = LinkedHashMap()
+    val pluginsScoreboard: MutableMap<Plugin, String> = LinkedHashMap()
 ) {
     val scoreboards get() = pluginsScoreboard.map { it.value }
 
@@ -37,13 +37,13 @@ data class PlayerData(
         return plugin in pluginsDisabling
     }
 
-    fun setScoreboard(plugin: Plugin, scoreboard: Scoreboard?) {
+    fun setScoreboard(plugin: Plugin, scoreboard: String?) {
         if (scoreboard == null) {
             pluginsScoreboard.remove(plugin)
         } else pluginsScoreboard[plugin] = scoreboard
     }
 
-    fun getScoreboard(plugin: Plugin): Scoreboard? {
+    fun getScoreboard(plugin: Plugin): String? {
         return pluginsScoreboard[plugin]
     }
 

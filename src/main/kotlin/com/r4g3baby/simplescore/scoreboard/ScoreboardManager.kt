@@ -53,7 +53,7 @@ class ScoreboardManager {
 
         playersData.forEach { (_, playerData) ->
             playerData.getScoreboard(SimpleScore.plugin)?.let { scoreboard ->
-                playerData.setScoreboard(SimpleScore.plugin, scoreboards.get(scoreboard.name))
+                playerData.setScoreboard(SimpleScore.plugin, scoreboards.get(scoreboard)?.name)
             }
         }
 
@@ -141,7 +141,7 @@ class ScoreboardManager {
                             if (isHidden) mutableSetOf(SimpleScore.plugin) else mutableSetOf(),
                             if (isDisabled) mutableSetOf(SimpleScore.plugin) else mutableSetOf(),
                             if (scoreboard != null) LinkedHashMap(
-                                mapOf(SimpleScore.plugin to scoreboard)
+                                mapOf(SimpleScore.plugin to scoreboard.name)
                             ) else LinkedHashMap()
                         )
                     }
@@ -169,7 +169,7 @@ class ScoreboardManager {
                                 uniqueId.toString(), mapOf(
                                     "isHidden" to if (isHidden) true else null,
                                     "isDisabled" to if (isDisabled) true else null,
-                                    "scoreboard" to scoreboard?.name
+                                    "scoreboard" to scoreboard
                                 )
                             )
                         }
@@ -193,7 +193,7 @@ class ScoreboardManager {
             }
         }
 
-        fun getScoreboards(player: Player): List<Scoreboard> {
+        fun getScoreboards(player: Player): List<String> {
             return get(player).scoreboards
         }
 
@@ -201,11 +201,11 @@ class ScoreboardManager {
             return get(player).hasScoreboards
         }
 
-        fun getScoreboard(plugin: Plugin, player: Player): Scoreboard? {
+        fun getScoreboard(plugin: Plugin, player: Player): String? {
             return get(player).getScoreboard(plugin)
         }
 
-        fun setScoreboard(plugin: Plugin, player: Player, scoreboard: Scoreboard?) {
+        fun setScoreboard(plugin: Plugin, player: Player, scoreboard: String?) {
             get(player).setScoreboard(plugin, scoreboard)
             SimpleScore.manager.updateScoreboardState(player)
         }

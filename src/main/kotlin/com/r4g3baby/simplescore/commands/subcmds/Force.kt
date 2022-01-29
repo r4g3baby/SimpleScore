@@ -18,7 +18,7 @@ class Force : SubCmd("force") {
                     SimpleScore.manager.playersData.setScoreboard(SimpleScore.plugin, sender, null)
                     sender.sendMessage(i18n.t("cmd.force.removed"))
                 } else if (scoreboard != null && scoreboard.canSee(sender)) {
-                    SimpleScore.manager.playersData.setScoreboard(SimpleScore.plugin, sender, scoreboard)
+                    SimpleScore.manager.playersData.setScoreboard(SimpleScore.plugin, sender, scoreboard.name)
                     sender.sendMessage(i18n.t("cmd.force.changed", scoreboard.name))
                 } else if (sender.hasPermission(otherPermission)) {
                     targetOther(sender, args)
@@ -44,7 +44,7 @@ class Force : SubCmd("force") {
                     SimpleScore.manager.playersData.setScoreboard(SimpleScore.plugin, target, null)
                     sender.sendMessage(i18n.t("cmd.force.other.removed", target.name))
                 } else if (scoreboard != null && scoreboard.canSee(target)) {
-                    SimpleScore.manager.playersData.setScoreboard(SimpleScore.plugin, target, scoreboard)
+                    SimpleScore.manager.playersData.setScoreboard(SimpleScore.plugin, target, scoreboard.name)
                     sender.sendMessage(i18n.t("cmd.force.other.changed", target.name, scoreboard.name))
                 } else sender.sendMessage(i18n.t("cmd.force.notFound", args[1]))
             } else sender.sendMessage(i18n.t("cmd.notOnline"))

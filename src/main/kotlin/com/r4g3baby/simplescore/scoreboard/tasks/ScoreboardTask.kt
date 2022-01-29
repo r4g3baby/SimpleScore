@@ -29,7 +29,9 @@ class ScoreboardTask : BukkitRunnable() {
                 if (playerData.isHidden || playerData.isDisabled) return@filter false
 
                 // Set the list of possible scoreboards for this player
-                possibleBoards[player] = playerData.scoreboards
+                possibleBoards[player] = playerData.scoreboards.mapNotNull {
+                    SimpleScore.manager.scoreboards.get(it)
+                }
 
                 // Player scoreboards override world and region scoreboards
                 return@filter !playerData.hasScoreboards
@@ -44,7 +46,7 @@ class ScoreboardTask : BukkitRunnable() {
                         // Set the list of possible scoreboards for this player
                         possibleBoards[player] = regionBoards.mapNotNull {
                             SimpleScore.manager.scoreboards.get(it)
-                        }.toList()
+                        }
 
                         // Region boards override world boards
                         iterator.remove()
