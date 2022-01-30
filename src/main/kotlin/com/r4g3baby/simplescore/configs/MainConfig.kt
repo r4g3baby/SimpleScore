@@ -1,5 +1,6 @@
 package com.r4g3baby.simplescore.configs
 
+import com.r4g3baby.simplescore.storage.models.Driver
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.plugin.Plugin
 import java.util.function.Predicate
@@ -9,7 +10,7 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
-    val savePlayerData = config.getBoolean("savePlayerData", true)
+    val storageDriver = Driver.fromValue(config.getString("storageDriver"))
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
     val forceLegacy = config.getBoolean("forceLegacy", false)
 

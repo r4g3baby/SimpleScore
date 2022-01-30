@@ -1,12 +1,18 @@
 package com.r4g3baby.simplescore.scoreboard.listeners
 
 import com.r4g3baby.simplescore.SimpleScore
+import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.*
 
 class PlayersListener : Listener {
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun onAsyncPlayerPreLogin(e: AsyncPlayerPreLoginEvent) {
+        SimpleScore.manager.playersData.loadPlayer(e.uniqueId)
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(e: PlayerJoinEvent) {
         SimpleScore.manager.updateScoreboardState(e.player)
@@ -15,6 +21,9 @@ class PlayersListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerQuit(e: PlayerQuitEvent) {
         SimpleScore.manager.scoreboardHandler.removeScoreboard(e.player)
+        Bukkit.getScheduler().runTaskAsynchronously(SimpleScore.plugin) {
+            SimpleScore.manager.playersData.unloadPlayer(e.player)
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

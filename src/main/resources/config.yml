@@ -11,8 +11,8 @@ language: en
 # Check for updates when the plugin starts
 checkForUpdates: true
 
-# Should we save player information (is the scoreboard hidden/disabled and forced scoreboard)
-savePlayerData: true
+# What type of storage driver to use (H2, SQLite)
+storageDriver: h2
 
 # Whether to apply placeholders asynchronously or not (disabling this might reduce performance)
 asyncPlaceholders: true

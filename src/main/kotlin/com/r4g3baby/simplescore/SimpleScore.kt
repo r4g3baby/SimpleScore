@@ -6,6 +6,7 @@ import com.r4g3baby.simplescore.configs.MainConfig
 import com.r4g3baby.simplescore.configs.lang.I18n
 import com.r4g3baby.simplescore.scoreboard.ScoreboardManager
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
+import com.r4g3baby.simplescore.storage.StorageManager
 import com.r4g3baby.simplescore.utils.updater.UpdateChecker
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
@@ -51,6 +52,8 @@ class SimpleScore : JavaPlugin() {
             private set
         lateinit var i18n: I18n
             private set
+        lateinit var storage: StorageManager
+            private set
         lateinit var manager: ScoreboardManager
             private set
 
@@ -64,6 +67,7 @@ class SimpleScore : JavaPlugin() {
             useMVdWPlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
             config = MainConfig(plugin)
             i18n = I18n(config.language, plugin)
+            storage = StorageManager()
             manager = ScoreboardManager()
         }
 
@@ -74,8 +78,8 @@ class SimpleScore : JavaPlugin() {
         }
 
         fun disable() {
-            if (this::manager.isInitialized) {
-                manager.playersData.save()
+            if (this::storage.isInitialized) {
+                storage.shutdown()
             }
         }
     }
