@@ -77,7 +77,7 @@ class SimpleScore : JavaPlugin() {
             manager.reload()
         }
 
-        fun disable() {
+        internal fun disable() {
             if (this::storage.isInitialized) {
                 storage.shutdown()
             }
