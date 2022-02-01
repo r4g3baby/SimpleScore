@@ -5,8 +5,8 @@ import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
 import com.r4g3baby.simplescore.storage.models.Driver
 import com.r4g3baby.simplescore.storage.providers.StorageProvider
-import com.r4g3baby.simplescore.storage.providers.drivers.H2Provider
-import com.r4g3baby.simplescore.storage.providers.drivers.SQLiteProvider
+import com.r4g3baby.simplescore.storage.providers.local.H2Provider
+import com.r4g3baby.simplescore.storage.providers.local.SQLiteProvider
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
@@ -41,10 +41,10 @@ class StorageManager {
 
             provider = when (driver) {
                 Driver.H2 -> H2Provider(
-                    pluginDataFolder.resolve("data-$driverName"), classLoader, tableName
+                    classLoader, pluginDataFolder.resolve("data-$driverName"), tableName
                 )
                 Driver.SQLite -> SQLiteProvider(
-                    pluginDataFolder.resolve("data-$driverName.db"), classLoader, tableName
+                    classLoader, pluginDataFolder.resolve("data-$driverName.db"), tableName
                 )
             }.apply { init() }
         }
