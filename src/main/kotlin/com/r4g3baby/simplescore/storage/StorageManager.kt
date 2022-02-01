@@ -1,6 +1,5 @@
 package com.r4g3baby.simplescore.storage
 
-import com.google.common.io.ByteStreams
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
@@ -70,7 +69,7 @@ class StorageManager {
     private fun downloadDriver(driver: Driver, driverFile: Path) {
         val connection = URL("https://repo1.maven.org/maven2/${driver.mavenPath}").openConnection()
         connection.getInputStream().use { inputStream ->
-            val bytes = ByteStreams.toByteArray(inputStream)
+            val bytes = inputStream.readBytes()
             check(bytes.isNotEmpty()) { "Empty stream" }
             Files.write(driverFile, bytes)
         }
