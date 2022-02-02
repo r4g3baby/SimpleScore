@@ -10,9 +10,11 @@ import com.r4g3baby.simplescore.storage.providers.local.SQLiteProvider
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
+import java.security.MessageDigest
 import java.util.*
 
 class StorageManager {
+    private val sha256 = MessageDigest.getInstance("SHA-256")
     private var provider: StorageProvider? = null
 
     init {
@@ -71,6 +73,7 @@ class StorageManager {
         connection.getInputStream().use { inputStream ->
             val bytes = inputStream.readBytes()
             check(bytes.isNotEmpty()) { "Empty stream" }
+            check(driver.validateHash(sha256.digest(bytes))) { "Invalid hash" }
             Files.write(driverFile, bytes)
         }
     }
