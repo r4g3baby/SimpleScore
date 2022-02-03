@@ -16,6 +16,14 @@ enum class Driver(
     SQLite(
         "org.xerial", "sqlite-jdbc", "3.36.0.3",
         "rzozdjkeGGoP7WPs1BS3Kogr9FJme0kKC+Or+FtjfT8="
+    ),
+    MariaDB(
+        "org.mariadb.jdbc", "mariadb-java-client", "3.0.3",
+        "YTCGoKIPF3389eIn9RknK8a+iL3kAR3g8jxTMjGnrgU="
+    ),
+    MySQL(
+        "mysql", "mysql-connector-java", "8.0.28",
+        "oAzN9Tf/UOUAZ7mJEIwiNRl/+2XhlxSbu2aduEPNHD4="
     );
 
     val fileName: String = "${name.lowercase()}-$version.jar"

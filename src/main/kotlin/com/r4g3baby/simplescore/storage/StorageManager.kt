@@ -5,6 +5,8 @@ import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
 import com.r4g3baby.simplescore.storage.models.Driver
 import com.r4g3baby.simplescore.storage.providers.StorageProvider
+import com.r4g3baby.simplescore.storage.providers.hikari.MariaDBProvider
+import com.r4g3baby.simplescore.storage.providers.hikari.MySQLProvider
 import com.r4g3baby.simplescore.storage.providers.local.H2Provider
 import com.r4g3baby.simplescore.storage.providers.local.SQLiteProvider
 import java.net.URL
@@ -18,7 +20,7 @@ class StorageManager {
     private var provider: StorageProvider? = null
 
     init {
-        val driver = SimpleScore.config.storageDriver
+        val driver = SimpleScore.config.storage.driver
         if (driver != null) {
             val pluginDataFolder = SimpleScore.plugin.dataFolder.toPath().toAbsolutePath()
             if (!Files.exists(pluginDataFolder)) {
@@ -47,6 +49,12 @@ class StorageManager {
                 )
                 Driver.SQLite -> SQLiteProvider(
                     classLoader, pluginDataFolder.resolve("data-$driverName.db"), tableName
+                )
+                Driver.MariaDB -> MariaDBProvider(
+                    classLoader, SimpleScore.config.storage, tableName
+                )
+                Driver.MySQL -> MySQLProvider(
+                    classLoader, SimpleScore.config.storage, tableName
                 )
             }.apply { init() }
         }

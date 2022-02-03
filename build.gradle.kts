@@ -31,6 +31,8 @@ dependencies {
     implementation("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
     implementation("net.swiftzer.semver:semver:1.2.0")
     implementation("org.bstats:bstats-bukkit:2.2.1")
+    implementation("com.zaxxer:HikariCP:4.0.3")
+    implementation("org.slf4j:slf4j-nop:1.7.35")
 }
 
 tasks {
@@ -66,6 +68,8 @@ tasks {
         relocate("org.codemc.worldguardwrapper", "$shaded.worldguardwrapper")
         relocate("net.swiftzer.semver", "$shaded.semver")
         relocate("org.bstats", "$shaded.bstats")
+        relocate("com.zaxxer.hikari", "$shaded.hikari")
+        relocate("org.slf4j", "$shaded.slf4j")
         relocate("org.jetbrains", "$shaded.jetbrains")
         relocate("org.intellij", "$shaded.intellij")
         relocate("kotlin", "$shaded.kotlin")

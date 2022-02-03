@@ -11,8 +11,34 @@ language: en
 # Check for updates when the plugin starts
 checkForUpdates: true
 
-# What type of storage driver to use (H2, SQLite)
-storageDriver: h2
+# Any changes done to the storage configuration require a server restart
+storage:
+  # Supported drivers: H2, SQLite, MariaDB, MySQL
+  driver: h2
+
+  # All the settings bellow this point don't apply to H2 and SQLite
+  address: 127.0.0.1:3306
+  database: minecraft
+  username: simplescore
+  password: '|D/-\55\^/0|2|)'
+
+  # HikariCP connection pool settings
+  pool:
+    # The maximum number of connections in the pool
+    maximumPoolSize: 8
+    # The minimum number of idle connections in the pool to maintain
+    minimumIdle: 8
+    # The maximum connection lifetime in milliseconds
+    maxLifetime: 1800000
+    # The interval in which connections will be tested for aliveness, thus keeping them alive by
+    #  the act of checking. Value is in milliseconds
+    keepaliveTime: 0
+    # The connection timeout in milliseconds
+    connectionTimeout: 5000
+    # Extra properties to pass on to the data source
+    extraProperties:
+      useUnicode: true
+      characterEncoding: utf8
 
 # Whether to apply placeholders asynchronously or not (disabling this might reduce performance)
 asyncPlaceholders: true

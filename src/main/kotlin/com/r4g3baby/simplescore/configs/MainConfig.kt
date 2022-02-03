@@ -1,6 +1,6 @@
 package com.r4g3baby.simplescore.configs
 
-import com.r4g3baby.simplescore.storage.models.Driver
+import com.r4g3baby.simplescore.configs.models.Storage
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.plugin.Plugin
 import java.util.function.Predicate
@@ -10,7 +10,21 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
-    val storageDriver = Driver.fromValue(config.getString("storageDriver"))
+    val storage = Storage(
+        config.getString("storage.driver", "h2"),
+        config.getString("storage.address", "127.0.0.1:3306"),
+        config.getString("storage.database", "minecraft"),
+        config.getString("storage.username", "simplescore"),
+        config.getString("storage.password", "|D/-\\55\\^/0|2|)"),
+        Storage.Pool(
+            config.getInt("storage.pool.maximumPoolSize", 8),
+            config.getInt("storage.pool.minimumIdle", 8),
+            config.getLong("storage.pool.maxLifetime", 1800000),
+            config.getLong("storage.pool.keepaliveTime", 0),
+            config.getLong("storage.pool.connectionTimeout", 5000),
+            config.getConfigurationSection("storage.pool.extraProperties")?.getValues(false) ?: emptyMap()
+        )
+    )
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
     val forceLegacy = config.getBoolean("forceLegacy", false)
 
