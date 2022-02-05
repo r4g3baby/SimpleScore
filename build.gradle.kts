@@ -64,15 +64,21 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        val shaded = "${project.group}.${project.name.toLowerCase()}.shaded"
-        relocate("org.codemc.worldguardwrapper", "$shaded.worldguardwrapper")
-        relocate("net.swiftzer.semver", "$shaded.semver")
-        relocate("org.bstats", "$shaded.bstats")
-        relocate("com.zaxxer.hikari", "$shaded.hikari")
-        relocate("org.slf4j", "$shaded.slf4j")
-        relocate("org.jetbrains", "$shaded.jetbrains")
-        relocate("org.intellij", "$shaded.intellij")
-        relocate("kotlin", "$shaded.kotlin")
+        val libs = "${project.group}.${project.name.toLowerCase()}.libs"
+        relocate("org.codemc.worldguardwrapper", "$libs.worldguardwrapper")
+        relocate("net.swiftzer.semver", "$libs.semver")
+        relocate("org.bstats", "$libs.bstats")
+        relocate("com.zaxxer.hikari", "$libs.hikari")
+        relocate("org.slf4j", "$libs.slf4j")
+        relocate("org.jetbrains", "$libs.jetbrains")
+        relocate("org.intellij", "$libs.intellij")
+        relocate("kotlin", "$libs.kotlin")
+
+        dependencies {
+            exclude("META-INF/maven/**")
+            exclude("META-INF/versions/**")
+            exclude("META-INF/**.kotlin_module")
+        }
 
         minimize()
     }
