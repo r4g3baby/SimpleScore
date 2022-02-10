@@ -4,6 +4,7 @@ import com.r4g3baby.simplescore.storage.models.Driver
 
 data class Storage(
     private val _driver: String,
+    val tablePrefix: String,
     val address: String,
     val database: String,
     val username: String,

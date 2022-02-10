@@ -15,6 +15,7 @@ checkForUpdates: true
 storage:
   # Supported drivers: H2, SQLite, MariaDB, MySQL
   driver: h2
+  tablePrefix: simplescore_
 
   # All the settings bellow this point don't apply to H2 and SQLite
   address: 127.0.0.1:3306

@@ -1,12 +1,13 @@
 package com.r4g3baby.simplescore.storage.providers.local
 
+import com.r4g3baby.simplescore.configs.models.Storage
 import com.r4g3baby.simplescore.storage.providers.SQLStorageProvider
 import java.nio.file.Path
 import java.sql.Connection
 
 abstract class LocalStorageProvider(
-    val file: Path, tableName: String
-) : SQLStorageProvider(tableName) {
+    val file: Path, settings: Storage
+) : SQLStorageProvider(settings) {
     abstract fun createConnection(): Connection
 
     private lateinit var connection: Connection

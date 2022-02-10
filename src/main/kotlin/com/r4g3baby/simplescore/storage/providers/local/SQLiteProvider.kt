@@ -1,5 +1,6 @@
 package com.r4g3baby.simplescore.storage.providers.local
 
+import com.r4g3baby.simplescore.configs.models.Storage
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
 import java.lang.reflect.Constructor
 import java.nio.file.Path
@@ -8,14 +9,14 @@ import java.sql.SQLException
 import java.util.*
 
 class SQLiteProvider(
-    classLoader: IsolatedClassLoader, file: Path, tableName: String
-) : LocalStorageProvider(file, tableName) {
+    classLoader: IsolatedClassLoader, file: Path, settings: Storage
+) : LocalStorageProvider(file, settings) {
     override val createTableQuery: String
         get() = """
-            create table if not exists ${tableName}_players
+            create table if not exists ${tablePrefix}players
             (
                 uniqueId   VARCHAR(36) not null
-                    constraint ${tableName}_players_pk
+                    constraint ${tablePrefix}players_pk
                         primary key,
                 hidden     BOOL        not null,
                 disabled   BOOL        not null,

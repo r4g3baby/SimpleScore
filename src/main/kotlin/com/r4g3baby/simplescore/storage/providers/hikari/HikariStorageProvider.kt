@@ -8,8 +8,8 @@ import com.zaxxer.hikari.HikariDataSource
 import java.sql.Connection
 
 abstract class HikariStorageProvider(
-    private val classLoader: IsolatedClassLoader, private val settings: Storage, tableName: String
-) : SQLStorageProvider(tableName) {
+    private val classLoader: IsolatedClassLoader, settings: Storage
+) : SQLStorageProvider(settings) {
     abstract fun configureHikari(hikariConfig: HikariConfig, settings: Storage)
 
     private lateinit var dataSource: HikariDataSource

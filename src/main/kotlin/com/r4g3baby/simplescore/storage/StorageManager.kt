@@ -41,20 +41,20 @@ class StorageManager {
             val classLoader = IsolatedClassLoader(urls)
 
             val driverName = driver.name.lowercase()
-            val tableName = "simplescore"
+            val storageSettings = SimpleScore.config.storage
 
             provider = when (driver) {
                 Driver.H2 -> H2Provider(
-                    classLoader, pluginDataFolder.resolve("data-$driverName"), tableName
+                    classLoader, pluginDataFolder.resolve("data-$driverName"), storageSettings
                 )
                 Driver.SQLite -> SQLiteProvider(
-                    classLoader, pluginDataFolder.resolve("data-$driverName.db"), tableName
+                    classLoader, pluginDataFolder.resolve("data-$driverName.db"), storageSettings
                 )
                 Driver.MariaDB -> MariaDBProvider(
-                    classLoader, SimpleScore.config.storage, tableName
+                    classLoader, storageSettings
                 )
                 Driver.MySQL -> MySQLProvider(
-                    classLoader, SimpleScore.config.storage, tableName
+                    classLoader, storageSettings
                 )
             }.apply { init() }
         }

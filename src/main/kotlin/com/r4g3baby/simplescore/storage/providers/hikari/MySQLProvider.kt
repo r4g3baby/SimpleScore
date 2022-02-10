@@ -5,11 +5,11 @@ import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
 import com.zaxxer.hikari.HikariConfig
 
 class MySQLProvider(
-    classLoader: IsolatedClassLoader, settings: Storage, tableName: String
-) : HikariStorageProvider(classLoader, settings, tableName) {
+    classLoader: IsolatedClassLoader, settings: Storage
+) : HikariStorageProvider(classLoader, settings) {
     override val createTableQuery: String
         get() = """
-            create table if not exists ${tableName}_players
+            create table if not exists ${tablePrefix}players
             (
                 uniqueId   varchar(36)  not null
                     primary key,

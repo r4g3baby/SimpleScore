@@ -12,6 +12,7 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
     val storage = Storage(
         config.getString("storage.driver", "h2"),
+        config.getString("storage.tablePrefix", "simplescore_"),
         config.getString("storage.address", "127.0.0.1:3306"),
         config.getString("storage.database", "minecraft"),
         config.getString("storage.username", "simplescore"),
