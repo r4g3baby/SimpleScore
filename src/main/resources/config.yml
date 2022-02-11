@@ -13,11 +13,13 @@ checkForUpdates: true
 
 # Any changes done to the storage configuration require a server restart
 storage:
-  # Supported drivers: H2, SQLite, MariaDB, MySQL
+  # Supported database drivers:
+  #  Local: H2, SQLite
+  #  Remote: MariaDB, MySQL
   driver: h2
   tablePrefix: simplescore_
 
-  # All the settings bellow this point don't apply to H2 and SQLite
+  # All the settings bellow this point only apply to remote databases
   address: 127.0.0.1:3306
   database: minecraft
   username: simplescore
@@ -36,7 +38,7 @@ storage:
     keepaliveTime: 0
     # The connection timeout in milliseconds
     connectionTimeout: 5000
-    # Extra properties to pass on to the data source
+    # Extra properties to pass on to the data source driver
     extraProperties:
       useUnicode: true
       characterEncoding: utf8
