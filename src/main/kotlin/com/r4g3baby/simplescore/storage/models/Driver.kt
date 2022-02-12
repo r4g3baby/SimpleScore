@@ -17,6 +17,10 @@ enum class Driver(
         "org.xerial", "sqlite-jdbc", "3.36.0.3",
         "rzozdjkeGGoP7WPs1BS3Kogr9FJme0kKC+Or+FtjfT8="
     ),
+    PostgreSQL(
+        "org.postgresql", "postgresql", "42.3.2",
+        "uQE+CS1Kba5AS5surqrsgudYPdRQkR/cHkNqWqYqJc8="
+    ),
     MariaDB(
         "org.mariadb.jdbc", "mariadb-java-client", "3.0.3",
         "YTCGoKIPF3389eIn9RknK8a+iL3kAR3g8jxTMjGnrgU="

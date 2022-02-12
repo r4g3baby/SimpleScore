@@ -7,6 +7,7 @@ import com.r4g3baby.simplescore.storage.models.Driver
 import com.r4g3baby.simplescore.storage.providers.StorageProvider
 import com.r4g3baby.simplescore.storage.providers.hikari.MariaDBProvider
 import com.r4g3baby.simplescore.storage.providers.hikari.MySQLProvider
+import com.r4g3baby.simplescore.storage.providers.hikari.PostgreSQLProvider
 import com.r4g3baby.simplescore.storage.providers.local.H2Provider
 import com.r4g3baby.simplescore.storage.providers.local.SQLiteProvider
 import java.net.URL
@@ -49,6 +50,9 @@ class StorageManager {
                 )
                 Driver.SQLite -> SQLiteProvider(
                     classLoader, pluginDataFolder.resolve("data-$driverName.db"), storageSettings
+                )
+                Driver.PostgreSQL -> PostgreSQLProvider(
+                    classLoader, storageSettings
                 )
                 Driver.MariaDB -> MariaDBProvider(
                     classLoader, storageSettings

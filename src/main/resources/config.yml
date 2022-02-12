@@ -15,7 +15,7 @@ checkForUpdates: true
 storage:
   # Supported database drivers:
   #  Local: H2, SQLite
-  #  Remote: MariaDB, MySQL
+  #  Remote: PostgreSQL, MariaDB, MySQL
   driver: h2
   tablePrefix: simplescore_
 
