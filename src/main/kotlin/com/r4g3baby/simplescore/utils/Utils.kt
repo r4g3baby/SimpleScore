@@ -28,3 +28,27 @@ fun List<Any>.isEqual(other: List<Any>): Boolean {
 
     return this.toTypedArray() contentEquals other.toTypedArray()
 }
+
+fun String.lazyReplace(oldValue: String, newValueFunc: () -> String): String {
+    run {
+        var occurrenceIndex: Int = indexOf(oldValue, 0, true)
+        if (occurrenceIndex < 0) return this
+
+        val newValue = newValueFunc()
+
+        val oldValueLength = oldValue.length
+        val searchStep = oldValueLength.coerceAtLeast(1)
+        val newLengthHint = length - oldValueLength + newValue.length
+        if (newLengthHint < 0) throw OutOfMemoryError()
+        val stringBuilder = StringBuilder(newLengthHint)
+
+        var i = 0
+        do {
+            stringBuilder.append(this, i, occurrenceIndex).append(newValue)
+            i = occurrenceIndex + oldValueLength
+            if (occurrenceIndex >= length) break
+            occurrenceIndex = indexOf(oldValue, occurrenceIndex + searchStep, true)
+        } while (occurrenceIndex > 0)
+        return stringBuilder.append(this, i, length).toString()
+    }
+}
