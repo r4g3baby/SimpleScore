@@ -14,8 +14,8 @@ enum class Driver(
         "rzozdjkeGGoP7WPs1BS3Kogr9FJme0kKC+Or+FtjfT8="
     ),
     PostgreSQL(
-        "org.postgresql", "postgresql", "42.3.2",
-        "uQE+CS1Kba5AS5surqrsgudYPdRQkR/cHkNqWqYqJc8="
+        "org.postgresql", "postgresql", "42.3.3",
+        "7tBgT1ErpEgXlU3pmgfipUcKpL/LSB1OY6k+D/Dgrt4="
     ),
     MariaDB(
         "org.mariadb.jdbc", "mariadb-java-client", "3.0.3",
