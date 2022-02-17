@@ -16,7 +16,9 @@ storage:
   # Supported database drivers:
   #  Local: H2, SQLite
   #  Remote: PostgreSQL, MariaDB, MySQL
+  # Set to "none" to disable player data saving.
   driver: h2
+  # Prefix used for SimpleScore tables
   tablePrefix: simplescore_
 
   # All the settings bellow this point only apply to remote databases
@@ -25,7 +27,9 @@ storage:
   username: simplescore
   password: '|D/-\55\^/0|2|)'
 
-  # HikariCP connection pool settings
+  # HikariCP connection pool settings for remote databases
+  # The default provided settings should work fine for most server setups
+  # Do not change these settings unless you know what you're doing!
   pool:
     # The maximum number of connections in the pool
     maximumPoolSize: 8
