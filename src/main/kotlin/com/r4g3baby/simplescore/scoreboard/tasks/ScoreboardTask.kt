@@ -24,6 +24,9 @@ class ScoreboardTask : BukkitRunnable() {
         val possibleBoards = HashMap<Player, List<Scoreboard>>()
         for (world in Bukkit.getWorlds()) {
             val players = world.players.filter { player ->
+                // Skip Citizens NPCs
+                if (player.hasMetadata("NPC")) return@filter false
+
                 val playerData = SimpleScore.manager.playersData.get(player)
                 // No need to waste time computing scoreboards for players that won't see it
                 if (playerData.isHidden || playerData.isDisabled) return@filter false
