@@ -24,7 +24,22 @@ abstract class ScoreboardHandler {
 
     protected fun splitScoreLine(text: String): Pair<String, String> {
         if (text.length > 16) {
-            val index = if (text.elementAt(15) == ChatColor.COLOR_CHAR) 15 else 16
+            // Prevent spliting color codes
+            var index = if (text.elementAt(15) == ChatColor.COLOR_CHAR) 15 else 16
+
+            // Prevent splitting hex color codes
+            for (i in 1..6) {
+                val newIndex = index - (i * 2)
+
+                // This isn't a hex color code
+                if (text.elementAt(newIndex) != ChatColor.COLOR_CHAR) break
+
+                // Found start of hex color code
+                if (text.elementAt(newIndex + 1) == 'x') {
+                    index = newIndex
+                    break
+                }
+            }
 
             val prefix = text.substring(0, index)
             val lastColors = ChatColor.getLastColors(prefix)
