@@ -1,6 +1,8 @@
 package com.r4g3baby.simplescore.scoreboard.handlers
 
+import com.r4g3baby.simplescore.SimpleScore
 import org.bukkit.ChatColor
+import org.bukkit.ChatColor.COLOR_CHAR
 import org.bukkit.entity.Player
 
 abstract class ScoreboardHandler {
@@ -18,21 +20,24 @@ abstract class ScoreboardHandler {
     }
 
     protected fun scoreToName(score: Int): String {
-        return score.toString().toCharArray()
-            .joinToString(ChatColor.COLOR_CHAR.toString(), ChatColor.COLOR_CHAR.toString())
+        return score.toString().toCharArray().joinToString(COLOR_CHAR.toString(), COLOR_CHAR.toString())
     }
 
+    private val useMultiVersionLimit
+        get() = SimpleScore.config.forceMultiVersion || (!SimpleScore.config.ignoreViaBackwards && SimpleScore.isViaBackwardsEnabled)
+
     protected fun splitScoreLine(text: String): Pair<String, String> {
-        if (text.length > 16) {
-            // Prevent spliting color codes
-            var index = if (text.elementAt(15) == ChatColor.COLOR_CHAR) 15 else 16
+        var index = if (useMultiVersionLimit) 16 else teamLengthLimit
+        if (text.length > index) {
+            // Prevent spliting normal color codes
+            if (text.elementAt(index - 1) == COLOR_CHAR) index--
 
             // Prevent splitting hex color codes
             for (i in 1..6) {
                 val newIndex = index - (i * 2)
 
                 // This isn't a hex color code
-                if (text.elementAt(newIndex) != ChatColor.COLOR_CHAR) break
+                if (text.elementAt(newIndex) != COLOR_CHAR) break
 
                 // Found start of hex color code
                 if (text.elementAt(newIndex + 1) == 'x') {

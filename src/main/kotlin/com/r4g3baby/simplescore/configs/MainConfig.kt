@@ -10,6 +10,10 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val version = config.getInt("version", -1)
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
+    val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
+    val ignoreViaBackwards = config.getBoolean("ignoreViaBackwards", false)
+    val forceMultiVersion = config.getBoolean("forceMultiVersion", false)
+    val forceLegacy = config.getBoolean("forceLegacy", false)
     val storage = Storage(
         config.getString("storage.driver", "h2"),
         config.getString("storage.tablePrefix", "simplescore_"),
@@ -26,8 +30,6 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
             config.getConfigurationSection("storage.pool.extraProperties")?.getValues(false) ?: emptyMap()
         )
     )
-    val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
-    val forceLegacy = config.getBoolean("forceLegacy", false)
 
     private val scoreboardsConfig = ScoreboardsConfig(plugin)
     val scoreboards get() = scoreboardsConfig.scoreboards

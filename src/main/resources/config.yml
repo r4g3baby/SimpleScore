@@ -11,6 +11,20 @@ language: en
 # Check for updates when the plugin starts
 checkForUpdates: true
 
+# Whether to apply placeholders asynchronously or not (disabling this might reduce performance)
+asyncPlaceholders: true
+
+# Ignore ViaBackwards support, allows you to use more characters per line but might cause
+#  inconsistences for players running on versions 1.12.2 and bellow
+ignoreViaBackwards: false
+
+# Forces multiple version support, only enable this if your server supports multiple versions and
+#  players are experiencing scoreboard inconsistencies between minecraft versions
+forceMultiVersion: false
+
+# Enable this if you have other plugins that are overriding the scoreboard (requires server restart)
+forceLegacy: false
+
 # Any changes done to the storage configuration require a server restart
 storage:
   # Supported database drivers:
@@ -46,12 +60,6 @@ storage:
     extraProperties:
       useUnicode: true
       characterEncoding: utf8
-
-# Whether to apply placeholders asynchronously or not (disabling this might reduce performance)
-asyncPlaceholders: true
-
-# Enable this if you have other plugins that are overriding the scoreboard (requires server restart)
-forceLegacy: false
 
 # The format here is "<world name>: [ <list of scoreboards> ]"
 # World Names:
