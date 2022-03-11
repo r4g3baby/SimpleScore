@@ -6,9 +6,6 @@ import org.bukkit.ChatColor.COLOR_CHAR
 import org.bukkit.entity.Player
 
 abstract class ScoreboardHandler {
-    abstract val titleLengthLimit: Int
-    abstract val teamLengthLimit: Int
-
     abstract fun createScoreboard(player: Player)
     abstract fun removeScoreboard(player: Player)
     abstract fun clearScoreboard(player: Player)
@@ -23,11 +20,11 @@ abstract class ScoreboardHandler {
         return score.toString().toCharArray().joinToString(COLOR_CHAR.toString(), COLOR_CHAR.toString())
     }
 
-    private val useMultiVersionLimit
-        get() = SimpleScore.config.forceMultiVersion || (!SimpleScore.config.ignoreViaBackwards && SimpleScore.isViaBackwardsEnabled)
+    private val forceMultiVersionLimit
+        get() = SimpleScore.config.forceMultiVersion || SimpleScore.isViaBackwardsEnabled
 
-    protected fun splitScoreLine(text: String): Pair<String, String> {
-        var index = if (useMultiVersionLimit) 16 else teamLengthLimit
+    protected fun splitScoreLine(text: String, maxSize: Int, cutSuffix: Boolean = true): Pair<String, String> {
+        var index = if (forceMultiVersionLimit) 16 else maxSize
         if (text.length > index) {
             // Prevent spliting normal color codes
             if (text.elementAt(index - 1) == COLOR_CHAR) index--
@@ -50,8 +47,8 @@ abstract class ScoreboardHandler {
             val lastColors = ChatColor.getLastColors(prefix)
 
             var suffix = lastColors + text.substring(index)
-            if (suffix.length > teamLengthLimit) {
-                suffix = suffix.substring(0, teamLengthLimit)
+            if (cutSuffix && suffix.length > maxSize) {
+                suffix = suffix.substring(0, maxSize)
             }
 
             return prefix to suffix

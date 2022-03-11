@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.InternalStructure
 import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.utility.MinecraftVersion
 import com.comphenix.protocol.wrappers.EnumWrappers
-import com.comphenix.protocol.wrappers.WrappedChatComponent.fromChatMessage
+import com.comphenix.protocol.wrappers.WrappedChatComponent.fromLegacyText
 import com.comphenix.protocol.wrappers.WrappedChatComponent.fromText
 import com.r4g3baby.simplescore.scoreboard.models.PlayerBoard
 import org.bukkit.entity.Player
@@ -20,9 +20,6 @@ class ProtocolScoreboard : ScoreboardHandler() {
     private val afterCavesAndCliffsUpdate = MinecraftVersion("1.17").atOrAbove()
 
     private val playerBoards = HashMap<UUID, PlayerBoard>()
-
-    override val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
-    override val teamLengthLimit = titleLengthLimit / 2
 
     override fun createScoreboard(player: Player) {
         playerBoards.computeIfAbsent(player.uniqueId) {
@@ -92,18 +89,16 @@ class ProtocolScoreboard : ScoreboardHandler() {
     override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
         playerBoards[player.uniqueId]?.also { playerBoard ->
             if (playerBoard.title != title) {
-                var displayTitle = title
-                if (displayTitle.length > titleLengthLimit) {
-                    displayTitle = displayTitle.substring(0, titleLengthLimit)
-                }
-
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
                 packet.modifier.writeDefaults()
                 packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
                 packet.integers.write(0, 2) // Mode 2: Update Display Name
                 if (afterAquaticUpdate) {
-                    packet.chatComponents.write(0, fromChatMessage(displayTitle)[0]) // Display Name
-                } else packet.strings.write(1, displayTitle) // Display Name
+                    packet.chatComponents.write(0, fromLegacyText(title)) // Display Name
+                } else {
+                    val displayTitle = if (title.length > 32) title.substring(0, 32) else title
+                    packet.strings.write(1, displayTitle) // Display Name
+                }
                 protocolManager.sendServerPacket(player, packet)
             }
 
@@ -117,21 +112,22 @@ class ProtocolScoreboard : ScoreboardHandler() {
                 packet.modifier.writeDefaults()
                 packet.strings.write(0, scoreName) // Team Name
 
-                val splitText = splitScoreLine(value)
+                // Always split at 16 to improve version compatibility (players on 1.12 and older)
+                val splitText = splitScoreLine(value, 16, !afterAquaticUpdate)
                 if (afterCavesAndCliffsUpdate) {
                     val optStruct: Optional<InternalStructure> = packet.optionalStructures.read(0)
                     if (optStruct.isPresent) {
                         val struct = optStruct.get()
                         struct.chatComponents.write(0, fromText(scoreName)) // Display Name
-                        struct.chatComponents.write(1, fromChatMessage(splitText.first)[0]) // Prefix
-                        struct.chatComponents.write(2, fromChatMessage(splitText.second)[0]) // Suffix
+                        struct.chatComponents.write(1, fromLegacyText(splitText.first)) // Prefix
+                        struct.chatComponents.write(2, fromLegacyText(splitText.second)) // Suffix
 
                         packet.optionalStructures.write(0, Optional.of(struct))
                     }
                 } else if (afterAquaticUpdate) {
                     packet.chatComponents.write(0, fromText(scoreName)) // Display Name
-                    packet.chatComponents.write(1, fromChatMessage(splitText.first)[0]) // Prefix
-                    packet.chatComponents.write(2, fromChatMessage(splitText.second)[0]) // Suffix
+                    packet.chatComponents.write(1, fromLegacyText(splitText.first)) // Prefix
+                    packet.chatComponents.write(2, fromLegacyText(splitText.second)) // Suffix
                 } else {
                     packet.strings.write(1, scoreName) // Display Name
                     packet.strings.write(2, splitText.first) // Prefix

@@ -11,7 +11,6 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
-    val ignoreViaBackwards = config.getBoolean("ignoreViaBackwards", false)
     val forceMultiVersion = config.getBoolean("forceMultiVersion", false)
     val forceLegacy = config.getBoolean("forceLegacy", false)
     val storage = Storage(

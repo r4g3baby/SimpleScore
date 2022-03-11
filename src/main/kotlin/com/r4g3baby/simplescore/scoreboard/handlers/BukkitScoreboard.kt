@@ -8,8 +8,8 @@ import org.bukkit.scoreboard.DisplaySlot
 class BukkitScoreboard : ScoreboardHandler() {
     private val afterAquaticUpdate = ServerVersion("1.13").atOrAbove()
 
-    override val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
-    override val teamLengthLimit = titleLengthLimit / 2
+    private val titleLengthLimit = if (afterAquaticUpdate) 128 else 32
+    private val teamLengthLimit = titleLengthLimit / 2
 
     override fun createScoreboard(player: Player) {
         if (player.scoreboard != null && player.scoreboard != Bukkit.getScoreboardManager().mainScoreboard) {
@@ -53,7 +53,7 @@ class BukkitScoreboard : ScoreboardHandler() {
                     team.addEntry(scoreName)
                 }
 
-                val splitText = splitScoreLine(value)
+                val splitText = splitScoreLine(value, teamLengthLimit)
                 team.prefix = splitText.first
                 team.suffix = splitText.second
 
