@@ -20,7 +20,8 @@ class McMMOListener : Listener {
         SimpleScore.manager.playersData.setDisabled(mcMMO.p, e.targetPlayer, false)
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    // EventPriority set to low, so it doesn't get called after the onPlayerQuit event from PlayersListener
+    @EventHandler(priority = EventPriority.LOW)
     fun onPlayerQuit(e: PlayerQuitEvent) {
         SimpleScore.manager.playersData.setDisabled(mcMMO.p, e.player, false)
     }
