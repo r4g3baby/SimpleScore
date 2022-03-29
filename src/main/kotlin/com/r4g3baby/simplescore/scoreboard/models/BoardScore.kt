@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 data class BoardScore(
     val score: Int,
     val frames: ScoreFrames,
+    val elseFrames: ScoreFrames,
     val conditions: List<Condition> = emptyList()
 ) {
     fun canSee(player: Player): Boolean {

@@ -43,6 +43,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                         val scoresSec = scoreboardSec.getConfigurationSection("scores")
                         scoresSec.getKeys(false).mapNotNull { it.toIntOrNull() }.forEach { score ->
                             val scoreFrames = ArrayList<ScoreFrame>()
+                            val elseFrames = ArrayList<ScoreFrame>()
                             var conditions = emptyList<Condition>()
 
                             when {
@@ -68,6 +69,42 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                         }
                                     }
 
+                                    when {
+                                        scoreSec.isConfigurationSection("else") -> {
+                                            val elseSec = scoreSec.getConfigurationSection("else")
+                                            when {
+                                                elseSec.isList("frames") -> {
+                                                    elseSec.getList("frames").forEach { line ->
+                                                        val parsed = parseFrame(line, updateTime)?.also { scoreFrames.add(it) }
+                                                        if (parsed == null) plugin.logger.warning(
+                                                            "Invalid else frame value for scoreboard: $scoreboard, score: $score, value: $line."
+                                                        )
+                                                    }
+                                                }
+                                                elseSec.isString("frames") -> {
+                                                    scoreFrames.add(ScoreFrame(elseSec.getString("frames"), updateTime))
+                                                }
+                                                else -> {
+                                                    val framesValue = elseSec.get("frames")
+                                                    plugin.logger.warning(
+                                                        "Invalid else frames value for scoreboard: $scoreboard, score: $score, value: $framesValue."
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        scoreSec.isList("else") -> {
+                                            scoresSec.getList("else").forEach { frame ->
+                                                val parsed = parseFrame(frame, updateTime)?.also { elseFrames.add(it) }
+                                                if (parsed == null) plugin.logger.warning(
+                                                    "Invalid else frame value for scoreboard: $scoreboard, score: $score, value: $frame."
+                                                )
+                                            }
+                                        }
+                                        scoreSec.isString("else") -> {
+                                            elseFrames.add(ScoreFrame(scoreSec.getString("else"), updateTime))
+                                        }
+                                    }
+
                                     conditions = getConditions(scoreSec)
                                 }
                                 scoresSec.isList(score.toString()) -> {
@@ -89,13 +126,14 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                 }
                             }
 
-                            scores.add(BoardScore(score, ScoreFrames(scoreFrames), conditions))
+                            scores.add(BoardScore(score, ScoreFrames(scoreFrames), ScoreFrames(elseFrames), conditions))
                         }
                     }
                     scoreboardSec.isList("scores") -> {
                         scoreboardSec.getMapList("scores").forEach { scoreSec ->
                             val score = scoreSec["score"] as Int
                             val scoreFrames = ArrayList<ScoreFrame>()
+                            val elseFrames = ArrayList<ScoreFrame>()
                             val conditions = if ("conditions" in scoreSec) {
                                 (scoreSec["conditions"] as List<*>).filterIsInstance<String>().mapNotNull {
                                     conditions[it.lowercase()]
@@ -117,7 +155,24 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                                 }
                             }
 
-                            scores.add(BoardScore(score, ScoreFrames(scoreFrames), conditions))
+                            if ("else" in scoreSec) {
+                                when (val frames = scoreSec["else"]) {
+                                    is List<*> -> for (frame in frames) {
+                                        val parsed = parseFrame(frame, updateTime)?.also { elseFrames.add(it) }
+                                        if (parsed == null) plugin.logger.warning(
+                                            "Invalid else frame value for scoreboard: $scoreboard, score: $score, value: $frame."
+                                        )
+                                    }
+                                    is String -> elseFrames.add(ScoreFrame(frames, updateTime))
+                                    else -> {
+                                        plugin.logger.warning(
+                                            "Invalid else frames value for scoreboard: $scoreboard, value: $frames."
+                                        )
+                                    }
+                                }
+                            }
+
+                            scores.add(BoardScore(score, ScoreFrames(scoreFrames), ScoreFrames(elseFrames), conditions))
                         }
                     }
                     else -> {

@@ -18,6 +18,7 @@ class ScoreboardTask : BukkitRunnable() {
             scoreboard.titles.tick()
             scoreboard.scores.forEach { score ->
                 score.frames.tick()
+                score.elseFrames.tick()
             }
         }
 
@@ -111,10 +112,11 @@ class ScoreboardTask : BukkitRunnable() {
     private fun getPlayerBoard(scoreboard: Scoreboard, player: Player): Pair<String, Map<Int, String>> {
         val title = scoreboard.titles.current?.text ?: ""
         val scores = HashMap<Int, String>()
-        scoreboard.scores.forEach { score ->
-            if (score.canSee(player)) {
-                scores[score.score] = score.frames.current?.text ?: ""
-            }
+        scoreboard.scores.forEach { boardScore ->
+            val frameText = if (boardScore.canSee(player)) {
+                boardScore.frames.current?.text
+            } else boardScore.elseFrames.current?.text
+            frameText?.let { scores[boardScore.score] = it }
         }
         return applyPlaceholders(title, scores, player)
     }
