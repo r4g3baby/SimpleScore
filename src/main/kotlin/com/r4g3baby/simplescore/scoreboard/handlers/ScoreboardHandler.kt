@@ -6,24 +6,24 @@ import org.bukkit.ChatColor.COLOR_CHAR
 import org.bukkit.entity.Player
 
 abstract class ScoreboardHandler {
+    companion object {
+        fun getPlayerIdentifier(player: Player): String {
+            return "sb${player.uniqueId.toString().replace("-", "")}".substring(0..15)
+        }
+    }
+
     abstract fun createScoreboard(player: Player)
     abstract fun removeScoreboard(player: Player)
     abstract fun clearScoreboard(player: Player)
     abstract fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player)
     abstract fun hasScoreboard(player: Player): Boolean
 
-    protected fun getPlayerIdentifier(player: Player): String {
-        return "sb${player.uniqueId.toString().replace("-", "")}".substring(0..15)
-    }
-
     protected fun scoreToName(score: Int): String {
         return score.toString().toCharArray().joinToString(COLOR_CHAR.toString(), COLOR_CHAR.toString())
     }
 
-    private val forceMultiVersionLimit
-        get() = SimpleScore.config.forceMultiVersion || SimpleScore.isViaBackwardsEnabled
-
     protected fun splitScoreLine(text: String, maxSize: Int, cutSuffix: Boolean = true): Pair<String, String> {
+        val forceMultiVersionLimit = SimpleScore.config.forceMultiVersion || SimpleScore.isViaBackwardsEnabled
         var index = if (forceMultiVersionLimit) 16 else maxSize
         if (text.length > index) {
             // Prevent spliting normal color codes

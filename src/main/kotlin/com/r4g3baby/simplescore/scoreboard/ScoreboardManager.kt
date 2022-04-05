@@ -1,10 +1,12 @@
 package com.r4g3baby.simplescore.scoreboard
 
+import com.comphenix.protocol.ProtocolLibrary
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.McMMOListener
+import com.r4g3baby.simplescore.scoreboard.listeners.PacketsListener
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
@@ -26,6 +28,11 @@ class ScoreboardManager {
     val playersData: PlayersData = PlayersData()
 
     init {
+        val forceLegacy = SimpleScore.config.forceLegacy
+        val hasProtocolLib = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")
+        scoreboardHandler = if (!forceLegacy && hasProtocolLib) ProtocolScoreboard() else BukkitScoreboard()
+
+        if (hasProtocolLib) ProtocolLibrary.getProtocolManager().addPacketListener(PacketsListener())
         Bukkit.getPluginManager().apply {
             registerEvents(PlayersListener(), SimpleScore.plugin)
             if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
@@ -34,12 +41,6 @@ class ScoreboardManager {
         }
 
         PlaceholderProvider()
-
-        scoreboardHandler = if (!SimpleScore.config.forceLegacy) {
-            if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                ProtocolScoreboard()
-            } else BukkitScoreboard()
-        } else BukkitScoreboard()
 
         ScoreboardTask().runTaskTimerAsynchronously(SimpleScore.plugin, 20L, 1L)
     }
