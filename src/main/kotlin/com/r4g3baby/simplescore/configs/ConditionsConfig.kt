@@ -19,6 +19,20 @@ class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions") {
                             conditionSec.getString("permission")
                         )
                     }
+                    Condition.Type.GREATER_THAN -> {
+                        conditions[condition.lowercase()] = GreaterThan(
+                            conditionSec.getString("input"),
+                            conditionSec.getString("value"),
+                            conditionSec.getBoolean("orEqual", false)
+                        )
+                    }
+                    Condition.Type.LESS_THAN -> {
+                        conditions[condition.lowercase()] = LessThan(
+                            conditionSec.getString("input"),
+                            conditionSec.getString("value"),
+                            conditionSec.getBoolean("orEqual", false)
+                        )
+                    }
                     Condition.Type.EQUALS -> {
                         conditions[condition.lowercase()] = Equals(
                             conditionSec.getString("input"),

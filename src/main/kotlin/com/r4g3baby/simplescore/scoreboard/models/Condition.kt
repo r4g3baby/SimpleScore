@@ -7,6 +7,8 @@ interface Condition {
 
     enum class Type {
         HAS_PERMISSION,
+        GREATER_THAN,
+        LESS_THAN,
         EQUALS,
         CONTAINS,
         ENDS_WITH,

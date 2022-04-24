@@ -7,6 +7,10 @@
 # List of available types (attributes with an = are optional and default to the value shown after):
 # - HAS_PERMISSION (attributes: permission)
 #   - Checks if the player has the specified permission
+# - GREATER_THAN, LESS_THAN (attributes: input, value, orEqual=false)
+#   - Performs the specified operation between the input and value
+#   - You can use placeholders/variables in the input attribute
+#   - You can set orEqual to return true if they are equal
 # - EQUALS, CONTAINS, ENDS_WITH, STARTS_WITH (attributes: input, value, ignoreCase=false)
 #   - Performs the specified operation between the input and value
 #   - You can use placeholders/variables in the input attribute
