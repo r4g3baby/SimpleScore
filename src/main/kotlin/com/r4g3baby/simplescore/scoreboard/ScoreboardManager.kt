@@ -40,6 +40,11 @@ class ScoreboardManager {
             }
         }
 
+        if (!hasProtocolLib) with(SimpleScore.plugin.logger) {
+            info("It looks like your server doesn't have ProtocolLib, install ProtocolLib for better performance and compatibility with other plugins.")
+            info("https://www.spigotmc.org/resources/protocollib.1997/")
+        }
+
         PlaceholderProvider()
 
         ScoreboardTask().runTaskTimerAsynchronously(SimpleScore.plugin, 20L, 1L)
