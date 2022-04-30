@@ -7,7 +7,8 @@ class ServerVersion : Comparable<ServerVersion> {
     companion object {
         private val VERSION_PATTERN = Pattern.compile(".*\\(.*MC.\\s*([a-zA-z0-9\\-.]+).*")
 
-        private var currentVersion = ServerVersion(0, 0, 0)
+        var currentVersion = ServerVersion(0, 0, 0)
+            private set
 
         init {
             val serverVersion = Bukkit.getVersion()
@@ -17,8 +18,12 @@ class ServerVersion : Comparable<ServerVersion> {
             } else throw IllegalStateException("Cannot parse version '$serverVersion'")
         }
 
+        fun isAbove(version: ServerVersion): Boolean {
+            return currentVersion.isAbove(version)
+        }
+
         fun atOrAbove(version: ServerVersion): Boolean {
-            return currentVersion.isAtLeast(version)
+            return currentVersion.atOrAbove(version)
         }
     }
 
@@ -39,11 +44,19 @@ class ServerVersion : Comparable<ServerVersion> {
         this.build = numbers[2]
     }
 
+    fun isAbove(): Boolean {
+        return Companion.isAbove(this)
+    }
+
     fun atOrAbove(): Boolean {
         return Companion.atOrAbove(this)
     }
 
-    fun isAtLeast(other: ServerVersion): Boolean {
+    fun isAbove(other: ServerVersion): Boolean {
+        return compareTo(other) > 0
+    }
+
+    fun atOrAbove(other: ServerVersion): Boolean {
         return compareTo(other) >= 0
     }
 
