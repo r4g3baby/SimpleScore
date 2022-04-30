@@ -72,7 +72,7 @@ class ScoreboardManager {
         playersData.get(player).let { playerData ->
             val worldBoards = scoreboards.getForWorld(to.world).filter { it.canSee(player) }
             val regionBoards = WorldGuardAPI.getFlag(player, to)
-            val needsScoreboard = !playerData.isDisabled && (
+            val needsScoreboard = player.isOnline && !playerData.isDisabled && (
                 playerData.hasScoreboards || worldBoards.isNotEmpty() || regionBoards.isNotEmpty()
             )
 
