@@ -13,6 +13,7 @@ import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderProvider
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardTask
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
+import com.r4g3baby.simplescore.utils.ServerVersion
 import com.r4g3baby.simplescore.utils.isEqual
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -40,7 +41,12 @@ class ScoreboardManager {
             }
         }
 
-        if (!hasProtocolLib) with(SimpleScore.plugin.logger) {
+        if (ServerVersion("1.18.2").isAbove()) with(SimpleScore.plugin.logger) {
+            if (scoreboardHandler is ProtocolScoreboard) {
+                info("It looks like your server is running on an untested Minecraft version, if you experience any issues try enabling 'forceLegacy'.")
+            } else info("It looks like your server is running on an untested Minecraft version, you might experience some issues.")
+            info("You can reach out for support over on discord: https://discord.gg/cJnzTDGphE")
+        } else if (!hasProtocolLib) with(SimpleScore.plugin.logger) {
             info("It looks like your server doesn't have ProtocolLib, install ProtocolLib for better performance and compatibility with other plugins.")
             info("https://www.spigotmc.org/resources/protocollib.1997/")
         }
