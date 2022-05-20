@@ -1,7 +1,9 @@
 package com.r4g3baby.simplescore.configs
 
+import com.r4g3baby.simplescore.configs.models.CompatibilityMode
 import com.r4g3baby.simplescore.configs.models.Storage
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.Plugin
 import java.util.function.Predicate
 import java.util.regex.Pattern
@@ -11,6 +13,7 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
+    val compatibilityMode = config.getCompatibilityMode("compatibilityMode", "disable")
     val forceMultiVersion = config.getBoolean("forceMultiVersion", false)
     val forceLegacy = config.getBoolean("forceLegacy", false)
     val storage = Storage(
@@ -50,5 +53,9 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
                 }
             }
         }
+    }
+
+    private fun FileConfiguration.getCompatibilityMode(path: String, def: String): CompatibilityMode {
+        return CompatibilityMode.fromValue(this.getString(path, def))
     }
 }

@@ -14,6 +14,12 @@ checkForUpdates: true
 # Whether to apply placeholders asynchronously or not (disabling this might reduce performance)
 asyncPlaceholders: true
 
+# Changes packet level compatibility mode (only works with ProtocolLib enabled)
+#   disable: Disables SimpleScore when it detects another plugin scoreboard is being set
+#   block: Blocks other plugins from overriding the SimpleScore scoreboard
+#   none: Disables compatibility mode
+compatibilityMode: disable
+
 # Forces multiple version support, only enable this if your server supports multiple versions and
 #  players on 1.12 and older are experiencing scoreboard inconsistencies
 forceMultiVersion: false

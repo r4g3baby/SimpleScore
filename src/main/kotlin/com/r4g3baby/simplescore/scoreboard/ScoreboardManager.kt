@@ -2,6 +2,7 @@ package com.r4g3baby.simplescore.scoreboard
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.configs.models.CompatibilityMode
 import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
@@ -33,13 +34,20 @@ class ScoreboardManager {
         val hasProtocolLib = Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")
         scoreboardHandler = if (!forceLegacy && hasProtocolLib) ProtocolScoreboard() else BukkitScoreboard()
 
-        if (hasProtocolLib) ProtocolLibrary.getProtocolManager().addPacketListener(PacketsListener())
         Bukkit.getPluginManager().apply {
             registerEvents(PlayersListener(), SimpleScore.plugin)
             if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
                 registerEvents(McMMOListener(), SimpleScore.plugin)
             }
         }
+
+        if (SimpleScore.config.compatibilityMode != CompatibilityMode.NONE) {
+            if (hasProtocolLib) PacketsListener().let { packetsListener ->
+                ProtocolLibrary.getProtocolManager().addPacketListener(packetsListener)
+                Bukkit.getPluginManager().registerEvents(packetsListener, SimpleScore.plugin)
+            }
+        }
+
 
         if (ServerVersion("1.18.2").isAbove()) with(SimpleScore.plugin.logger) {
             if (scoreboardHandler is ProtocolScoreboard) {
@@ -66,6 +74,16 @@ class ScoreboardManager {
         }
 
         Bukkit.getOnlinePlayers().forEach { scoreboardHandler.clearScoreboard(it) }
+    }
+
+    internal fun needsScoreboard(player: Player): Boolean {
+        playersData.get(player).let { playerData ->
+            val worldBoards = scoreboards.getForWorld(player.world).filter { it.canSee(player) }
+            val regionBoards = WorldGuardAPI.getFlag(player, player.location)
+            return player.isOnline && !playerData.isDisabled && (
+                playerData.hasScoreboards || worldBoards.isNotEmpty() || regionBoards.isNotEmpty()
+            )
+        }
     }
 
     internal fun updateScoreboardState(player: Player, to: Location = player.location, from: Location? = null) {
