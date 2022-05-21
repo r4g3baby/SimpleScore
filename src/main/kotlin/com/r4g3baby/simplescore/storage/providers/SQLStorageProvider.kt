@@ -1,7 +1,7 @@
 package com.r4g3baby.simplescore.storage.providers
 
 import com.r4g3baby.simplescore.SimpleScore
-import com.r4g3baby.simplescore.configs.models.Storage
+import com.r4g3baby.simplescore.storage.models.Storage
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import java.sql.Connection
 import java.util.*

@@ -1,6 +1,6 @@
 package com.r4g3baby.simplescore.storage.providers.hikari
 
-import com.r4g3baby.simplescore.configs.models.Storage
+import com.r4g3baby.simplescore.storage.models.Storage
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
 import com.r4g3baby.simplescore.storage.providers.SQLStorageProvider
 import com.zaxxer.hikari.HikariConfig

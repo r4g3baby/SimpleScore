@@ -1,7 +1,7 @@
 package com.r4g3baby.simplescore.configs
 
-import com.r4g3baby.simplescore.configs.models.CompatibilityMode
-import com.r4g3baby.simplescore.configs.models.Storage
+import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
+import com.r4g3baby.simplescore.storage.models.Storage
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.Plugin
@@ -13,28 +13,13 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
     val language = config.getString("language", "en")
     val checkForUpdates = config.getBoolean("checkForUpdates", true)
     val asyncPlaceholders = config.getBoolean("asyncPlaceholders", true)
-    val compatibilityMode = config.getCompatibilityMode("compatibilityMode", "disable")
+    val compatibilityMode = config.getCompatibilityMode("compatibilityMode")
     val forceMultiVersion = config.getBoolean("forceMultiVersion", false)
     val forceLegacy = config.getBoolean("forceLegacy", false)
-    val storage = Storage(
-        config.getString("storage.driver", "h2"),
-        config.getString("storage.tablePrefix", "simplescore_"),
-        config.getString("storage.address", "127.0.0.1:3306"),
-        config.getString("storage.database", "minecraft"),
-        config.getString("storage.username", "simplescore"),
-        config.getString("storage.password", "|D/-\\55\\^/0|2|)"),
-        Storage.Pool(
-            config.getInt("storage.pool.maximumPoolSize", 8),
-            config.getInt("storage.pool.minimumIdle", 8),
-            config.getLong("storage.pool.maxLifetime", 1800000),
-            config.getLong("storage.pool.keepaliveTime", 0),
-            config.getLong("storage.pool.connectionTimeout", 5000),
-            config.getConfigurationSection("storage.pool.extraProperties")?.getValues(false) ?: emptyMap()
-        )
-    )
+    val storage = config.getStorage("storage")
 
-    private val scoreboardsConfig = ScoreboardsConfig(plugin)
-    val scoreboards get() = scoreboardsConfig.scoreboards
+    val conditions = ConditionsConfig(plugin)
+    val scoreboards = ScoreboardsConfig(plugin, conditions)
     val worlds = LinkedHashMap<Predicate<String>, List<String>>()
 
     init {
@@ -55,7 +40,30 @@ class MainConfig(plugin: Plugin) : ConfigFile(plugin, "config") {
         }
     }
 
-    private fun FileConfiguration.getCompatibilityMode(path: String, def: String): CompatibilityMode {
-        return CompatibilityMode.fromValue(this.getString(path, def))
+    private fun FileConfiguration.getCompatibilityMode(path: String): CompatibilityMode {
+        return CompatibilityMode.fromValue(this.getString(path, "disable"))
+    }
+
+    private fun FileConfiguration.getStorage(path: String): Storage {
+        return Storage(
+            this.getString("$path.driver", "h2"),
+            this.getString("$path.tablePrefix", "simplescore_"),
+            this.getString("$path.address", "127.0.0.1:3306"),
+            this.getString("$path.database", "minecraft"),
+            this.getString("$path.username", "simplescore"),
+            this.getString("$path.password", "|D/-\\55\\^/0|2|)"),
+            this.getStoragePool("$path.pool")
+        )
+    }
+
+    private fun FileConfiguration.getStoragePool(path: String): Storage.Pool {
+        return Storage.Pool(
+            this.getInt("$path.maximumPoolSize", 8),
+            this.getInt("$path.minimumIdle", 8),
+            this.getLong("$path.maxLifetime", 1800000),
+            this.getLong("$path.keepaliveTime", 0),
+            this.getLong("$path.connectionTimeout", 5000),
+            this.getConfigurationSection("$path.extraProperties")?.getValues(false) ?: emptyMap()
+        )
     }
 }

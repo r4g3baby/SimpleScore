@@ -5,8 +5,8 @@ import com.r4g3baby.simplescore.scoreboard.models.conditions.*
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.plugin.Plugin
 
-class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions") {
-    val conditions = HashMap<String, Condition>()
+class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions"), Iterable<Map.Entry<String, Condition>> {
+    private val conditions = HashMap<String, Condition>()
 
     init {
         for (condition in config.getKeys(false).filter { !conditions.containsKey(it.lowercase()) }) {
@@ -64,5 +64,13 @@ class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions") {
                 }
             }
         }
+    }
+
+    operator fun get(condition: String): Condition? {
+        return conditions[condition.lowercase()]
+    }
+
+    override fun iterator(): Iterator<Map.Entry<String, Condition>> {
+        return conditions.asIterable().iterator()
     }
 }

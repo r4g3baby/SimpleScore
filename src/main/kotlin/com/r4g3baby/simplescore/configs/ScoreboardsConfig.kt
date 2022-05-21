@@ -5,10 +5,10 @@ import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.plugin.Plugin
 
-class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
-    private val conditionsConfig = ConditionsConfig(plugin)
-    val conditions get() = conditionsConfig.conditions
-    val scoreboards = HashMap<String, Scoreboard>()
+class ScoreboardsConfig(
+    plugin: Plugin, private val conditions: ConditionsConfig
+) : ConfigFile(plugin, "scoreboards"), Iterable<Map.Entry<String, Scoreboard>> {
+    private val scoreboards = HashMap<String, Scoreboard>()
 
     init {
         for (scoreboard in config.getKeys(false).filter { !scoreboards.containsKey(it.lowercase()) }) {
@@ -136,7 +136,7 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
                             val elseFrames = ArrayList<ScoreFrame>()
                             val conditions = if ("conditions" in scoreSec) {
                                 (scoreSec["conditions"] as List<*>).filterIsInstance<String>().mapNotNull {
-                                    conditions[it.lowercase()]
+                                    conditions[it]
                                 }
                             } else emptyList()
 
@@ -190,6 +190,14 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
         }
     }
 
+    operator fun get(scoreboard: String): Scoreboard? {
+        return scoreboards[scoreboard.lowercase()]
+    }
+
+    override fun iterator(): Iterator<Map.Entry<String, Scoreboard>> {
+        return scoreboards.asIterable().iterator()
+    }
+
     private fun parseFrame(frame: Any?, updateTime: Int): ScoreFrame? {
         return when (frame) {
             is String -> ScoreFrame(frame, updateTime)
@@ -200,6 +208,6 @@ class ScoreboardsConfig(plugin: Plugin) : ConfigFile(plugin, "scoreboards") {
 
     private fun getConditions(section: ConfigurationSection): List<Condition> {
         if (!section.isList("conditions")) return emptyList()
-        return section.getStringList("conditions").mapNotNull { conditions[it.lowercase()] }
+        return section.getStringList("conditions").mapNotNull { conditions[it] }
     }
 }

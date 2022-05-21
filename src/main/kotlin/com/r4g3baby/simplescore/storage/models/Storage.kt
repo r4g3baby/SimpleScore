@@ -1,6 +1,4 @@
-package com.r4g3baby.simplescore.configs.models
-
-import com.r4g3baby.simplescore.storage.models.Driver
+package com.r4g3baby.simplescore.storage.models
 
 data class Storage(
     private val _driver: String,

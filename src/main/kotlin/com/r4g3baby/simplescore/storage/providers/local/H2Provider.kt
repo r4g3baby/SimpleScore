@@ -1,6 +1,6 @@
 package com.r4g3baby.simplescore.storage.providers.local
 
-import com.r4g3baby.simplescore.configs.models.Storage
+import com.r4g3baby.simplescore.storage.models.Storage
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
 import java.lang.reflect.Constructor
 import java.nio.file.Path

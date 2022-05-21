@@ -2,7 +2,7 @@ package com.r4g3baby.simplescore.scoreboard
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.r4g3baby.simplescore.SimpleScore
-import com.r4g3baby.simplescore.configs.models.CompatibilityMode
+import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
 import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
@@ -114,7 +114,7 @@ class ScoreboardManager {
         private val worldScoreboardsCache = HashMap<String, List<Scoreboard>>()
 
         fun get(scoreboard: String): Scoreboard? {
-            return SimpleScore.config.scoreboards[scoreboard.lowercase()]
+            return SimpleScore.config.scoreboards[scoreboard]
         }
 
         fun getForWorld(world: World) = getForWorld(world.name)
@@ -138,7 +138,7 @@ class ScoreboardManager {
         }
 
         override fun iterator(): Iterator<Map.Entry<String, Scoreboard>> {
-            return SimpleScore.config.scoreboards.asIterable().iterator()
+            return SimpleScore.config.scoreboards.iterator()
         }
     }
 

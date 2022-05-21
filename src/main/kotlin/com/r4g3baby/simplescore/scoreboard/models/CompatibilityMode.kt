@@ -1,4 +1,4 @@
-package com.r4g3baby.simplescore.configs.models
+package com.r4g3baby.simplescore.scoreboard.models
 
 enum class CompatibilityMode {
     DISABLE,
