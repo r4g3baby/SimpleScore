@@ -18,15 +18,6 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
     private lateinit var customBundle: ResourceBundle
 
     private val messageFormatCache = HashMap<String, MessageFormat>()
-    private val nullBundle = object : ResourceBundle() {
-        override fun getKeys(): Enumeration<String>? {
-            return null
-        }
-
-        override fun handleGetObject(key: String): Any? {
-            return null
-        }
-    }
 
     init {
         loadTranslations(lang)
@@ -61,13 +52,13 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
         defaultBundle = try {
             ResourceBundle.getBundle("lang/messages", Locale(lang))
         } catch (ex: MissingResourceException) {
-            nullBundle
+            NullBundle
         }
 
         customBundle = try {
             ResourceBundle.getBundle("messages", Locale(lang), PluginResClassLoader(plugin))
         } catch (ex: MissingResourceException) {
-            nullBundle
+            NullBundle
         }
     }
 
@@ -94,6 +85,20 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
                 }
             }
             return null
+        }
+    }
+
+    private object NullBundle : ResourceBundle() {
+        override fun handleGetObject(key: String): Any? {
+            return null
+        }
+
+        override fun getKeys(): Enumeration<String>? {
+            return null
+        }
+
+        override fun toString(): String {
+            return "NullBundle"
         }
     }
 }
