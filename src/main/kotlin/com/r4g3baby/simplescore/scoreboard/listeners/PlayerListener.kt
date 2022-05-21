@@ -7,7 +7,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.*
 
-class PlayersListener : Listener {
+class PlayerListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onAsyncPlayerPreLogin(e: AsyncPlayerPreLoginEvent) {
         SimpleScore.manager.playersData.loadPlayer(e.uniqueId)

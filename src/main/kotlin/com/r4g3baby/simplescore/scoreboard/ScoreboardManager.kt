@@ -7,8 +7,8 @@ import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.McMMOListener
-import com.r4g3baby.simplescore.scoreboard.listeners.PacketsListener
-import com.r4g3baby.simplescore.scoreboard.listeners.PlayersListener
+import com.r4g3baby.simplescore.scoreboard.listeners.PacketListener
+import com.r4g3baby.simplescore.scoreboard.listeners.PlayerListener
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderProvider
@@ -34,16 +34,16 @@ class ScoreboardManager {
         scoreboardHandler = if (!forceLegacy && hasProtocolLib) ProtocolScoreboard() else BukkitScoreboard()
 
         Bukkit.getPluginManager().apply {
-            registerEvents(PlayersListener(), SimpleScore.plugin)
+            registerEvents(PlayerListener(), SimpleScore.plugin)
             if (!hasProtocolLib && isPluginEnabled("mcMMO")) {
                 registerEvents(McMMOListener(), SimpleScore.plugin)
             }
         }
 
         if (SimpleScore.config.compatibilityMode != CompatibilityMode.NONE) {
-            if (hasProtocolLib) PacketsListener().let { packetsListener ->
-                ProtocolLibrary.getProtocolManager().addPacketListener(packetsListener)
-                Bukkit.getPluginManager().registerEvents(packetsListener, SimpleScore.plugin)
+            if (hasProtocolLib) PacketListener().let { packetListener ->
+                ProtocolLibrary.getProtocolManager().addPacketListener(packetListener)
+                Bukkit.getPluginManager().registerEvents(packetListener, SimpleScore.plugin)
             }
         }
 
