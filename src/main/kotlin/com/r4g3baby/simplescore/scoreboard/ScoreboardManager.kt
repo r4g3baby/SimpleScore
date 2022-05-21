@@ -71,10 +71,10 @@ class ScoreboardManager {
 
     internal fun needsScoreboard(player: Player): Boolean {
         playersData.get(player).let { playerData ->
-            val worldBoards = scoreboards.getForWorld(player.world).filter { it.canSee(player) }
-            val regionBoards = WorldGuardAPI.getFlag(player, player.location)
+            val hasWorldBoard = scoreboards.getForWorld(player.world).any { it.canSee(player) }
+            val hasRegionBoard = WorldGuardAPI.getFlag(player, player.location).isNotEmpty()
             return player.isOnline && !playerData.isDisabled && (
-                playerData.hasScoreboards || worldBoards.isNotEmpty() || regionBoards.isNotEmpty()
+                playerData.hasScoreboards || hasWorldBoard || hasRegionBoard
             )
         }
     }
