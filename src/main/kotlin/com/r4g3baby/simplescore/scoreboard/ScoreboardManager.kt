@@ -36,7 +36,7 @@ class ScoreboardManager {
 
         Bukkit.getPluginManager().apply {
             registerEvents(PlayersListener(), SimpleScore.plugin)
-            if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
+            if (!hasProtocolLib && isPluginEnabled("mcMMO")) {
                 registerEvents(McMMOListener(), SimpleScore.plugin)
             }
         }
