@@ -195,7 +195,7 @@ class ScoreboardsConfig(
     }
 
     override fun iterator(): Iterator<Map.Entry<String, Scoreboard>> {
-        return scoreboards.asIterable().iterator()
+        return scoreboards.iterator()
     }
 
     private fun parseFrame(frame: Any?, updateTime: Int): ScoreFrame? {

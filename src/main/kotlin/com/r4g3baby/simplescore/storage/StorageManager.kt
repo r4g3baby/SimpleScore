@@ -64,7 +64,7 @@ class StorageManager {
         }
     }
 
-    fun shutdown() {
+    internal fun shutdown() {
         provider?.shutdown()
     }
 

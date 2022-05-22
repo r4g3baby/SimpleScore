@@ -2,13 +2,13 @@ package com.r4g3baby.simplescore.scoreboard
 
 import com.comphenix.protocol.ProtocolLibrary
 import com.r4g3baby.simplescore.SimpleScore
-import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
 import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ProtocolScoreboard
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler
 import com.r4g3baby.simplescore.scoreboard.listeners.McMMOListener
 import com.r4g3baby.simplescore.scoreboard.listeners.PacketListener
 import com.r4g3baby.simplescore.scoreboard.listeners.PlayerListener
+import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderProvider
@@ -93,7 +93,7 @@ class ScoreboardManager {
                 else if (from != null) {
                     val fromWorldBoards = scoreboards.getForWorld(from.world).filter { it.canSee(player) }
                     val fromRegionBoards = WorldGuardAPI.getFlag(player, from)
-                    if (!fromWorldBoards.isEqual(worldBoards) || !fromRegionBoards.isEqual(regionBoards)) {
+                    if (!(fromWorldBoards.isEqual(worldBoards)) || !(fromRegionBoards.isEqual(regionBoards))) {
                         Bukkit.getScheduler().runTask(SimpleScore.plugin) {
                             scoreboardHandler.clearScoreboard(player)
                         }
@@ -126,7 +126,7 @@ class ScoreboardManager {
             }
         }
 
-        fun clearCache() {
+        internal fun clearCache() {
             worldScoreboardsCache.clear()
         }
 
@@ -231,7 +231,7 @@ class ScoreboardManager {
         }
 
         override fun iterator(): Iterator<Map.Entry<UUID, PlayerData>> {
-            return playersData.asIterable().iterator()
+            return playersData.iterator()
         }
     }
 }

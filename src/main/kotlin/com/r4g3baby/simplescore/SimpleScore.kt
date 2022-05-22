@@ -68,6 +68,7 @@ class SimpleScore : JavaPlugin() {
             usePlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
             useMVdWPlaceholderAPI = Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
             isViaBackwardsEnabled = Bukkit.getPluginManager().isPluginEnabled("ViaBackwards")
+
             config = MainConfig(plugin)
             i18n = I18n(config.language, plugin)
             storage = StorageManager()

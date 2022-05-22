@@ -71,6 +71,6 @@ class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions"), Itera
     }
 
     override fun iterator(): Iterator<Map.Entry<String, Condition>> {
-        return conditions.asIterable().iterator()
+        return conditions.iterator()
     }
 }

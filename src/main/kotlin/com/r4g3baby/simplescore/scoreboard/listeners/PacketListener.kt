@@ -6,8 +6,8 @@ import com.comphenix.protocol.events.ListeningWhitelist
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.events.PacketListener
 import com.r4g3baby.simplescore.SimpleScore
-import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler.Companion.getPlayerIdentifier
+import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
