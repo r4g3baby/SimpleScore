@@ -1,8 +1,8 @@
 package com.r4g3baby.simplescore.scoreboard.worldguard
 
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
 import org.codemc.worldguardwrapper.WorldGuardWrapper
 import org.codemc.worldguardwrapper.flag.IWrappedFlag
 
@@ -12,8 +12,8 @@ object WorldGuardAPI {
 
     val isEnabled get() = this::scoreboardFlag.isInitialized
 
-    fun init(plugin: Plugin) {
-        if (plugin.server.pluginManager.getPlugin("WorldGuard") != null) {
+    internal fun init() {
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
             wrapper = WorldGuardWrapper.getInstance()
 
             var flag = wrapper.registerFlag("scoreboard", String::class.java, "")

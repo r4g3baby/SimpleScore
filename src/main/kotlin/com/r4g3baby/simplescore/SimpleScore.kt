@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class SimpleScore : JavaPlugin() {
     override fun onLoad() {
-        WorldGuardAPI.init(this)
+        WorldGuardAPI.init()
     }
 
     override fun onEnable() {
