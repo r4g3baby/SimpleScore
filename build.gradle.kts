@@ -1,6 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     kotlin("jvm") version "1.6.21"
+    id("maven-publish")
 }
 
 group = "com.r4g3baby"
@@ -81,5 +82,25 @@ tasks {
         }
 
         minimize()
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/r4g3baby/SimpleScore")
+            credentials {
+                username = project.findProperty("github.actor") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+
+    publications {
+        register<MavenPublication>("gpr") {
+            artifactId = project.name.toLowerCase()
+            from(components["kotlin"])
+        }
     }
 }
