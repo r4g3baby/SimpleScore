@@ -29,7 +29,7 @@ class BukkitScoreboard : ScoreboardHandler() {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
             objective.scoreboard.entries.forEach { scoreName ->
-                objective.scoreboard.getTeam(scoreName).unregister()
+                objective.scoreboard.getTeam(scoreName)?.unregister()
                 objective.scoreboard.resetScores(scoreName)
             }
         }
@@ -66,7 +66,7 @@ class BukkitScoreboard : ScoreboardHandler() {
             objective.scoreboard.entries.forEach { scoreName ->
                 val score = objective.getScore(scoreName).score
                 if (!scores.containsKey(score)) {
-                    objective.scoreboard.getTeam(scoreName).unregister()
+                    objective.scoreboard.getTeam(scoreName)?.unregister()
                     objective.scoreboard.resetScores(scoreName)
                 }
             }
