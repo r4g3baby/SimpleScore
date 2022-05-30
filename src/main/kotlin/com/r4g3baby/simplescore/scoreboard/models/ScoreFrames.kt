@@ -1,7 +1,11 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
+import org.bukkit.entity.Player
+
 data class ScoreFrames(
-    private val frames: List<ScoreFrame>
+    private val frames: List<ScoreFrame> = emptyList(),
+    val elseFrames: ScoreFrames? = null,
+    val conditions: List<Condition> = emptyList()
 ) : Iterable<ScoreFrame> {
     private var currentIndex = 0
     private var currentTick = 0
@@ -20,6 +24,10 @@ data class ScoreFrames(
             }
             currentTick = 1
         }
+    }
+
+    fun canSee(player: Player): Boolean {
+        return conditions.isEmpty() || !conditions.any { !it.check(player) }
     }
 
     override fun iterator(): Iterator<ScoreFrame> {
