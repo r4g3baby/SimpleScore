@@ -13,5 +13,17 @@ interface Condition {
         CONTAINS,
         ENDS_WITH,
         STARTS_WITH;
+
+        companion object {
+            @JvmStatic
+            fun fromValue(value: String): Type? {
+                for (type in Type.values()) {
+                    if (type.name.equals(value, ignoreCase = true)) {
+                        return type
+                    }
+                }
+                return null
+            }
+        }
     }
 }
