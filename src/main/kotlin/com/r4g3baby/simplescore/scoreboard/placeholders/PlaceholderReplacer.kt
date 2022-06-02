@@ -22,7 +22,7 @@ object PlaceholderReplacer {
         try {
             return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, input)
         } catch (ex: Exception) {
-            if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
+            if ((System.currentTimeMillis() - lastException) > 10 * 1000) {
                 lastException = System.currentTimeMillis()
                 SimpleScore.plugin.logger.log(
                     Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
@@ -38,7 +38,7 @@ object PlaceholderReplacer {
         try {
             return be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, input)
         } catch (ex: Exception) {
-            if ((System.currentTimeMillis() - lastException) > 5 * 1000) {
+            if ((System.currentTimeMillis() - lastException) > 10 * 1000) {
                 lastException = System.currentTimeMillis()
                 SimpleScore.plugin.logger.log(
                     Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
