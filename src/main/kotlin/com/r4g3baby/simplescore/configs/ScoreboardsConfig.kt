@@ -74,8 +74,11 @@ class ScoreboardsConfig(
     }
 
     private fun ConfigurationSection.getConditions(): List<Condition> {
-        if (!isList("conditions")) return emptyList()
-        return getStringList("conditions").mapNotNull { conditions[it] }
+        return when {
+            isList("conditions") -> getStringList("conditions").mapNotNull { conditions[it] }
+            isString("conditions") -> listOf(getString("conditions")).mapNotNull { conditions[it] }
+            else -> emptyList()
+        }
     }
 
     private fun ConfigurationSection.getScoreFrames(path: String, updateTime: Int): ScoreFrames? {
