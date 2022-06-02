@@ -84,7 +84,7 @@ class ConditionsConfig(plugin: Plugin) : ConfigFile(plugin, "conditions"), Itera
     }
 
     private fun ConfigurationSection.getConditionType(path: String): Condition.Type? {
-        if (!contains(path)) return null
+        if (!isString(path)) return null
         return Condition.Type.fromValue(getString(path))
     }
 }
