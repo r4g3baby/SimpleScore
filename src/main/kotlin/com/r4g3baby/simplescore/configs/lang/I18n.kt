@@ -3,10 +3,7 @@ package com.r4g3baby.simplescore.configs.lang
 import com.r4g3baby.simplescore.utils.translateHexColorCodes
 import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.plugin.Plugin
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.InputStream
+import java.io.*
 import java.net.MalformedURLException
 import java.net.URL
 import java.text.MessageFormat
@@ -59,13 +56,13 @@ class I18n(locale: String = "en", private val plugin: Plugin) {
         ResourceBundle.clearCache()
 
         defaultBundle = try {
-            ResourceBundle.getBundle("lang/messages", currentLocale)
+            ResourceBundle.getBundle("lang/messages", currentLocale, UTF8PropertiesControl)
         } catch (_: MissingResourceException) {
             NullBundle
         }
 
         customBundle = try {
-            ResourceBundle.getBundle("messages", currentLocale, PluginResClassLoader(plugin))
+            ResourceBundle.getBundle("messages", currentLocale, PluginResClassLoader(plugin), UTF8PropertiesControl)
         } catch (_: MissingResourceException) {
             NullBundle
         }
@@ -92,6 +89,29 @@ class I18n(locale: String = "en", private val plugin: Plugin) {
                     return FileInputStream(file)
                 } catch (_: FileNotFoundException) {
                 }
+            }
+            return null
+        }
+    }
+
+    private object UTF8PropertiesControl : ResourceBundle.Control() {
+        override fun newBundle(baseName: String?, locale: Locale?, format: String?, loader: ClassLoader?, reload: Boolean): ResourceBundle? {
+            val resourceName = toResourceName(toBundleName(baseName, locale), "properties")
+
+            var stream: InputStream? = null
+            if (reload) {
+                val url = loader?.getResource(resourceName)
+                if (url != null) {
+                    val connection = url.openConnection()
+                    if (connection != null) {
+                        connection.useCaches = false
+                        stream = connection.getInputStream()
+                    }
+                }
+            } else stream = loader?.getResourceAsStream(resourceName)
+
+            stream?.use {
+                return PropertyResourceBundle(InputStreamReader(it, Charsets.UTF_8))
             }
             return null
         }
