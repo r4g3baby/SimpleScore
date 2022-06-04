@@ -13,14 +13,15 @@ import java.text.MessageFormat
 import java.util.*
 import java.util.logging.Level
 
-class I18n(lang: String = "en", private val plugin: Plugin) {
+class I18n(locale: String = "en", private val plugin: Plugin) {
+    private var currentLocale = Locale.getDefault()
     private lateinit var defaultBundle: ResourceBundle
     private lateinit var customBundle: ResourceBundle
 
     private val messageFormatCache = HashMap<String, MessageFormat>()
 
     init {
-        loadTranslations(lang)
+        loadTranslations(locale)
     }
 
     fun t(key: String, vararg args: Any, prefixed: Boolean = true) = trans(key, *args, prefixed = prefixed)
@@ -30,7 +31,7 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
                 '&', (if (prefixed) "${t("prefix", prefixed = false)} " else "") + try {
                     try {
                         customBundle.getString(key)
-                    } catch (ex: MissingResourceException) {
+                    } catch (_: MissingResourceException) {
                         defaultBundle.getString(key)
                     }
                 } catch (ex: MissingResourceException) {
@@ -46,18 +47,26 @@ class I18n(lang: String = "en", private val plugin: Plugin) {
         }.format(args)
     }
 
-    fun loadTranslations(lang: String) {
+    fun loadTranslations(locale: String) {
+        val parts = locale.split("_", "-", ".", "\\", "/")
+        currentLocale = when (parts.size) {
+            1 -> Locale(parts[0])
+            2 -> Locale(parts[0], parts[1])
+            3 -> Locale(parts[0], parts[1], parts[2])
+            else -> Locale(locale)
+        }
+
         ResourceBundle.clearCache()
 
         defaultBundle = try {
-            ResourceBundle.getBundle("lang/messages", Locale(lang))
-        } catch (ex: MissingResourceException) {
+            ResourceBundle.getBundle("lang/messages", currentLocale)
+        } catch (_: MissingResourceException) {
             NullBundle
         }
 
         customBundle = try {
-            ResourceBundle.getBundle("messages", Locale(lang), PluginResClassLoader(plugin))
-        } catch (ex: MissingResourceException) {
+            ResourceBundle.getBundle("messages", currentLocale, PluginResClassLoader(plugin))
+        } catch (_: MissingResourceException) {
             NullBundle
         }
     }
