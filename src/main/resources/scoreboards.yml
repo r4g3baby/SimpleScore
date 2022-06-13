@@ -15,7 +15,7 @@
 
 # This is a simple scoreboard with only the top and bottom lines animated
 simple:
-  titles: '&7&LYour&6&lServer'
+  titles: '&7&LDeeZ&e&aServer'
   scores:
     13:
       - '&7&m+----------------+'
@@ -27,7 +27,7 @@ simple:
     8: '    %hearts%'
     7: ''
     6: '&7» &6&lWorld'
-    5: '    &7%world%'
+    5: '    &7%worldDeez%'
     4: ''
     3: '&7» &6&lOnline Players'
     2: '    &7%online% &6players'
