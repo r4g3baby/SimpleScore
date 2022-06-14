@@ -10,15 +10,15 @@ import java.text.MessageFormat
 import java.util.*
 import java.util.logging.Level
 
-class I18n(locale: String = "en", private val plugin: Plugin) {
-    private var currentLocale = Locale.getDefault()
+class I18n(language: String = "en", private val plugin: Plugin) {
+    private lateinit var currentLocale: Locale
     private lateinit var defaultBundle: ResourceBundle
     private lateinit var customBundle: ResourceBundle
 
     private val messageFormatCache = HashMap<String, MessageFormat>()
 
     init {
-        loadTranslations(locale)
+        loadTranslations(language)
     }
 
     fun t(key: String, vararg args: Any, prefixed: Boolean = true) = trans(key, *args, prefixed = prefixed)
@@ -44,13 +44,13 @@ class I18n(locale: String = "en", private val plugin: Plugin) {
         }.format(args)
     }
 
-    fun loadTranslations(locale: String) {
-        val parts = locale.split("_", "-", ".", "\\", "/")
+    fun loadTranslations(language: String) {
+        val parts = language.split("_", "-", ".", "\\", "/")
         currentLocale = when (parts.size) {
             1 -> Locale(parts[0])
             2 -> Locale(parts[0], parts[1])
             3 -> Locale(parts[0], parts[1], parts[2])
-            else -> Locale(locale)
+            else -> Locale(language)
         }
 
         ResourceBundle.clearCache()
