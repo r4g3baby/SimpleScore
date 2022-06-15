@@ -15,7 +15,7 @@ abstract class ScoreboardHandler {
     abstract fun createScoreboard(player: Player)
     abstract fun removeScoreboard(player: Player)
     abstract fun clearScoreboard(player: Player)
-    abstract fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player)
+    abstract fun updateScoreboard(title: String?, scores: Map<Int, String?>, player: Player)
     abstract fun hasScoreboard(player: Player): Boolean
 
     protected fun scoreToName(score: Int): String {

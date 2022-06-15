@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
-data class ScoreFrame(
+data class Frame(
     val text: String,
-    val time: Int
+    val updateTime: Int,
+    val renderTime: Int
 )

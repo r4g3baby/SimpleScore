@@ -14,18 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
-        SimpleScore.manager.scoreboards.forEach { (_, scoreboard) ->
-            scoreboard.titles.tick()
-            scoreboard.scores.forEach { score ->
-                score.frames.tick()
-
-                var scoreElseFrames = score.frames.elseFrames
-                while (scoreElseFrames != null) {
-                    scoreElseFrames.tick()
-                    scoreElseFrames = scoreElseFrames.elseFrames
-                }
-            }
-        }
+        SimpleScore.manager.playersData.forEach { (_, playerData) -> playerData.scoreboard?.tick() }
 
         val possibleBoards = HashMap<Player, List<Scoreboard>>()
         for (world in Bukkit.getWorlds()) {
@@ -72,11 +61,11 @@ class ScoreboardTask : BukkitRunnable() {
         }
 
         if (SimpleScore.config.asyncPlaceholders) {
-            val playerBoards = HashMap<Player, Pair<String, Map<Int, String>>>()
+            val playerBoards = HashMap<Player, Pair<String?, Map<Int, String?>>>()
             possibleBoards.forEach { (player, scoreboards) ->
                 for (scoreboard in scoreboards) {
                     if (scoreboard.canSee(player)) {
-                        playerBoards[player] = getPlayerBoard(scoreboard, player)
+                        playerBoards[player] = getPlayerScoreboard(scoreboard, player)
                         break
                     }
                 }
@@ -101,7 +90,7 @@ class ScoreboardTask : BukkitRunnable() {
                     if (!playerData.isHidden && !playerData.isDisabled) {
                         for (scoreboard in scoreboards) {
                             if (scoreboard.canSee(player)) {
-                                val board = getPlayerBoard(scoreboard, player)
+                                val board = getPlayerScoreboard(scoreboard, player)
                                 with(SimpleScore.manager.scoreboardHandler) {
                                     updateScoreboard(board.first, board.second, player)
                                 }
@@ -114,29 +103,34 @@ class ScoreboardTask : BukkitRunnable() {
         }
     }
 
-    private fun getPlayerBoard(scoreboard: Scoreboard, player: Player): Pair<String, Map<Int, String>> {
-        val title = scoreboard.titles.current?.text ?: ""
-        val scores = HashMap<Int, String>()
-        scoreboard.scores.forEach { boardScore ->
-            val frameText = if (!boardScore.frames.canSee(player)) {
-                var scoreElseFrames = boardScore.frames.elseFrames
-                while (scoreElseFrames != null && !scoreElseFrames.canSee(player)) {
-                    scoreElseFrames = scoreElseFrames.elseFrames
-                }
-
-                scoreElseFrames?.current?.text
-            } else boardScore.frames.current?.text
-            frameText?.let { scores[boardScore.score] = it }
+    private fun getPlayerScoreboard(scoreboard: Scoreboard, player: Player): Pair<String?, Map<Int, String?>> {
+        val playerScoreboard = SimpleScore.manager.playersData.get(player).let { playerData ->
+            if (playerData.scoreboard == null || playerData.scoreboard?.name != scoreboard.name) {
+                playerData.scoreboard = scoreboard.asPlayerScoreboard()
+            }
+            return@let playerData.scoreboard!!
         }
-        return applyPlaceholders(title, scores, player)
-    }
 
-    private fun applyPlaceholders(title: String, scores: Map<Int, String>, player: Player): Pair<String, Map<Int, String>> {
-        val toDisplayTitle = replacePlaceholders(title, player)
+        val title = playerScoreboard.getTitle(player)
+        val scores = playerScoreboard.getScores(player)
 
-        val toDisplayScores = HashMap<Int, String>()
+        val toDisplayTitle = if (title != null) {
+            if (title.shouldRender) {
+                replacePlaceholders(title.currentText ?: "", player)
+            } else null
+        } else ""
+
+        val toDisplayScores = HashMap<Int, String?>()
         scores.forEach { (score, value) ->
-            toDisplayScores[score] = preventDuplicates(replacePlaceholders(value, player), toDisplayScores.values)
+            if (value != null) {
+                if (value.shouldRender) {
+                    toDisplayScores[score] = preventDuplicates(
+                        replacePlaceholders(
+                            value.currentText ?: "", player
+                        ), toDisplayScores.values
+                    )
+                } else toDisplayScores[score] = null
+            }
         }
 
         return (toDisplayTitle to toDisplayScores)
@@ -147,7 +141,7 @@ class ScoreboardTask : BukkitRunnable() {
         return translateHexColorCodes(translateAlternateColorCodes('&', result))
     }
 
-    private fun preventDuplicates(text: String, values: Collection<String>): String {
+    private fun preventDuplicates(text: String, values: Collection<String?>): String {
         return if (values.contains(text)) {
             preventDuplicates("${ChatColor.RESET}$text", values)
         } else text

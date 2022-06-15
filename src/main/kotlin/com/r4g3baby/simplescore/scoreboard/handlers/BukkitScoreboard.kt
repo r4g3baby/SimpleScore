@@ -35,16 +35,18 @@ class BukkitScoreboard : ScoreboardHandler() {
         }
     }
 
-    override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
+    override fun updateScoreboard(title: String?, scores: Map<Int, String?>, player: Player) {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
-            if (objective.displayName != title) {
+            if (title != null && objective.displayName != title) {
                 if (title.length > titleLengthLimit) {
                     objective.displayName = title.substring(0, titleLengthLimit)
                 } else objective.displayName = title
             }
 
             scores.forEach { (score, value) ->
+                if (value == null) return@forEach
+
                 val scoreName = scoreToName(score)
 
                 var team = objective.scoreboard.getTeam(scoreName)

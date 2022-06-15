@@ -86,9 +86,9 @@ class ProtocolScoreboard : ScoreboardHandler() {
         }
     }
 
-    override fun updateScoreboard(title: String, scores: Map<Int, String>, player: Player) {
+    override fun updateScoreboard(title: String?, scores: Map<Int, String?>, player: Player) {
         playerBoards[player.uniqueId]?.also { playerBoard ->
-            if (playerBoard.title != title) {
+            if (title != null && playerBoard.title != title) {
                 val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
                 packet.modifier.writeDefaults()
                 packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
@@ -103,6 +103,8 @@ class ProtocolScoreboard : ScoreboardHandler() {
             }
 
             scores.forEach { (score, value) ->
+                if (value == null) return@forEach
+
                 val boardScore = playerBoard.getScore(value)
                 if (boardScore == score) return@forEach
 
@@ -177,9 +179,13 @@ class ProtocolScoreboard : ScoreboardHandler() {
                 protocolManager.sendServerPacket(player, packet)
             }
 
-            playerBoard.also {
-                it.title = title
-                it.scores = scores
+            playerBoard.apply {
+                this.title = title ?: playerBoard.title
+                this.scores = scores.mapValues { score ->
+                    if (score.value == null) {
+                        playerBoard.scores[score.key] ?: ""
+                    } else score.value!!
+                }
             }
         }
     }

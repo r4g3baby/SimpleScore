@@ -1,6 +1,9 @@
 package com.r4g3baby.simplescore.configs
 
-import com.r4g3baby.simplescore.scoreboard.models.*
+import com.r4g3baby.simplescore.scoreboard.models.Condition
+import com.r4g3baby.simplescore.scoreboard.models.Frame
+import com.r4g3baby.simplescore.scoreboard.models.Line
+import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.plugin.Plugin
@@ -16,37 +19,42 @@ class ScoreboardsConfig(
 
             val scoreboardSec = config.getConfigurationSection(scoreboard)
             val updateTime = scoreboardSec.getInt("updateTime", 20)
+            val renderTime = scoreboardSec.getInt("renderTime", 5)
             val conditions = scoreboardSec.getConditions()
 
-            val titles = scoreboardSec.getScoreFrames("titles", updateTime)
-            if (titles == null) {
-                val titlesValue = scoreboardSec.get("titles")
-                plugin.logger.warning(
-                    "Invalid titles value for scoreboard: $scoreboard, value: $titlesValue."
-                )
+            val titles = scoreboardSec.getLineList("titles", updateTime, renderTime).let { titles ->
+                if (titles == null) {
+                    val titlesValue = scoreboardSec.get("titles")
+                    plugin.logger.warning(
+                        "Invalid titles value for scoreboard: $scoreboard, value: $titlesValue."
+                    )
+                }
+                return@let titles ?: emptyList()
             }
 
-            val scores = ArrayList<BoardScore>()
+            val scores = HashMap<Int, List<Line>>()
             when {
                 scoreboardSec.isConfigurationSection("scores") -> {
                     val scoresSec = scoreboardSec.getConfigurationSection("scores")
                     scoresSec.getKeys(false).mapNotNull { it.toIntOrNull() }.forEach { score ->
-                        val scoreFrames = scoresSec.getScoreFrames(score.toString(), updateTime)
-                        if (scoreFrames == null) {
+                        val scoreLines = scoresSec.getLineList(score.toString(), updateTime, renderTime)
+                        if (scoreLines == null) {
                             val scoreValue = scoreboardSec.get(score.toString())
                             plugin.logger.warning(
                                 "Invalid score value for scoreboard: $scoreboard, score: $score, value: $scoreValue."
                             )
                         }
 
-                        scores.add(BoardScore(score, scoreFrames ?: ScoreFrames()))
+                        scores.computeIfAbsent(score) { scoreLines ?: emptyList() }
                     }
                 }
                 scoreboardSec.isList("scores") -> scoreboardSec.getMapList("scores").forEach { scoreMap ->
                     val scoreNumber = scoreMap["score"] as Int
                     val scoreUpdateTime = scoreMap.getOrDefault("updateTime", updateTime) as Int
-                    val scoreFrames = scoreMap.getScoreFrames(scoreUpdateTime)
-                    scores.add(BoardScore(scoreNumber, scoreFrames ?: ScoreFrames()))
+                    val scoreRenderTime = scoreMap.getOrDefault("renderTime", renderTime) as Int
+                    val scoreFrames = scoreMap.getLineList(scoreUpdateTime, scoreRenderTime)
+
+                    scores.computeIfAbsent(scoreNumber) { scoreFrames ?: emptyList() }
                 }
                 else -> {
                     val scoresValue = scoreboardSec.get("scores")
@@ -56,9 +64,7 @@ class ScoreboardsConfig(
                 }
             }
 
-            scoreboards[scoreboard.lowercase()] = Scoreboard(
-                scoreboard, titles ?: ScoreFrames(), scores, conditions
-            )
+            scoreboards[scoreboard.lowercase()] = Scoreboard(scoreboard, titles, scores, conditions)
         }
     }
 
@@ -81,53 +87,51 @@ class ScoreboardsConfig(
         }
     }
 
-    private fun ConfigurationSection.getScoreFrames(path: String, updateTime: Int): ScoreFrames? {
+    private fun ConfigurationSection.getLineList(path: String, updateTime: Int, renderTime: Int): List<Line>? {
         if (!contains(path)) return null
 
         when {
             isConfigurationSection(path) -> getConfigurationSection(path).let { section ->
-                val frames = ArrayList<ScoreFrame>()
+                val frames = ArrayList<Frame>()
                 when {
                     section.isList("frames") -> section.getList("frames").forEach { frame ->
-                        parseFrame(frame, updateTime)?.also { frames.add(it) }
+                        parseFrame(frame, updateTime, renderTime)?.also { frames.add(it) }
                     }
-                    section.isString("frames") -> frames.add(ScoreFrame(section.getString("frames"), updateTime))
+                    section.isString("frames") -> frames.add(Frame(section.getString("frames"), updateTime, renderTime))
                 }
 
-                return ScoreFrames(frames, section.getScoreFrames("else", updateTime), getConditions())
+                val lines = mutableListOf(Line(frames, getConditions()))
+                section.getLineList("else", updateTime, renderTime)?.also { lines.addAll(it) }
+                return lines
             }
             isList(path) -> {
-                val frames = ArrayList<ScoreFrame>()
+                val frames = ArrayList<Frame>()
                 getList(path).forEach { frame ->
-                    parseFrame(frame, updateTime)?.also { frames.add(it) }
+                    parseFrame(frame, updateTime, renderTime)?.also { frames.add(it) }
                 }
-                return ScoreFrames(frames)
+                return listOf(Line(frames))
             }
-            isString(path) -> return ScoreFrames(listOf(ScoreFrame(getString(path), updateTime)))
+            isString(path) -> return listOf(Line(listOf(Frame(getString(path), updateTime, renderTime))))
             else -> return null
         }
     }
 
-    private fun Map<*, *>.getScoreFrames(updateTime: Int): ScoreFrames? {
+    private fun Map<*, *>.getLineList(updateTime: Int, renderTime: Int): List<Line>? {
         if (!containsKey("frames")) return null
 
         val frames = when (val frames = get("frames")) {
             is List<*> -> {
-                val frameList = ArrayList<ScoreFrame>()
+                val frameList = ArrayList<Frame>()
                 frames.forEach { frame ->
-                    parseFrame(frame, updateTime)?.also { frameList.add(it) }
+                    parseFrame(frame, updateTime, renderTime)?.also { frameList.add(it) }
                 }
                 frameList
             }
             is String -> {
-                listOf(ScoreFrame(frames, updateTime))
+                listOf(Frame(frames, updateTime, renderTime))
             }
             else -> emptyList()
         }
-
-        val elseFrames = if (containsKey("else")) {
-            (get("else") as Map<*, *>).getScoreFrames(updateTime)
-        } else null
 
         val conditions = if (containsKey("conditions")) {
             (get("conditions") as List<*>).filterIsInstance<String>().mapNotNull {
@@ -135,13 +139,21 @@ class ScoreboardsConfig(
             }
         } else emptyList()
 
-        return ScoreFrames(frames, elseFrames, conditions)
+        val lines = mutableListOf(Line(frames, conditions))
+        if (containsKey("else")) {
+            (get("else") as Map<*, *>).getLineList(updateTime, renderTime)?.also { lines.addAll(it) }
+        }
+        return lines
     }
 
-    private fun parseFrame(frame: Any?, updateTime: Int): ScoreFrame? {
+    private fun parseFrame(frame: Any?, updateTime: Int, renderTime: Int): Frame? {
         return when (frame) {
-            is String -> ScoreFrame(frame, updateTime)
-            is Map<*, *> -> ScoreFrame(frame["text"] as String, frame.getOrDefault("time", updateTime) as Int)
+            is String -> Frame(frame, updateTime, renderTime)
+            is Map<*, *> -> Frame(
+                frame["text"] as String,
+                frame.getOrDefault("update", updateTime) as Int,
+                frame.getOrDefault("render", renderTime) as Int
+            )
             else -> null
         }
     }
