@@ -23,9 +23,14 @@ class I18n(language: String = "en", private val plugin: Plugin) {
 
     fun t(key: String, vararg args: Any, prefixed: Boolean = true) = trans(key, *args, prefixed = prefixed)
     fun trans(key: String, vararg args: Any, prefixed: Boolean = true): String {
+        val prefix = if (prefixed) {
+            val prefix = trans("prefix", prefixed = false)
+            if (prefix.isNotEmpty()) "$prefix " else ""
+        } else ""
+
         val translation = translateHexColorCodes(
             translateAlternateColorCodes(
-                '&', (if (prefixed) "${t("prefix", prefixed = false)} " else "") + try {
+                '&', prefix + try {
                     try {
                         customBundle.getString(key)
                     } catch (_: MissingResourceException) {
