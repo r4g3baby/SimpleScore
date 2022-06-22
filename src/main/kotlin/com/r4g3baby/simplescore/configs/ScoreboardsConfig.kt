@@ -37,24 +37,23 @@ class ScoreboardsConfig(
                 scoreboardSec.isConfigurationSection("scores") -> {
                     val scoresSec = scoreboardSec.getConfigurationSection("scores")
                     scoresSec.getKeys(false).mapNotNull { it.toIntOrNull() }.forEach { score ->
-                        val scoreLines = scoresSec.getLineList(score.toString(), updateTime, renderTime)
-                        if (scoreLines == null) {
-                            val scoreValue = scoreboardSec.get(score.toString())
-                            plugin.logger.warning(
-                                "Invalid score value for scoreboard: $scoreboard, score: $score, value: $scoreValue."
-                            )
+                        scores[score] = scoresSec.getLineList(score.toString(), updateTime, renderTime).let { lines ->
+                            if (lines == null) {
+                                val scoreValue = scoreboardSec.get(score.toString())
+                                plugin.logger.warning(
+                                    "Invalid score value for scoreboard: $scoreboard, score: $score, value: $scoreValue."
+                                )
+                            }
+                            return@let lines ?: emptyList()
                         }
-
-                        scores.computeIfAbsent(score) { scoreLines ?: emptyList() }
                     }
                 }
                 scoreboardSec.isList("scores") -> scoreboardSec.getMapList("scores").forEach { scoreMap ->
                     val scoreNumber = scoreMap["score"] as Int
                     val scoreUpdateTime = scoreMap.getOrDefault("updateTime", updateTime) as Int
                     val scoreRenderTime = scoreMap.getOrDefault("renderTime", renderTime) as Int
-                    val scoreFrames = scoreMap.getLineList(scoreUpdateTime, scoreRenderTime)
 
-                    scores.computeIfAbsent(scoreNumber) { scoreFrames ?: emptyList() }
+                    scores[scoreNumber] = scoreMap.getLineList(scoreUpdateTime, scoreRenderTime) ?: emptyList()
                 }
                 else -> {
                     val scoresValue = scoreboardSec.get("scores")
@@ -83,12 +82,12 @@ class ScoreboardsConfig(
         return when {
             isList("conditions") -> getStringList("conditions").mapNotNull { name ->
                 if (name.startsWith("!")) {
-                    conditions[name.substring(1)]?.negate(negate = true)
+                    conditions[name.substring(1)]?.negate(true)
                 } else conditions[name]
             }
             isString("conditions") -> getString("conditions").let { name ->
                 if (name.startsWith("!")) {
-                    conditions[name.substring(1)]?.negate(negate = true)
+                    conditions[name.substring(1)]?.negate(true)
                 } else conditions[name]
             }?.let { listOf(it) } ?: emptyList()
             else -> emptyList()
@@ -108,9 +107,12 @@ class ScoreboardsConfig(
                     section.isString("frames") -> frames.add(Frame(section.getString("frames"), updateTime, renderTime))
                 }
 
-                val lines = mutableListOf(Line(frames, getConditions()))
-                section.getLineList("else", updateTime, renderTime)?.also { lines.addAll(it) }
-                return lines
+                val conditions = getConditions()
+                val elseLines = section.getLineList("else", updateTime, renderTime)
+
+                return if (conditions.isNotEmpty() && elseLines != null) {
+                    mutableListOf(Line(frames, conditions)).also { it.addAll(elseLines) }
+                } else listOf(Line(frames, conditions))
             }
             isList(path) -> {
                 val frames = ArrayList<Frame>()
@@ -142,16 +144,15 @@ class ScoreboardsConfig(
         }
 
         val conditions = if (containsKey("conditions")) {
-            (get("conditions") as List<*>).filterIsInstance<String>().mapNotNull {
-                conditions[it]
-            }
+            (get("conditions") as List<*>).filterIsInstance<String>().mapNotNull { conditions[it] }
         } else emptyList()
 
-        val lines = mutableListOf(Line(frames, conditions))
-        if (containsKey("else")) {
-            (get("else") as Map<*, *>).getLineList(updateTime, renderTime)?.also { lines.addAll(it) }
-        }
-        return lines
+        return if (conditions.isNotEmpty() && containsKey("else")) {
+            val elseLines = (get("else") as Map<*, *>).getLineList(updateTime, renderTime)
+            mutableListOf(Line(frames, conditions)).also {
+                if (elseLines != null) it.addAll(elseLines)
+            }
+        } else listOf(Line(frames, conditions))
     }
 
     private fun parseFrame(frame: Any?, updateTime: Int, renderTime: Int): Frame? {
