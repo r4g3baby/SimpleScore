@@ -81,8 +81,16 @@ class ScoreboardsConfig(
 
     private fun ConfigurationSection.getConditions(): List<Condition> {
         return when {
-            isList("conditions") -> getStringList("conditions").mapNotNull { conditions[it] }
-            isString("conditions") -> listOf(getString("conditions")).mapNotNull { conditions[it] }
+            isList("conditions") -> getStringList("conditions").mapNotNull { name ->
+                if (name.startsWith("!")) {
+                    conditions[name.substring(1)]?.negate(negate = true)
+                } else conditions[name]
+            }
+            isString("conditions") -> getString("conditions").let { name ->
+                if (name.startsWith("!")) {
+                    conditions[name.substring(1)]?.negate(negate = true)
+                } else conditions[name]
+            }?.let { listOf(it) } ?: emptyList()
             else -> emptyList()
         }
     }

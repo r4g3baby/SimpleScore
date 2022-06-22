@@ -2,8 +2,13 @@ package com.r4g3baby.simplescore.scoreboard.models
 
 import org.bukkit.entity.Player
 
-interface Condition {
-    fun check(player: Player): Boolean
+abstract class Condition {
+    abstract val negate: Boolean
+
+    fun check(player: Player) = if (negate) !can(player) else can(player)
+    protected abstract fun can(player: Player): Boolean
+
+    abstract fun negate(negate: Boolean): Condition
 
     enum class Type {
         HAS_PERMISSION,

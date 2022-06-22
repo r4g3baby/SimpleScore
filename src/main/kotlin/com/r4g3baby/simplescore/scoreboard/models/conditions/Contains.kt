@@ -8,10 +8,15 @@ import org.bukkit.entity.Player
 data class Contains(
     val input: String,
     val value: String,
-    val ignoreCase: Boolean
-) : Condition {
-    override fun check(player: Player): Boolean {
+    val ignoreCase: Boolean,
+    override val negate: Boolean = false
+) : Condition() {
+    override fun can(player: Player): Boolean {
         val parsedInput = input.replacePlaceholders(player).replaceVariables(player)
         return parsedInput.contains(value, ignoreCase)
+    }
+
+    override fun negate(negate: Boolean): Condition {
+        return copy(negate = negate)
     }
 }
