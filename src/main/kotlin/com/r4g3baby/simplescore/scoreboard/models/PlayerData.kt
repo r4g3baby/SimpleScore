@@ -7,8 +7,7 @@ data class PlayerData(
     val pluginsDisabling: MutableSet<Plugin> = HashSet(),
     val pluginsScoreboard: MutableMap<Plugin, String> = LinkedHashMap()
 ) {
-    var scoreboard: PlayerScoreboard? = null
-        internal set
+    internal var scoreboard: PlayerScoreboard? = null
 
     val scoreboards get() = pluginsScoreboard.map { it.value }
 

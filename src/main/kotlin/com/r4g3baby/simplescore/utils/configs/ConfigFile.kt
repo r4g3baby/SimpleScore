@@ -9,7 +9,7 @@ import java.io.InputStreamReader
 
 @Suppress("LeakingThis")
 open class ConfigFile(plugin: Plugin, name: String) : File(plugin.dataFolder, "$name.yml") {
-    internal lateinit var config: FileConfiguration
+    lateinit var config: FileConfiguration
         private set
 
     init {

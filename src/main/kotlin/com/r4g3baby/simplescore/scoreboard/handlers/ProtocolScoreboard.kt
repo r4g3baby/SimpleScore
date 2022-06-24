@@ -180,10 +180,10 @@ class ProtocolScoreboard : ScoreboardHandler() {
             }
 
             playerBoard.apply {
-                this.title = title ?: playerBoard.title
+                this.title = title ?: this.title
                 this.scores = scores.mapValues { score ->
                     if (score.value == null) {
-                        playerBoard.scores[score.key] ?: ""
+                        this.scores[score.key] ?: ""
                     } else score.value!!
                 }
             }

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 
 abstract class ScoreboardHandler {
     companion object {
-        fun getPlayerIdentifier(player: Player): String {
+        internal fun getPlayerIdentifier(player: Player): String {
             return "sb${player.uniqueId.toString().replace("-", "")}".substring(0..15)
         }
     }
