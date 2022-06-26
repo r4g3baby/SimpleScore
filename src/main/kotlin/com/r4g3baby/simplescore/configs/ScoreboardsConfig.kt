@@ -19,7 +19,7 @@ class ScoreboardsConfig(
 
             val scoreboardSec = config.getConfigurationSection(scoreboard)
             val updateTime = scoreboardSec.getInt("updateTime", 20)
-            val renderTime = scoreboardSec.getInt("renderTime", 5)
+            val renderTime = scoreboardSec.getInt("renderTime", 10)
             val conditions = scoreboardSec.getConditions()
 
             val titles = scoreboardSec.getLineList("titles", updateTime, renderTime).let { titles ->
