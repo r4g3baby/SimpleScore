@@ -114,8 +114,11 @@ class ScoreboardTask : BukkitRunnable() {
         val title = playerScoreboard.getTitle(player)
         val scores = playerScoreboard.getScores(player)
 
+        // Force a full render of the scoreboard if there are no scores
+        val hasNoScores = !SimpleScore.manager.scoreboardHandler.hasScores(player)
+
         val toDisplayTitle = if (title != null) {
-            if (title.shouldRender) {
+            if (hasNoScores || title.shouldRender) {
                 replacePlaceholders(title.currentText ?: "", player)
             } else null
         } else ""
@@ -123,7 +126,7 @@ class ScoreboardTask : BukkitRunnable() {
         val toDisplayScores = HashMap<Int, String?>()
         scores.forEach { (score, value) ->
             if (value != null) {
-                if (value.shouldRender) {
+                if (hasNoScores || value.shouldRender) {
                     toDisplayScores[score] = preventDuplicates(
                         replacePlaceholders(
                             value.currentText ?: "", player

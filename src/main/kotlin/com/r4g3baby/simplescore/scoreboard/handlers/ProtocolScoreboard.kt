@@ -193,4 +193,8 @@ class ProtocolScoreboard : ScoreboardHandler() {
     override fun hasScoreboard(player: Player): Boolean {
         return player.uniqueId in playerBoards
     }
+
+    override fun hasScores(player: Player): Boolean {
+        return playerBoards[player.uniqueId]?.scores?.isNotEmpty() ?: false
+    }
 }

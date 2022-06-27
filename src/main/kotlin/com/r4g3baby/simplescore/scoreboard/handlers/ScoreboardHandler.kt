@@ -16,7 +16,9 @@ abstract class ScoreboardHandler {
     abstract fun removeScoreboard(player: Player)
     abstract fun clearScoreboard(player: Player)
     abstract fun updateScoreboard(title: String?, scores: Map<Int, String?>, player: Player)
+
     abstract fun hasScoreboard(player: Player): Boolean
+    abstract fun hasScores(player: Player): Boolean
 
     protected fun scoreToName(score: Int): String {
         return score.toString().toCharArray().joinToString(COLOR_CHAR.toString(), COLOR_CHAR.toString())

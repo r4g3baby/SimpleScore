@@ -79,4 +79,12 @@ class BukkitScoreboard : ScoreboardHandler() {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         return objective != null && objective.isModifiable
     }
+
+    override fun hasScores(player: Player): Boolean {
+        val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
+        if (objective != null && objective.isModifiable) {
+            return objective.scoreboard.entries.isNotEmpty()
+        }
+        return false
+    }
 }
