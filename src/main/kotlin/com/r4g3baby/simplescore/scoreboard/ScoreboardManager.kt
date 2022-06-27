@@ -71,7 +71,7 @@ class ScoreboardManager {
 
     internal fun needsScoreboard(player: Player): Boolean {
         playersData.get(player).let { playerData ->
-            val hasWorldBoard = scoreboards.getForWorld(player.world).any { it.canSee(player) }
+            val hasWorldBoard = scoreboards.getForWorld(player.world).isNotEmpty()
             val hasRegionBoard = WorldGuardAPI.getFlag(player, player.location).isNotEmpty()
             return player.isOnline && !playerData.isDisabled && (
                 playerData.hasScoreboards || hasWorldBoard || hasRegionBoard
@@ -81,7 +81,7 @@ class ScoreboardManager {
 
     internal fun updateScoreboardState(player: Player, to: Location = player.location, from: Location? = null) {
         playersData.get(player).let { playerData ->
-            val worldBoards = scoreboards.getForWorld(to.world).filter { it.canSee(player) }
+            val worldBoards = scoreboards.getForWorld(to.world)
             val regionBoards = WorldGuardAPI.getFlag(player, to)
             val needsScoreboard = player.isOnline && !playerData.isDisabled && (
                 playerData.hasScoreboards || worldBoards.isNotEmpty() || regionBoards.isNotEmpty()
@@ -91,7 +91,7 @@ class ScoreboardManager {
                 if (!needsScoreboard) scoreboardHandler.removeScoreboard(player)
                 else if (playerData.isHidden) scoreboardHandler.clearScoreboard(player)
                 else if (from != null) {
-                    val fromWorldBoards = scoreboards.getForWorld(from.world).filter { it.canSee(player) }
+                    val fromWorldBoards = scoreboards.getForWorld(from.world)
                     val fromRegionBoards = WorldGuardAPI.getFlag(player, from)
                     if (!(fromWorldBoards.isEqual(worldBoards)) || !(fromRegionBoards.isEqual(regionBoards))) {
                         Bukkit.getScheduler().runTask(SimpleScore.plugin) {
