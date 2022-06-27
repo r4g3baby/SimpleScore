@@ -123,7 +123,7 @@ class ScoreboardManager {
                             return@forEach
                         }
                     }
-                }.toList()
+                }
             }
         }
 
@@ -157,8 +157,8 @@ class ScoreboardManager {
             }
         }
 
-        fun get(player: Player) = get(player.uniqueId)
-        fun get(uniqueId: UUID): PlayerData {
+        internal fun get(player: Player) = get(player.uniqueId)
+        internal fun get(uniqueId: UUID): PlayerData {
             return playersData.getOrDefault(uniqueId, PlayerData())
         }
 

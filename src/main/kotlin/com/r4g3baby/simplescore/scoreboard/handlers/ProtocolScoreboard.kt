@@ -38,7 +38,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
             packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
             protocolManager.sendServerPacket(player, packet)
 
-            return@computeIfAbsent PlayerBoard(getPlayerIdentifier(player), mapOf())
+            return@computeIfAbsent PlayerBoard(getPlayerIdentifier(player), emptyMap())
         }
     }
 
