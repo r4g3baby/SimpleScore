@@ -64,9 +64,10 @@ class ScoreboardManager {
             playerData.getScoreboard(SimpleScore.plugin)?.let { scoreboard ->
                 playerData.setScoreboard(SimpleScore.plugin, scoreboards.get(scoreboard)?.name)
             }
+            playerData.scoreboard = null
         }
 
-        Bukkit.getOnlinePlayers().forEach { scoreboardHandler.clearScoreboard(it) }
+        Bukkit.getOnlinePlayers().forEach { updateScoreboardState(it) }
     }
 
     internal fun needsScoreboard(player: Player): Boolean {
