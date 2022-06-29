@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.configs
 
 import com.r4g3baby.simplescore.utils.configs.ConfigFile
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.plugin.Plugin
 import java.io.File
 
@@ -134,7 +135,49 @@ class ConfigUpdater(plugin: Plugin) {
 
                 return@version 2
             }
+            2 -> return version@{
+                scoreboardsConfig.getKeys(false).forEach { scoreboard ->
+                    scoreboardsConfig.getConfigurationSection(scoreboard).apply {
+                        updateFrames("titles")
+
+                        if (isConfigurationSection("scores")) getConfigurationSection("scores").apply {
+                            getKeys(false).forEach { score -> updateFrames(score)}
+                        }
+                    }
+                }
+
+                scoreboardsConfig.save(scoreboardsConfigFile)
+
+                return@version 3
+            }
             else -> null
         }
+    }
+
+    private fun ConfigurationSection.updateFrames(path: String) {
+        when {
+            isConfigurationSection(path) -> getConfigurationSection(path).let { section ->
+                if (section.isList("frames")) {
+                    val newList = ArrayList<Any?>()
+                    section.getList("frames").forEach { frame -> newList.add(updateFrame(frame)) }
+                    section.set("frames", newList)
+                }
+            }
+            isList(path) -> {
+                val newList = ArrayList<Any?>()
+                getList(path).forEach { frame -> newList.add(updateFrame(frame)) }
+                set(path, newList)
+            }
+        }
+    }
+
+    private fun updateFrame(frame: Any?): Any? {
+        if (frame is MutableMap<*, *>) {
+            val time = frame.remove("time")
+            if (time != null) {
+                return frame.toMutableMap().apply { put("update", time) }
+            }
+        }
+        return frame
     }
 }
