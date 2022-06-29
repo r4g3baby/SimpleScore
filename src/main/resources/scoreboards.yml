@@ -5,11 +5,14 @@
 # then specifying a default "updateTime" and a list of "titles" and "scores".
 #
 # "updateTime": the default update time in ticks (optional and defaults to 20 ticks/1 second)
+# "renderTime": the default render time in ticks (optional and defaults to 10 ticks/0.5 seconds)
 # "titles": text to display or a list of frames*
 # "scores": the score number/value followed by the text to display or a list of frames* or a
-#  map with the "conditions" (list of conditions) and "frames" (list of frames*) attributes
-# *frames: is a list of strings or list of maps with the "text" (text to display) and
-#  "time" (time to stay visible, optional and defaults to "updateTime") attributes
+#  map with the "conditions" (list of conditions*) and "frames" (list of frames*) keys
+# *conditions: can be prefixed with a "!" (exclamation mark) to negate the condition
+# *frames: is a list of strings or list of maps with the "text" (text to display),
+#  "time" (time to stay visible, optional and defaults to "updateTime") and
+#  "render" (time to wait before rendering, optional and defaults to "renderTime") keys
 #
 # Check out the examples bellow for more information.
 
@@ -40,7 +43,7 @@ customTiming:
   updateTime: 100 # Any title or frame without a specified time will default to this
   titles:
     - text: '&c200 ticks/10 seconds title'
-      time: 200
+      update: 200
     - text: '&a100 ticks/5 seconds title'
   scores:
     6: '&7You can set a per title and score time'
@@ -48,14 +51,14 @@ customTiming:
     4: ''
     3:
       - text: '&7This will last for &810 seconds'
-        time: 200
+        update: 200
       - text: '&7while this only lasts for &85 seconds'
     2: ''
     1:
       - text: '&6Your current world is &7%world%&6.'
-        time: 60
+        update: 60
       - text: '&6There are &7%online% &6players online.'
-        time: 60
+        update: 60
 
 # Scoreboard showing how conditions work
 conditional:
