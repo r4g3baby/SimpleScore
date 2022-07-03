@@ -107,7 +107,7 @@ class ScoreboardsConfig(
                     section.isString("frames") -> frames.add(Frame(section.getString("frames"), updateTime, renderTime))
                 }
 
-                val conditions = getConditions()
+                val conditions = section.getConditions()
                 val elseLines = section.getLineList("else", updateTime, renderTime)
 
                 return if (conditions.isNotEmpty() && elseLines != null) {
