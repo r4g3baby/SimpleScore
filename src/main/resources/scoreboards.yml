@@ -1,17 +1,21 @@
 ## Scoreboards (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/scoreboards.yml)
 # This is where you create your scoreboards to be displayed.
 
-# You can create a scoreboard by creating a node with the scoreboard name and
-# then specifying a default "updateTime" and a list of "titles" and "scores".
+# You can create a scoreboard by creating a node with the scoreboard name and then
+# specifying a default "updateTime", "renderTime" and a list of "titles" and "scores".
 #
 # "updateTime": the default update time in ticks (optional and defaults to 20 ticks/1 second)
+#  This controls how long it takes for each frame to stay on the scoreboard
 # "renderTime": the default render time in ticks (optional and defaults to 10 ticks/0.5 seconds)
+#  This controls how long it takes before rendering each frame, placeholders and variables will
+#   only get applied each time a render occurs
 # "titles": text to display or a list of frames*
 # "scores": the score number/value followed by the text to display or a list of frames* or a
 #  map with the "conditions" (list of conditions*) and "frames" (list of frames*) keys
+#
 # *conditions: can be prefixed with a "!" (exclamation mark) to negate the condition
 # *frames: is a list of strings or list of maps with the "text" (text to display),
-#  "time" (time to stay visible, optional and defaults to "updateTime") and
+#  "update" (time to stay visible, optional and defaults to "updateTime") and
 #  "render" (time to wait before rendering, optional and defaults to "renderTime") keys
 #
 # Check out the examples bellow for more information.
@@ -40,11 +44,16 @@ simple:
 
 # Scoreboard with a basic timing example
 customTiming:
-  updateTime: 100 # Any title or frame without a specified time will default to this
+  # Any frame without a specified update/render time will default to this values
+  updateTime: 100
+  renderTime: 50
   titles:
+    # This frame will show for 200 ticks and render every 50 ticks (4 times)
     - text: '&c200 ticks/10 seconds title'
       update: 200
+    # While this frame will show for 100 ticks and render every 20 ticks (5 times)
     - text: '&a100 ticks/5 seconds title'
+      render: 20
   scores:
     6: '&7You can set a per title and score time'
     5: '&7instead of using the default value'
@@ -55,29 +64,37 @@ customTiming:
       - text: '&7while this only lasts for &85 seconds'
     2: ''
     1:
+      # These frames will change every 60 ticks/3 seconds and will only render once on change
       - text: '&6Your current world is &7%world%&6.'
         update: 60
+        render: 60
       - text: '&6There are &7%online% &6players online.'
         update: 60
+        render: 60
 
 # Scoreboard showing how conditions work
 conditional:
   updateTime: 60
-  conditions: [ 'hasPermissionExample' ]
-  titles: '&cRestricted Scoreboard'
+  conditions: [ 'hasPermission' ]
+  titles: '&cConditional Scoreboard'
   scores:
     9: ''
     8: '&7Scoreboards with a list of conditions require'
     7: '&7that the player passes all of them.'
     6: ''
     5: '&7You can see this scoreboard because you'
-    4: '&7passed the &8hasPermissionExample &7condition.'
-    3:
-      conditions: [ 'equalsOperationExample' ]
-      frames: ''
+    4: '&7passed the &8hasPermission &7condition.'
+    3: ''
     2:
-      conditions: [ 'equalsOperationExample' ]
+      conditions: [ 'isOverworld' ]
       frames:
-        - '&7You can see this line because you passed..'
-        - '&7the &8equalsOperationExample &7condition.'
+        - '&7You can see this line because you..'
+        - '&7passed the &8isOverworld &7condition.'
+      else:
+        conditions: [ 'isTheEnd' ]
+        frames:
+          - '&7You can see this line because you..'
+          - '&7passed the &8isTheEnd &7condition but..'
+          - '&7didn''t pass the &8isOverworld &7condition.'
+        else: '&7You didn''t pass any of the conditions.'
     1: ''

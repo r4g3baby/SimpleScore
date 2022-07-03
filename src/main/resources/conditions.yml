@@ -19,12 +19,18 @@
 # Check out the examples bellow for more information.
 
 # This condition is true when the player has the specified permission
-hasPermissionExample:
+hasPermission:
   type: HAS_PERMISSION
   permission: 'simplescore.example.condition'
 
-# This condition is true when the player world equals to the specified value
-equalsOperationExample:
+# This condition is true when the player world equals to "world"
+isOverworld:
+  type: EQUALS
+  input: '%world%'
+  value: 'world'
+
+# This condition is true when the player world equals to "world_the_end"
+isTheEnd:
   type: EQUALS
   input: '%world%'
   value: 'world_the_end'
