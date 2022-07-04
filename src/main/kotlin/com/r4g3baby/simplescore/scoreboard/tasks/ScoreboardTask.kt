@@ -22,17 +22,21 @@ class ScoreboardTask : BukkitRunnable() {
                 // Skip Citizens NPCs
                 if (player.hasMetadata("NPC")) return@filter false
 
-                val playerData = SimpleScore.manager.playersData.get(player)
-                // No need to waste time computing scoreboards for players that won't see it
-                if (playerData.isHidden || playerData.isDisabled) return@filter false
+                val playerData = SimpleScore.manager.playersData.get(player)?.also { playerData ->
+                    // No need to waste time computing scoreboards for players that won't see it
+                    if (playerData.isHidden || playerData.isDisabled) return@filter false
 
-                // Set the list of possible scoreboards for this player
-                possibleBoards[player] = playerData.scoreboards.mapNotNull {
-                    SimpleScore.manager.scoreboards.get(it)
+                    // Set the list of possible scoreboards for this player
+                    possibleBoards[player] = playerData.scoreboards.mapNotNull {
+                        SimpleScore.manager.scoreboards.get(it)
+                    }
+
+                    // Player scoreboards override world and region scoreboards
+                    return@filter !playerData.hasScoreboards
                 }
 
-                // Player scoreboards override world and region scoreboards
-                return@filter !playerData.hasScoreboards
+                // Skip player if there is no playerData associated with it
+                return@filter playerData != null
             }.toMutableList()
             if (players.size == 0) continue
 
@@ -73,11 +77,12 @@ class ScoreboardTask : BukkitRunnable() {
 
             Bukkit.getScheduler().runTask(SimpleScore.plugin) {
                 playerBoards.filter { it.key.isOnline }.forEach { (player, board) ->
-                    val playerData = SimpleScore.manager.playersData.get(player)
-                    // Check if our player didn't hide/disable the scoreboard
-                    if (!playerData.isHidden && !playerData.isDisabled) {
-                        with(SimpleScore.manager.scoreboardHandler) {
-                            updateScoreboard(board.first, board.second, player)
+                    SimpleScore.manager.playersData.get(player)?.let { playerData ->
+                        // Check if our player didn't hide/disable the scoreboard
+                        if (!playerData.isHidden && !playerData.isDisabled) {
+                            with(SimpleScore.manager.scoreboardHandler) {
+                                updateScoreboard(board.first, board.second, player)
+                            }
                         }
                     }
                 }
@@ -85,16 +90,17 @@ class ScoreboardTask : BukkitRunnable() {
         } else {
             Bukkit.getScheduler().runTask(SimpleScore.plugin) {
                 possibleBoards.filter { it.key.isOnline }.forEach { (player, scoreboards) ->
-                    val playerData = SimpleScore.manager.playersData.get(player)
-                    // Check if our player didn't hide/disable the scoreboard
-                    if (!playerData.isHidden && !playerData.isDisabled) {
-                        for (scoreboard in scoreboards) {
-                            if (scoreboard.canSee(player)) {
-                                val board = getPlayerScoreboard(scoreboard, player)
-                                with(SimpleScore.manager.scoreboardHandler) {
-                                    updateScoreboard(board.first, board.second, player)
+                    SimpleScore.manager.playersData.get(player)?.let { playerData ->
+                        // Check if our player didn't hide/disable the scoreboard
+                        if (!playerData.isHidden && !playerData.isDisabled) {
+                            for (scoreboard in scoreboards) {
+                                if (scoreboard.canSee(player)) {
+                                    val board = getPlayerScoreboard(scoreboard, player)
+                                    with(SimpleScore.manager.scoreboardHandler) {
+                                        updateScoreboard(board.first, board.second, player)
+                                    }
+                                    break
                                 }
-                                break
                             }
                         }
                     }
@@ -104,12 +110,12 @@ class ScoreboardTask : BukkitRunnable() {
     }
 
     private fun getPlayerScoreboard(scoreboard: Scoreboard, player: Player): Pair<String?, Map<Int, String?>> {
-        val playerScoreboard = SimpleScore.manager.playersData.get(player).let { playerData ->
+        val playerScoreboard = SimpleScore.manager.playersData.get(player)?.let { playerData ->
             if (playerData.scoreboard == null || playerData.scoreboard?.name != scoreboard.name) {
                 playerData.scoreboard = scoreboard.asPlayerScoreboard()
             }
-            return@let playerData.scoreboard!!
-        }
+            return@let playerData.scoreboard
+        } ?: return "" to emptyMap() // this should never happen?
 
         val title = playerScoreboard.getTitle(player)
         val scores = playerScoreboard.getScores(player)

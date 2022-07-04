@@ -6,7 +6,7 @@ data class Scoreboard(
     val scores: Map<Int, List<Line>> = emptyMap(),
     val conditions: List<Condition> = emptyList()
 ) : Conditional(conditions) {
-    fun asPlayerScoreboard(): PlayerScoreboard {
+    internal fun asPlayerScoreboard(): PlayerScoreboard {
         return PlayerScoreboard(
             name = name,
             titles = titles.map { line -> PlayerLine(line.frames, line.conditions) },

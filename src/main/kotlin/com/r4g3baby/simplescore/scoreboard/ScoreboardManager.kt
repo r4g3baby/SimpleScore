@@ -60,28 +60,31 @@ class ScoreboardManager {
     internal fun reload() {
         scoreboards.clearCache()
 
-        playersData.forEach { (_, playerData) ->
-            playerData.getScoreboard(SimpleScore.plugin)?.let { scoreboard ->
-                playerData.setScoreboard(SimpleScore.plugin, scoreboards.get(scoreboard)?.name)
+        Bukkit.getOnlinePlayers().forEach { player ->
+            playersData.get(player)?.let { playerData ->
+                playerData.getScoreboard(SimpleScore.plugin)?.let { scoreboard ->
+                    playerData.setScoreboard(SimpleScore.plugin, scoreboards.get(scoreboard)?.name)
+                }
+                playerData.scoreboard = null
             }
-            playerData.scoreboard = null
-        }
 
-        Bukkit.getOnlinePlayers().forEach { updateScoreboardState(it) }
+            updateScoreboardState(player)
+        }
     }
 
     internal fun needsScoreboard(player: Player): Boolean {
-        playersData.get(player).let { playerData ->
+        playersData.get(player)?.let { playerData ->
             val hasWorldBoard = scoreboards.getForWorld(player.world).isNotEmpty()
             val hasRegionBoard = WorldGuardAPI.getFlag(player, player.location).isNotEmpty()
             return player.isOnline && !playerData.isDisabled && (
                 playerData.hasScoreboards || hasWorldBoard || hasRegionBoard
             )
         }
+        return false
     }
 
     internal fun updateScoreboardState(player: Player, to: Location = player.location, from: Location? = null) {
-        playersData.get(player).let { playerData ->
+        playersData.get(player)?.let { playerData ->
             val worldBoards = scoreboards.getForWorld(to.world)
             val regionBoards = WorldGuardAPI.getFlag(player, to)
             val needsScoreboard = player.isOnline && !playerData.isDisabled && (
@@ -104,6 +107,7 @@ class ScoreboardManager {
         }
     }
 
+    @Suppress("MemberVisibilityCanBePrivate", "unused")
     class Scoreboards : Iterable<Map.Entry<String, Scoreboard>> {
         private val worldScoreboardsCache = HashMap<String, List<Scoreboard>>()
 
@@ -136,6 +140,7 @@ class ScoreboardManager {
         }
     }
 
+    @Suppress("MemberVisibilityCanBePrivate", "unused")
     class PlayersData : Iterable<Map.Entry<UUID, PlayerData>> {
         private val playersData = HashMap<UUID, PlayerData>()
 
@@ -143,8 +148,8 @@ class ScoreboardManager {
         internal fun loadPlayer(uniqueId: UUID): PlayerData {
             var playerData = SimpleScore.storage.fetchPlayer(uniqueId)
             if (playerData == null) {
-                playerData = PlayerData()
-                SimpleScore.storage.createPlayer(uniqueId, playerData)
+                playerData = PlayerData(uniqueId)
+                SimpleScore.storage.createPlayer(playerData)
             }
             playersData[uniqueId] = playerData
             return playerData
@@ -153,81 +158,111 @@ class ScoreboardManager {
         internal fun unloadPlayer(player: Player) = unloadPlayer(player.uniqueId)
         internal fun unloadPlayer(uniqueId: UUID) {
             playersData.remove(uniqueId)?.let { playerData ->
-                SimpleScore.storage.savePlayer(uniqueId, playerData)
+                SimpleScore.storage.savePlayer(playerData)
             }
         }
 
-        internal fun get(player: Player) = get(player.uniqueId)
-        internal fun get(uniqueId: UUID): PlayerData {
-            return playersData.getOrDefault(uniqueId, PlayerData())
+        fun get(player: Player) = get(player.uniqueId)
+        fun get(uniqueId: UUID): PlayerData? {
+            return playersData[uniqueId]
         }
 
-        fun getScoreboards(player: Player): List<String> {
-            return get(player).scoreboards
+        fun getScoreboards(player: Player) = getScoreboards(player.uniqueId)
+        fun getScoreboards(uniqueId: UUID) = get(uniqueId)?.let { getScoreboards(it) } ?: emptyList()
+        fun getScoreboards(playerData: PlayerData): List<String> {
+            return playerData.scoreboards
         }
 
-        fun hasScoreboards(player: Player): Boolean {
-            return get(player).hasScoreboards
+        fun hasScoreboards(player: Player) = hasScoreboards(player.uniqueId)
+        fun hasScoreboards(uniqueId: UUID) = get(uniqueId)?.let { hasScoreboards(it) } ?: false
+        fun hasScoreboards(playerData: PlayerData): Boolean {
+            return playerData.hasScoreboards
         }
 
-        fun getScoreboard(plugin: Plugin, player: Player): String? {
-            return get(player).getScoreboard(plugin)
+        fun getScoreboard(plugin: Plugin, player: Player) = getScoreboard(plugin, player.uniqueId)
+        fun getScoreboard(plugin: Plugin, uniqueId: UUID) = get(uniqueId)?.let { getScoreboard(plugin, it) }
+        fun getScoreboard(plugin: Plugin, playerData: PlayerData): String? {
+            return playerData.getScoreboard(plugin)
         }
 
-        fun setScoreboard(plugin: Plugin, player: Player, scoreboard: String?) {
-            get(player).setScoreboard(plugin, scoreboard)
-            SimpleScore.manager.updateScoreboardState(player)
+        fun setScoreboard(plugin: Plugin, player: Player, scoreboard: String?) = setScoreboard(plugin, player.uniqueId, scoreboard)
+        fun setScoreboard(plugin: Plugin, uniqueId: UUID, scoreboard: String?) = get(uniqueId)?.let { setScoreboard(plugin, it, scoreboard) }
+        fun setScoreboard(plugin: Plugin, playerData: PlayerData, scoreboard: String?) {
+            playerData.setScoreboard(plugin, scoreboard)
+            Bukkit.getPlayer(playerData.uniqueId)?.let { player ->
+                SimpleScore.manager.updateScoreboardState(player)
+            }
         }
 
-        fun isHidden(player: Player): Boolean {
-            return get(player).isHidden
+        fun isHidden(player: Player) = isHidden(player.uniqueId)
+        fun isHidden(uniqueId: UUID) = get(uniqueId)?.let { isHidden(it) } ?: false
+        fun isHidden(playerData: PlayerData): Boolean {
+            return playerData.isHidden
         }
 
-        fun isHiding(plugin: Plugin, player: Player): Boolean {
-            return get(player).isHiding(plugin)
+        fun isHiding(plugin: Plugin, player: Player) = isHiding(plugin, player.uniqueId)
+        fun isHiding(plugin: Plugin, uniqueId: UUID) = get(uniqueId)?.let { isHiding(plugin, it) } ?: false
+        fun isHiding(plugin: Plugin, playerData: PlayerData): Boolean {
+            return playerData.isHiding(plugin)
         }
 
-        fun setHidden(plugin: Plugin, player: Player, hidden: Boolean) {
-            get(player).also { playerData ->
-                if (hidden) playerData.hide(plugin) else playerData.show(plugin)
+        fun setHidden(plugin: Plugin, player: Player, hidden: Boolean) = setHidden(plugin, player.uniqueId, hidden)
+        fun setHidden(plugin: Plugin, uniqueId: UUID, hidden: Boolean) = get(uniqueId)?.let { setHidden(plugin, it, hidden) }
+        fun setHidden(plugin: Plugin, playerData: PlayerData, hidden: Boolean) {
+            if (hidden) playerData.hide(plugin) else playerData.show(plugin)
+            Bukkit.getPlayer(playerData.uniqueId)?.let { player ->
+                SimpleScore.manager.updateScoreboardState(player)
+            }
+        }
+
+        fun toggleHidden(plugin: Plugin, player: Player) = toggleHidden(plugin, player.uniqueId)
+        fun toggleHidden(plugin: Plugin, uniqueId: UUID) = get(uniqueId)?.let { toggleHidden(plugin, it) } ?: false
+        fun toggleHidden(plugin: Plugin, playerData: PlayerData): Boolean {
+            val isHidden = run {
+                if (playerData.hide(plugin)) return@run true
+                return@run !playerData.show(plugin)
             }
 
-            SimpleScore.manager.updateScoreboardState(player)
-        }
-
-        fun toggleHidden(plugin: Plugin, player: Player): Boolean {
-            val isHidden = get(player).let { playerData ->
-                if (playerData.hide(plugin)) return@let true
-                return@let !playerData.show(plugin)
+            Bukkit.getPlayer(playerData.uniqueId)?.let { player ->
+                SimpleScore.manager.updateScoreboardState(player)
             }
 
-            SimpleScore.manager.updateScoreboardState(player)
             return isHidden
         }
 
-        fun isDisabled(player: Player): Boolean {
-            return get(player).isDisabled
+        fun isDisabled(player: Player) = isDisabled(player.uniqueId)
+        fun isDisabled(uniqueId: UUID) = get(uniqueId)?.let { isDisabled(it) } ?: false
+        fun isDisabled(playerData: PlayerData): Boolean {
+            return playerData.isDisabled
         }
 
-        fun isDisabling(plugin: Plugin, player: Player): Boolean {
-            return get(player).isDisabling(plugin)
+        fun isDisabling(plugin: Plugin, player: Player) = isDisabling(plugin, player.uniqueId)
+        fun isDisabling(plugin: Plugin, uniqueId: UUID) = get(uniqueId)?.let { isDisabling(plugin, it) } ?: false
+        fun isDisabling(plugin: Plugin, playerData: PlayerData): Boolean {
+            return playerData.isDisabling(plugin)
         }
 
-        fun setDisabled(plugin: Plugin, player: Player, disabled: Boolean) {
-            get(player).also { playerData ->
-                if (disabled) playerData.disable(plugin) else playerData.enable(plugin)
+        fun setDisabled(plugin: Plugin, player: Player, disabled: Boolean) = setDisabled(plugin, player.uniqueId, disabled)
+        fun setDisabled(plugin: Plugin, uniqueId: UUID, disabled: Boolean) = get(uniqueId)?.let { setDisabled(plugin, it, disabled) }
+        fun setDisabled(plugin: Plugin, playerData: PlayerData, disabled: Boolean) {
+            if (disabled) playerData.disable(plugin) else playerData.enable(plugin)
+            Bukkit.getPlayer(playerData.uniqueId)?.let { player ->
+                SimpleScore.manager.updateScoreboardState(player)
+            }
+        }
+
+        fun toggleDisabled(plugin: Plugin, player: Player) = toggleDisabled(plugin, player.uniqueId)
+        fun toggleDisabled(plugin: Plugin, uniqueId: UUID) = get(uniqueId)?.let { toggleDisabled(plugin, it) } ?: false
+        fun toggleDisabled(plugin: Plugin, playerData: PlayerData): Boolean {
+            val isDisabled = run {
+                if (playerData.disable(plugin)) return@run true
+                return@run !playerData.enable(plugin)
             }
 
-            SimpleScore.manager.updateScoreboardState(player)
-        }
-
-        fun toggleDisabled(plugin: Plugin, player: Player): Boolean {
-            val isDisabled = get(player).let { playerData ->
-                if (playerData.disable(plugin)) return@let true
-                return@let !playerData.enable(plugin)
+            Bukkit.getPlayer(playerData.uniqueId)?.let { player ->
+                SimpleScore.manager.updateScoreboardState(player)
             }
 
-            SimpleScore.manager.updateScoreboardState(player)
             return isDisabled
         }
 

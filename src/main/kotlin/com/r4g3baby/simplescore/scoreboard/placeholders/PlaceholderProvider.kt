@@ -3,6 +3,7 @@ package com.r4g3baby.simplescore.scoreboard.placeholders
 import be.maximvdw.placeholderapi.PlaceholderAPI
 import be.maximvdw.placeholderapi.PlaceholderReplacer
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.scoreboard.models.PlayerData
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.entity.Player
 import java.util.*
@@ -48,7 +49,7 @@ class PlaceholderProvider {
     }
 
     private fun replaceParams(params: String, uniqueId: UUID): String {
-        with(SimpleScore.manager.playersData.get(uniqueId)) {
+        with(SimpleScore.manager.playersData.get(uniqueId) ?: PlayerData(uniqueId)) {
             return when (params) {
                 "hidden" -> isHidden.toString()
                 "visible" -> (!isHidden).toString()

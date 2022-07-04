@@ -8,6 +8,6 @@ interface StorageProvider {
     fun shutdown()
 
     fun fetchPlayer(uniqueId: UUID): PlayerData?
-    fun createPlayer(uniqueId: UUID, playerData: PlayerData)
-    fun savePlayer(uniqueId: UUID, playerData: PlayerData)
+    fun createPlayer(playerData: PlayerData)
+    fun savePlayer(playerData: PlayerData)
 }

@@ -1,11 +1,13 @@
 package com.r4g3baby.simplescore.scoreboard.models
 
 import org.bukkit.plugin.Plugin
+import java.util.UUID
 
 data class PlayerData(
-    val pluginsHiding: MutableSet<Plugin> = HashSet(),
-    val pluginsDisabling: MutableSet<Plugin> = HashSet(),
-    val pluginsScoreboard: MutableMap<Plugin, String> = LinkedHashMap()
+    val uniqueId: UUID,
+    private val pluginsHiding: MutableSet<Plugin> = HashSet(),
+    private val pluginsDisabling: MutableSet<Plugin> = HashSet(),
+    private val pluginsScoreboard: MutableMap<Plugin, String> = LinkedHashMap()
 ) {
     internal var scoreboard: PlayerScoreboard? = null
 
@@ -15,11 +17,11 @@ data class PlayerData(
     val isDisabled get() = pluginsDisabling.isNotEmpty()
     val hasScoreboards get() = pluginsScoreboard.isNotEmpty()
 
-    fun hide(plugin: Plugin): Boolean {
+    internal fun hide(plugin: Plugin): Boolean {
         return pluginsHiding.add(plugin)
     }
 
-    fun show(plugin: Plugin): Boolean {
+    internal fun show(plugin: Plugin): Boolean {
         return pluginsHiding.remove(plugin)
     }
 
@@ -27,11 +29,11 @@ data class PlayerData(
         return plugin in pluginsHiding
     }
 
-    fun disable(plugin: Plugin): Boolean {
+    internal fun disable(plugin: Plugin): Boolean {
         return pluginsDisabling.add(plugin)
     }
 
-    fun enable(plugin: Plugin): Boolean {
+    internal fun enable(plugin: Plugin): Boolean {
         return pluginsDisabling.remove(plugin)
     }
 
@@ -39,7 +41,7 @@ data class PlayerData(
         return plugin in pluginsDisabling
     }
 
-    fun setScoreboard(plugin: Plugin, scoreboard: String?) {
+    internal fun setScoreboard(plugin: Plugin, scoreboard: String?) {
         if (scoreboard == null) {
             pluginsScoreboard.remove(plugin)
         } else pluginsScoreboard[plugin] = scoreboard

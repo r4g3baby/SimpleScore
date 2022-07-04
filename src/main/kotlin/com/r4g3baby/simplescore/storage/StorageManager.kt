@@ -72,12 +72,12 @@ class StorageManager {
         return provider?.fetchPlayer(uniqueId)
     }
 
-    fun createPlayer(uniqueId: UUID, playerData: PlayerData) {
-        provider?.createPlayer(uniqueId, playerData)
+    fun createPlayer(playerData: PlayerData) {
+        provider?.createPlayer(playerData)
     }
 
-    fun savePlayer(uniqueId: UUID, playerData: PlayerData) {
-        provider?.savePlayer(uniqueId, playerData)
+    fun savePlayer(playerData: PlayerData) {
+        provider?.savePlayer(playerData)
     }
 
     private fun downloadDriver(driver: Driver, driverFile: Path) {

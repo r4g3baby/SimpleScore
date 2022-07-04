@@ -35,7 +35,7 @@ abstract class SQLStorageProvider(val settings: Storage) : StorageProvider {
 
                 val result = stmt.executeQuery()
                 if (result.next()) {
-                    return@withConnection PlayerData().apply {
+                    return@withConnection PlayerData(uniqueId).apply {
                         if (result.getBoolean("hidden")) {
                             hide(SimpleScore.plugin)
                         }
@@ -52,10 +52,10 @@ abstract class SQLStorageProvider(val settings: Storage) : StorageProvider {
         }
     }
 
-    override fun createPlayer(uniqueId: UUID, playerData: PlayerData) {
+    override fun createPlayer(playerData: PlayerData) {
         withConnection { conn ->
             conn.prepareStatement(insertPlayerQuery).use { stmt ->
-                stmt.setString(1, uniqueId.toString())
+                stmt.setString(1, playerData.uniqueId.toString())
                 stmt.setBoolean(2, playerData.isHiding(SimpleScore.plugin))
                 stmt.setBoolean(3, playerData.isDisabling(SimpleScore.plugin))
                 stmt.setString(4, playerData.getScoreboard(SimpleScore.plugin))
@@ -65,13 +65,13 @@ abstract class SQLStorageProvider(val settings: Storage) : StorageProvider {
         }
     }
 
-    override fun savePlayer(uniqueId: UUID, playerData: PlayerData) {
+    override fun savePlayer(playerData: PlayerData) {
         withConnection { conn ->
             conn.prepareStatement(updatePlayerQuery).use { stmt ->
                 stmt.setBoolean(1, playerData.isHiding(SimpleScore.plugin))
                 stmt.setBoolean(2, playerData.isDisabling(SimpleScore.plugin))
                 stmt.setString(3, playerData.getScoreboard(SimpleScore.plugin))
-                stmt.setString(4, uniqueId.toString())
+                stmt.setString(4, playerData.uniqueId.toString())
 
                 stmt.execute()
             }
