@@ -1,4 +1,4 @@
-name: 'Release'
+name: Release
 
 on:
   push:
@@ -7,35 +7,26 @@ on:
 
 jobs:
   release:
-    name: 'Release'
+    name: Release
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [ 8 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: 'Setup Java ${{ matrix.java }}'
-        uses: actions/setup-java@v2
+      - name: Setup Java ${{ matrix.java }}
+        uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
+          cache: 'gradle'
 
-      - name: 'Cache Gradle'
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-jdk${{ matrix.java }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-jdk${{ matrix.java }}-gradle-
-
-      - name: 'Build with Gradle'
+      - name: Build with Gradle
         run: ./gradlew shadowJar --no-daemon --build-cache
 
-      - name: 'Generate changelog'
+      - name: Generate Changelog
         id: generate_changelog
         run: |
           git fetch --unshallow --tags
@@ -50,7 +41,7 @@ jobs:
           changelog=" - ${changelog//$'\r'/'%0D'}"
           echo "::set-output name=changelog::$changelog"
 
-      - name: 'Create draft release'
+      - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
