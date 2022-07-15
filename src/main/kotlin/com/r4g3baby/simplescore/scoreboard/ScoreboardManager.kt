@@ -21,6 +21,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class ScoreboardManager {
     internal val scoreboardHandler: ScoreboardHandler
@@ -142,7 +143,7 @@ class ScoreboardManager {
 
     @Suppress("MemberVisibilityCanBePrivate", "unused")
     class PlayersData : Iterable<Map.Entry<UUID, PlayerData>> {
-        private val playersData = HashMap<UUID, PlayerData>()
+        private val playersData = ConcurrentHashMap<UUID, PlayerData>()
 
         internal fun loadPlayer(player: Player) = loadPlayer(player.uniqueId)
         internal fun loadPlayer(uniqueId: UUID): PlayerData {

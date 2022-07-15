@@ -11,6 +11,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent.fromText
 import com.r4g3baby.simplescore.scoreboard.models.PlayerBoard
 import org.bukkit.entity.Player
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
@@ -19,7 +20,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
     private val afterAquaticUpdate = MinecraftVersion("1.13").atOrAbove()
     private val afterCavesAndCliffsUpdate = MinecraftVersion("1.17").atOrAbove()
 
-    private val playerBoards = HashMap<UUID, PlayerBoard>()
+    private val playerBoards = ConcurrentHashMap(HashMap<UUID, PlayerBoard>())
 
     override fun createScoreboard(player: Player) {
         playerBoards.computeIfAbsent(player.uniqueId) {
@@ -191,7 +192,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
     }
 
     override fun hasScoreboard(player: Player): Boolean {
-        return player.uniqueId in playerBoards
+        return playerBoards.containsKey(player.uniqueId)
     }
 
     override fun hasScores(player: Player): Boolean {
