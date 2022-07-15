@@ -21,14 +21,6 @@ fun translateHexColorCodes(text: String): String {
     return matcher.appendTail(buffer).toString()
 }
 
-fun List<Any>.isEqual(other: List<Any>): Boolean {
-    if (this.size != other.size) {
-        return false
-    }
-
-    return this.toTypedArray() contentEquals other.toTypedArray()
-}
-
 fun String.lazyReplace(oldValue: String, newValueFunc: () -> String): String {
     run {
         var occurrenceIndex: Int = indexOf(oldValue, 0, true)

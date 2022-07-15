@@ -40,13 +40,13 @@ class PlayerListener : Listener {
     fun onPlayerMove(e: PlayerMoveEvent) {
         if (e.from.blockX == e.to.blockX && e.from.blockY == e.to.blockY && e.from.blockZ == e.to.blockZ) return
 
-        SimpleScore.manager.updateScoreboardState(e.player, e.to, e.from)
+        SimpleScore.manager.updateScoreboardState(e.player, e.to)
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlayerTeleport(e: PlayerTeleportEvent) {
         if (e.from.world != e.to.world) return
 
-        SimpleScore.manager.updateScoreboardState(e.player, e.to, e.from)
+        SimpleScore.manager.updateScoreboardState(e.player, e.to)
     }
 }

@@ -11,12 +11,13 @@ import org.bukkit.ChatColor
 import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
+import java.util.*
 
 class ScoreboardTask : BukkitRunnable() {
     override fun run() {
         SimpleScore.manager.playersData.forEach { (_, playerData) -> playerData.scoreboard?.tick() }
 
-        val possibleBoards = HashMap<Player, List<Scoreboard>>()
+        val possibleScoreboards = HashMap<Player, List<Scoreboard>>()
         for (world in Bukkit.getWorlds()) {
             val players = world.players.filter { player ->
                 // Skip Citizens NPCs
@@ -27,7 +28,7 @@ class ScoreboardTask : BukkitRunnable() {
                     if (playerData.isHidden || playerData.isDisabled) return@filter false
 
                     // Set the list of possible scoreboards for this player
-                    possibleBoards[player] = playerData.scoreboards.mapNotNull {
+                    possibleScoreboards[player] = playerData.scoreboards.mapNotNull {
                         SimpleScore.manager.scoreboards.get(it)
                     }
 
@@ -46,7 +47,7 @@ class ScoreboardTask : BukkitRunnable() {
                     val regionBoards = WorldGuardAPI.getFlag(player)
                     if (regionBoards.isNotEmpty()) {
                         // Set the list of possible scoreboards for this player
-                        possibleBoards[player] = regionBoards.mapNotNull {
+                        possibleScoreboards[player] = regionBoards.mapNotNull {
                             SimpleScore.manager.scoreboards.get(it)
                         }
 
@@ -59,50 +60,46 @@ class ScoreboardTask : BukkitRunnable() {
             val worldBoards = SimpleScore.manager.scoreboards.getForWorld(world)
             val iterator = players.iterator()
             iterator.forEach { player ->
-                possibleBoards[player] = worldBoards
+                possibleScoreboards[player] = worldBoards
                 iterator.remove()
             }
         }
 
         if (SimpleScore.config.asyncPlaceholders) {
-            val playerBoards = HashMap<Player, Pair<String?, Map<Int, String?>>>()
-            possibleBoards.forEach { (player, scoreboards) ->
-                for (scoreboard in scoreboards) {
-                    if (scoreboard.canSee(player)) {
-                        playerBoards[player] = getPlayerScoreboard(scoreboard, player)
-                        break
-                    }
-                }
-            }
-
+            val playerScoreboards = getPlayerScoreboards(possibleScoreboards)
             Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-                playerBoards.filter { it.key.isOnline }.forEach { (player, board) ->
-                    SimpleScore.manager.playersData.get(player)?.let { playerData ->
-                        // Check if our player didn't hide/disable the scoreboard
-                        if (!playerData.isHidden && !playerData.isDisabled) {
-                            with(SimpleScore.manager.scoreboardHandler) {
-                                updateScoreboard(board.first, board.second, player)
-                            }
-                        }
-                    }
-                }
+                updateScoreboards(playerScoreboards)
             }
         } else {
             Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-                possibleBoards.filter { it.key.isOnline }.forEach { (player, scoreboards) ->
+                updateScoreboards(getPlayerScoreboards(possibleScoreboards))
+            }
+        }
+    }
+
+    private fun updateScoreboards(playerBoards: Map<UUID, Pair<String?, Map<Int, String?>>>) {
+        Bukkit.getOnlinePlayers().forEach { player ->
+            with(SimpleScore.manager.scoreboardHandler) {
+                val playerBoard = playerBoards[player.uniqueId]
+                if (playerBoard != null) {
                     SimpleScore.manager.playersData.get(player)?.let { playerData ->
                         // Check if our player didn't hide/disable the scoreboard
                         if (!playerData.isHidden && !playerData.isDisabled) {
-                            for (scoreboard in scoreboards) {
-                                if (scoreboard.canSee(player)) {
-                                    val board = getPlayerScoreboard(scoreboard, player)
-                                    with(SimpleScore.manager.scoreboardHandler) {
-                                        updateScoreboard(board.first, board.second, player)
-                                    }
-                                    break
-                                }
-                            }
+                            updateScoreboard(playerBoard.first, playerBoard.second, player)
                         }
+                    }
+                } else clearScoreboard(player)
+            }
+        }
+    }
+
+    private fun getPlayerScoreboards(possibleBoards: Map<Player, List<Scoreboard>>): Map<UUID, Pair<String?, Map<Int, String?>>> {
+        return HashMap<UUID, Pair<String?, Map<Int, String?>>>().also { playerBoards ->
+            possibleBoards.forEach { (player, scoreboards) ->
+                for (scoreboard in scoreboards) {
+                    if (scoreboard.canSee(player)) {
+                        playerBoards[player.uniqueId] = getPlayerScoreboard(scoreboard, player)
+                        break
                     }
                 }
             }

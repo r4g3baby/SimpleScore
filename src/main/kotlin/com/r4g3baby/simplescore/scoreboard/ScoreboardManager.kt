@@ -14,7 +14,6 @@ import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderProvider
 import com.r4g3baby.simplescore.scoreboard.tasks.ScoreboardTask
 import com.r4g3baby.simplescore.scoreboard.worldguard.WorldGuardAPI
-import com.r4g3baby.simplescore.utils.isEqual
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -73,39 +72,21 @@ class ScoreboardManager {
         }
     }
 
-    internal fun needsScoreboard(player: Player): Boolean {
+    internal fun needsScoreboard(player: Player, location: Location = player.location): Boolean {
         playersData.get(player)?.let { playerData ->
-            val hasWorldBoard = scoreboards.getForWorld(player.world).isNotEmpty()
-            val hasRegionBoard = WorldGuardAPI.getFlag(player, player.location).isNotEmpty()
+            val hasWorldBoard = scoreboards.getForWorld(location.world)
+            val hasRegionBoard = WorldGuardAPI.getFlag(player, location)
             return player.isOnline && !playerData.isDisabled && (
-                playerData.hasScoreboards || hasWorldBoard || hasRegionBoard
+                playerData.hasScoreboards || hasWorldBoard.isNotEmpty() || hasRegionBoard.isNotEmpty()
             )
         }
         return false
     }
 
-    internal fun updateScoreboardState(player: Player, to: Location = player.location, from: Location? = null) {
-        playersData.get(player)?.let { playerData ->
-            val worldBoards = scoreboards.getForWorld(to.world)
-            val regionBoards = WorldGuardAPI.getFlag(player, to)
-            val needsScoreboard = player.isOnline && !playerData.isDisabled && (
-                playerData.hasScoreboards || worldBoards.isNotEmpty() || regionBoards.isNotEmpty()
-            )
-
-            if (scoreboardHandler.hasScoreboard(player)) {
-                if (!needsScoreboard) scoreboardHandler.removeScoreboard(player)
-                else if (playerData.isHidden) scoreboardHandler.clearScoreboard(player)
-                else if (from != null) {
-                    val fromWorldBoards = scoreboards.getForWorld(from.world)
-                    val fromRegionBoards = WorldGuardAPI.getFlag(player, from)
-                    if (!(fromWorldBoards.isEqual(worldBoards)) || !(fromRegionBoards.isEqual(regionBoards))) {
-                        Bukkit.getScheduler().runTask(SimpleScore.plugin) {
-                            scoreboardHandler.clearScoreboard(player)
-                        }
-                    }
-                }
-            } else if (needsScoreboard) scoreboardHandler.createScoreboard(player)
-        }
+    internal fun updateScoreboardState(player: Player, to: Location = player.location) {
+        if (scoreboardHandler.hasScoreboard(player)) {
+            if (!needsScoreboard(player, to)) scoreboardHandler.removeScoreboard(player)
+        } else if (needsScoreboard(player, to)) scoreboardHandler.createScoreboard(player)
     }
 
     @Suppress("MemberVisibilityCanBePrivate", "unused")
