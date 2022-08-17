@@ -79,4 +79,4 @@ worlds:
   # "world_the_end" will never reach this line since it already matched above
   world_\w*: [ 'customTiming' ]
   # This will match all worlds that haven't been defined above
-  \w*: [ 'simple' ]
+  '[\w ]*': [ 'simple' ]
