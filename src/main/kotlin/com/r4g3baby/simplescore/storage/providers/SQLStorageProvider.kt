@@ -1,22 +1,24 @@
 package com.r4g3baby.simplescore.storage.providers
 
 import com.r4g3baby.simplescore.SimpleScore
-import com.r4g3baby.simplescore.storage.models.Storage
 import com.r4g3baby.simplescore.scoreboard.models.PlayerData
+import com.r4g3baby.simplescore.storage.models.Storage
 import java.sql.Connection
 import java.util.*
 
 abstract class SQLStorageProvider(val settings: Storage) : StorageProvider {
+    protected val tablePrefix: String = settings.tablePrefix
+
     abstract val createTableQuery: String
 
-    val tablePrefix: String = settings.tablePrefix
+    open val selectPlayerQuery: String =
+        "SELECT hidden, disabled, scoreboard FROM ${tablePrefix}players WHERE uniqueId = ? LIMIT 1"
 
-    open val selectPlayerQuery: String
-        get() = "SELECT hidden, disabled, scoreboard FROM ${tablePrefix}players WHERE uniqueId = ? LIMIT 1"
-    open val insertPlayerQuery: String
-        get() = "INSERT INTO ${tablePrefix}players(uniqueId, hidden, disabled, scoreboard) VALUES (?, ?, ?, ?)"
-    open val updatePlayerQuery: String
-        get() = "UPDATE ${tablePrefix}players SET hidden = ?, disabled = ?, scoreboard = ? WHERE uniqueId = ?"
+    open val insertPlayerQuery: String =
+        "INSERT INTO ${tablePrefix}players(uniqueId, hidden, disabled, scoreboard) VALUES (?, ?, ?, ?)"
+
+    open val updatePlayerQuery: String =
+        "UPDATE ${tablePrefix}players SET hidden = ?, disabled = ?, scoreboard = ? WHERE uniqueId = ?"
 
     abstract fun <R> withConnection(action: (Connection) -> R): R
 

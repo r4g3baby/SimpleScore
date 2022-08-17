@@ -1,7 +1,7 @@
 package com.r4g3baby.simplescore.storage.providers.local
 
-import com.r4g3baby.simplescore.storage.models.Storage
 import com.r4g3baby.simplescore.storage.classloader.IsolatedClassLoader
+import com.r4g3baby.simplescore.storage.models.Storage
 import java.lang.reflect.Constructor
 import java.nio.file.Path
 import java.sql.Connection
@@ -11,18 +11,17 @@ import java.util.*
 class SQLiteProvider(
     classLoader: IsolatedClassLoader, file: Path, settings: Storage
 ) : LocalStorageProvider(file, settings) {
-    override val createTableQuery: String
-        get() = """
-            create table if not exists ${tablePrefix}players
-            (
-                uniqueId   VARCHAR(36) not null
-                    constraint ${tablePrefix}players_pk
-                        primary key,
-                hidden     BOOL        not null,
-                disabled   BOOL        not null,
-                scoreboard VARCHAR(200)
-            )
-        """.trimIndent()
+    override val createTableQuery: String = """
+        create table if not exists ${tablePrefix}players
+        (
+            uniqueId   VARCHAR(36) not null
+                constraint ${tablePrefix}players_pk
+                    primary key,
+            hidden     BOOL        not null,
+            disabled   BOOL        not null,
+            scoreboard VARCHAR(200)
+        )
+    """.trimIndent()
 
     private val connectionConstructor: Constructor<*>
 
