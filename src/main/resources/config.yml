@@ -11,7 +11,7 @@ language: en
 # Check for updates when the plugin starts
 checkForUpdates: true
 
-# Whether to apply placeholders asynchronously or not (disabling this might reduce performance)
+# Whether to apply placeholders asynchronously or not (disabling this will reduce performance)
 asyncPlaceholders: true
 
 # Changes packet level compatibility mode (only works with ProtocolLib enabled)
