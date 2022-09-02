@@ -12,12 +12,11 @@ class BukkitScoreboard : ScoreboardHandler() {
     private val teamLengthLimit = titleLengthLimit / 2
 
     override fun createScoreboard(player: Player) {
-        if (player.scoreboard != null && player.scoreboard != Bukkit.getScoreboardManager().mainScoreboard) {
-            player.scoreboard.getObjective(getPlayerIdentifier(player))?.unregister()
-        } else player.scoreboard = Bukkit.getScoreboardManager().newScoreboard
-
-        val objective = player.scoreboard.registerNewObjective(getPlayerIdentifier(player), "dummy")
-        objective.displaySlot = DisplaySlot.SIDEBAR
+        player.scoreboard = Bukkit.getScoreboardManager().newScoreboard.apply {
+            registerNewObjective(getPlayerIdentifier(player), "dummy").apply {
+                displaySlot = DisplaySlot.SIDEBAR
+            }
+        }
     }
 
     override fun removeScoreboard(player: Player) {
