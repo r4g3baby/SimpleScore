@@ -1,8 +1,8 @@
 ## Conditions (https://github.com/r4g3baby/SimpleScore/blob/main/src/main/resources/conditions.yml)
 # This is where you specify conditions to be used on scoreboards and scores.
 
-# You can create a condition by creating a node with the condition name and
-# then specifying the "type" and the required attributes for that type.
+# You can create a condition by creating a node with the condition name and then specifying a "type" and the required
+#  attributes for that type.
 #
 # List of available types (attributes with an = are optional and default to the value shown after):
 # - HAS_PERMISSION (attributes: permission)

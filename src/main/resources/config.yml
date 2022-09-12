@@ -4,7 +4,7 @@
 # Config version (don't change this value)
 version: 3
 
-# Plugin language (supported: en, pt, zh_CN)
+# Plugin language (supported: en, fr, pt, zh_CN)
 # To use custom messages read the plugin documentation page
 language: en
 
@@ -20,8 +20,8 @@ asyncPlaceholders: true
 #   none: Disables compatibility mode
 compatibilityMode: disable
 
-# Forces multiple version support, only enable this if your server supports multiple versions and
-#  players on 1.12 and older are experiencing scoreboard inconsistencies
+# Forces multiple version support, only enable this if your server supports multiple versions and players on 1.12 and
+#  older are experiencing scoreboard inconsistencies
 forceMultiVersion: false
 
 # Enable this if you have other plugins that are overriding the scoreboard (requires server restart)
@@ -80,3 +80,4 @@ worlds:
   world_\w*: [ 'customTiming' ]
   # This will match all worlds that haven't been defined above
   '[\w ]*': [ 'simple' ]
+  # Adding anything here will not work as it was already matched by the regex specified above
