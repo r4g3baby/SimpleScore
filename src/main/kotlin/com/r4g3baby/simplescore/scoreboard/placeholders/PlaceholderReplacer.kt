@@ -25,9 +25,7 @@ object PlaceholderReplacer {
             if ((System.currentTimeMillis() - lastException) > 10 * 1000) {
                 lastException = System.currentTimeMillis()
                 SimpleScore.plugin.logger.log(
-                    Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
-                        "Could not apply PlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
-                    } else "Could not apply PlaceholderAPI placeholders", ex
+                    Level.WARNING, "Could not apply PlaceholderAPI placeholders", ex
                 )
             }
         }
@@ -41,9 +39,7 @@ object PlaceholderReplacer {
             if ((System.currentTimeMillis() - lastException) > 10 * 1000) {
                 lastException = System.currentTimeMillis()
                 SimpleScore.plugin.logger.log(
-                    Level.WARNING, if (SimpleScore.config.asyncPlaceholders) {
-                        "Could not apply MVdWPlaceholderAPI placeholders. Disable 'asyncPlaceholders' and try again"
-                    } else "Could not apply MVdWPlaceholderAPI placeholders", ex
+                    Level.WARNING, "Could not apply MVdWPlaceholderAPI placeholders", ex
                 )
             }
         }
