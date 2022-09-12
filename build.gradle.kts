@@ -65,8 +65,8 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        val libs = "${project.group}.${project.name.toLowerCase()}.libs"
-        relocate("org.codemc.worldguardwrapper", "$libs.worldguardwrapper")
+        val libs = "${project.group}.${project.name.toLowerCase()}.lib"
+        relocate("org.codemc.worldguardwrapper", "$libs.wgwrapper")
         relocate("net.swiftzer.semver", "$libs.semver")
         relocate("org.bstats", "$libs.bstats")
         relocate("com.zaxxer.hikari", "$libs.hikari")
@@ -75,7 +75,10 @@ tasks {
         relocate("org.intellij", "$libs.intellij")
         relocate("kotlin", "$libs.kotlin")
 
+        from(file("LICENSE"))
+
         dependencies {
+            exclude("META-INF/NOTICE")
             exclude("META-INF/maven/**")
             exclude("META-INF/versions/**")
             exclude("META-INF/**.kotlin_module")
