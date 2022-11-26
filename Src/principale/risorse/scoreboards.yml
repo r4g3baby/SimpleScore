@@ -22,7 +22,7 @@
 
 # This is a simple scoreboard with only the top and bottom lines animated
 simple:
-  titles: '&7&LYour&6&lServer'
+  titles: '&7&LFrontier&6&lCity'
   scores:
     13:
       - '&7&m+----------------+'
