@@ -57,7 +57,7 @@ tasks {
                     "name" to project.name,
                     "version" to project.version,
                     "description" to "A simple animated scoreboard plugin for your server.",
-                    "package" to "${project.group}.${project.name.toLowerCase()}",
+                    "package" to "${project.group}.${project.name.lowercase()}",
                     "website" to "https://r4g3baby.com"
                 )
             )
@@ -67,7 +67,7 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        val libs = "${project.group}.${project.name.toLowerCase()}.lib"
+        val libs = "${project.group}.${project.name.lowercase()}.lib"
         relocate("org.codemc.worldguardwrapper", "$libs.wgwrapper")
         relocate("net.swiftzer.semver", "$libs.semver")
         relocate("org.bstats", "$libs.bstats")
@@ -104,7 +104,7 @@ publishing {
 
     publications {
         register<MavenPublication>("gpr") {
-            artifactId = project.name.toLowerCase()
+            artifactId = project.name.lowercase()
             from(components["kotlin"])
         }
     }
