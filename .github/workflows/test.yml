@@ -5,7 +5,7 @@ on:
     branches:
       - '**'
     tags-ignore:
-      - 'v*.*.*'
+      - 'v*'
   pull_request:
 
 jobs:
@@ -23,8 +23,17 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: 'gradle'
+          distribution: temurin
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-jdk${{ matrix.java }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-jdk${{ matrix.java }}-gradle-
 
       - name: Test with Gradle
         run: ./gradlew test --no-daemon --build-cache

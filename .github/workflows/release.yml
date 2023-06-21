@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*'
 
 jobs:
   release:
@@ -20,8 +20,8 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: 'gradle'
+          distribution: temurin
+          cache: gradle
 
       - name: Build with Gradle
         run: ./gradlew shadowJar --no-daemon --build-cache
@@ -39,7 +39,9 @@ jobs:
           changelog="${changelog//'%'/'%25'}"
           changelog="${changelog//$'\n'/'%0A' - }"
           changelog=" - ${changelog//$'\r'/'%0D'}"
-          echo "::set-output name=changelog::$changelog"
+          echo "CHANGELOG<<$EOF" >> "$GITHUB_OUTPUT"
+          echo "$changelog" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
@@ -47,6 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           body: |
-            ${{ steps.generate_changelog.outputs.changelog }}
+            ${{ steps.generate_changelog.outputs.CHANGELOG }}
           files: build/libs/*.jar
           draft: true
