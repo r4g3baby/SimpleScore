@@ -1,0 +1,29 @@
+name: Feature Request
+description: Suggest a feature you would like SimpleScore to include.
+labels: [ enhancement ]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to fill out this feature request!
+
+  - type: textarea
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature request.
+      placeholder: You can attach images by clicking on this area to highlight it and then dragging files in.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Feature Goal
+      description: What is the goal of your feature?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Unfitting Alternatives
+      description: What alternatives have you considered and why are they not sufficient for your use case?
+    validations:
+      required: true

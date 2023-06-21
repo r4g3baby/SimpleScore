@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Configuration Help
+    url: https://discord.gg/cJnzTDGphE
+    about: You can ask for help configuring SimpleScore over on Discord.
+  - name: Questions and Discussions
+    url: https://discord.gg/cJnzTDGphE
+    about: Discord is the best place to ask questions and discuss SimpleScore.

@@ -1,0 +1,39 @@
+name: Bug Report
+description: Create a bug report about a problem with SimpleScore.
+labels: [ bug ]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to fill out this bug report!
+
+  - type: input
+    attributes:
+      label: Plugin Version
+      description: The output of the ``/SimpleScore version`` command.
+      placeholder: e.g. vx.x.x
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Server Version
+      description: The output of the ``/version`` command.
+      placeholder: "e.g. git-Paper-XXX (MC: 1.x.x)"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the Bug
+      description: Include any **details** you feel are necessary. Upload your config files to [gist.github.com](https://gist.github.com) and paste them in here.
+      placeholder: You can attach images by clicking on this area to highlight it and then dragging files in.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Relevant Log Output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no backticks are required.
+      render: shell
+    validations:
+      required: false
