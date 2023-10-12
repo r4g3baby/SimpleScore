@@ -3,7 +3,7 @@ package com.r4g3baby.simplescore.storage.models
 import java.util.*
 
 enum class Driver(
-    groupId: String, artifactId: String, version: String, encodedHash: String
+    groupId: String, artifactId: String, version: String, val encodedHash: String
 ) {
     H2(
         "com.h2database", "h2", "1.4.200",

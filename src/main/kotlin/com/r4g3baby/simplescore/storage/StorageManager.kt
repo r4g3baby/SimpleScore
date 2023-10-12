@@ -15,9 +15,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
 import java.util.*
+import kotlin.io.path.writeBytes
 
 class StorageManager {
-    private val sha256 = MessageDigest.getInstance("SHA-256")
     private var provider: StorageProvider? = null
 
     init {
@@ -85,8 +85,14 @@ class StorageManager {
         connection.getInputStream().use { inputStream ->
             val bytes = inputStream.readBytes()
             check(bytes.isNotEmpty()) { "Empty stream" }
-            check(driver.validateHash(sha256.digest(bytes))) { "Invalid hash" }
-            Files.write(driverFile, bytes)
+
+            val sha256Hash = MessageDigest.getInstance("SHA-256").digest(bytes)
+            check(driver.validateHash(sha256Hash)) {
+                val encodedHash = Base64.getEncoder().encodeToString(sha256Hash)
+                "Invalid hash, expected: ${driver.encodedHash} got: $encodedHash"
+            }
+
+            driverFile.writeBytes(bytes)
         }
     }
 }
