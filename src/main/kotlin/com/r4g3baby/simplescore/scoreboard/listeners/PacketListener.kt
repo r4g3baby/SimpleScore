@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.ListeningWhitelist
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.events.PacketListener
+import com.comphenix.protocol.utility.MinecraftVersion
 import com.r4g3baby.simplescore.SimpleScore
 import com.r4g3baby.simplescore.scoreboard.handlers.ScoreboardHandler.Companion.getPlayerIdentifier
 import com.r4g3baby.simplescore.scoreboard.models.CompatibilityMode
@@ -13,12 +14,15 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
+import org.bukkit.scoreboard.DisplaySlot
 
 class PacketListener : PacketListener, Listener {
     private val protocolLibPlugin = ProtocolLibrary.getPlugin()
     private val sendingPackets = ListeningWhitelist.newBuilder().highest().types(
         PacketType.Play.Server.SCOREBOARD_OBJECTIVE, PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE
     ).build()
+
+    private val afterTrailsAndTailsDot2Update = MinecraftVersion("1.20.2").atOrAbove()
 
     override fun getSendingWhitelist(): ListeningWhitelist {
         return sendingPackets
@@ -30,7 +34,9 @@ class PacketListener : PacketListener, Listener {
         when (SimpleScore.config.compatibilityMode) {
             CompatibilityMode.DISABLE -> {
                 if (e.packet.type == PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE) {
-                    val position = e.packet.integers.read(0)
+                    val position = if (afterTrailsAndTailsDot2Update) {
+                        e.packet.getEnumModifier(DisplaySlot::class.java, 0).read(0).ordinal - 1
+                    } else e.packet.integers.read(0)
                     val name = e.packet.strings.read(0)
                     if (position == 1 && name != getPlayerIdentifier(e.player)) {
                         SimpleScore.manager.playersData.setDisabled(protocolLibPlugin, e.player, true)
@@ -47,7 +53,9 @@ class PacketListener : PacketListener, Listener {
             }
             CompatibilityMode.BLOCK -> {
                 if (e.packet.type == PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE) {
-                    val position = e.packet.integers.read(0)
+                    val position = if (afterTrailsAndTailsDot2Update) {
+                        e.packet.getEnumModifier(DisplaySlot::class.java, 0).read(0).ordinal - 1
+                    } else e.packet.integers.read(0)
                     val name = e.packet.strings.read(0)
                     if (position == 1 && name != getPlayerIdentifier(e.player)) {
                         e.isCancelled = SimpleScore.manager.needsScoreboard(e.player)

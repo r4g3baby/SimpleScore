@@ -10,8 +10,10 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent.fromLegacyText
 import com.comphenix.protocol.wrappers.WrappedChatComponent.fromText
 import com.r4g3baby.simplescore.scoreboard.models.PlayerBoard
 import org.bukkit.entity.Player
+import org.bukkit.scoreboard.DisplaySlot
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+
 
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
@@ -19,6 +21,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
     // Don't use ProtocolLib version enums, so we can support older plugin versions
     private val afterAquaticUpdate = MinecraftVersion("1.13").atOrAbove()
     private val afterCavesAndCliffsUpdate = MinecraftVersion("1.17").atOrAbove()
+    private val afterTrailsAndTailsDot2Update = MinecraftVersion("1.20.2").atOrAbove()
 
     private val playerBoards = ConcurrentHashMap(HashMap<UUID, PlayerBoard>())
 
@@ -35,7 +38,9 @@ class ProtocolScoreboard : ScoreboardHandler() {
 
             packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE)
             packet.modifier.writeDefaults()
-            packet.integers.write(0, 1) // Position 1: Sidebar
+            if (afterTrailsAndTailsDot2Update) {
+                packet.getEnumModifier(DisplaySlot::class.java, 0).write(0, DisplaySlot.SIDEBAR)
+            } else packet.integers.write(0, 1) // Position 1: Sidebar
             packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
             protocolManager.sendServerPacket(player, packet)
 
