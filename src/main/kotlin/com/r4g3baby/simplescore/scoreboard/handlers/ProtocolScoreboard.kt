@@ -14,7 +14,6 @@ import org.bukkit.scoreboard.DisplaySlot
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-
 class ProtocolScoreboard : ScoreboardHandler() {
     private val protocolManager = ProtocolLibrary.getProtocolManager()
 

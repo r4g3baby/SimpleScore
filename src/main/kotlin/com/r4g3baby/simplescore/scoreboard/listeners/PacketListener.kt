@@ -3,6 +3,7 @@ package com.r4g3baby.simplescore.scoreboard.listeners
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.ListeningWhitelist
+import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.events.PacketListener
 import com.comphenix.protocol.utility.MinecraftVersion
@@ -34,11 +35,8 @@ class PacketListener : PacketListener, Listener {
         when (SimpleScore.config.compatibilityMode) {
             CompatibilityMode.DISABLE -> {
                 if (e.packet.type == PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE) {
-                    val position = if (afterTrailsAndTailsDot2Update) {
-                        e.packet.getEnumModifier(DisplaySlot::class.java, 0).read(0).ordinal - 1
-                    } else e.packet.integers.read(0)
                     val name = e.packet.strings.read(0)
-                    if (position == 1 && name != getPlayerIdentifier(e.player)) {
+                    if (e.packet.isSidebar() && name != getPlayerIdentifier(e.player)) {
                         SimpleScore.manager.playersData.setDisabled(protocolLibPlugin, e.player, true)
                     }
                 } else if (e.packet.type == PacketType.Play.Server.SCOREBOARD_OBJECTIVE) {
@@ -51,17 +49,16 @@ class PacketListener : PacketListener, Listener {
                     }
                 }
             }
+
             CompatibilityMode.BLOCK -> {
                 if (e.packet.type == PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE) {
-                    val position = if (afterTrailsAndTailsDot2Update) {
-                        e.packet.getEnumModifier(DisplaySlot::class.java, 0).read(0).ordinal - 1
-                    } else e.packet.integers.read(0)
                     val name = e.packet.strings.read(0)
-                    if (position == 1 && name != getPlayerIdentifier(e.player)) {
+                    if (e.packet.isSidebar() && name != getPlayerIdentifier(e.player)) {
                         e.isCancelled = SimpleScore.manager.needsScoreboard(e.player)
                     }
                 }
             }
+
             else -> {}
         }
     }
@@ -80,5 +77,15 @@ class PacketListener : PacketListener, Listener {
 
     override fun getPlugin(): Plugin {
         return SimpleScore.plugin
+    }
+
+    private fun PacketContainer.isSidebar(): Boolean {
+        return if (afterTrailsAndTailsDot2Update) {
+            try {
+                getEnumModifier(DisplaySlot::class.java, 0).read(0) == DisplaySlot.SIDEBAR
+            } catch (_: IllegalArgumentException) {
+                false
+            }
+        } else integers.read(0) == 1
     }
 }
