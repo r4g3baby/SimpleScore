@@ -97,7 +97,7 @@ tasks {
             "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20"
         )
         loaders = arrayListOf("bukkit", "spigot", "paper")
-        changelog = run {
+        changelog = provider {
             val tags = ByteArrayOutputStream().apply {
                 exec {
                     commandLine("git", "tag", "--sort", "version:refname")
@@ -121,7 +121,7 @@ tasks {
                 write("\n\nCompare Changes: [$tagsRange]($repoUrl/compare/$tagsRange)".toByteArray())
             }.toString()
 
-            return@run changelog
+            return@provider changelog
         }
 
         syncBodyFrom = file("README.md").readText()
