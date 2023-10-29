@@ -43,7 +43,7 @@ storage:
   username: simplescore
   password: '|D/-\55\^/0|2|)'
 
-  # HikariCP connection pool settings for remote databases
+  # HikariCP's connection pool settings for remote databases
   # The default provided settings should work fine for most server setups
   # Do not change these settings unless you know what you're doing!
   pool:
@@ -79,5 +79,5 @@ worlds:
   # "world_the_end" will never reach this line since it already matched above
   world_\w*: [ 'customTiming' ]
   # This will match all worlds that haven't been defined above
-  '[\w ]*': [ 'simple' ]
+  '[\w\- ]*': [ 'simple' ]
   # Adding anything here will not work as it was already matched by the regex specified above
