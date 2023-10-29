@@ -31,13 +31,13 @@ jobs:
         run: |
           git fetch --unshallow --tags
           tag=$(git tag --sort version:refname | tail -n 2 | head -n 1)
-          changelog=$(git log $tag..HEAD --pretty=format:'- %h %s%n' --reverse)
+          changelog=$(git log $tag...HEAD --pretty=format:'- %h %s' --reverse)
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "CHANGELOG<<$EOF" >> $GITHUB_OUTPUT
           echo "$changelog" >> $GITHUB_OUTPUT
           echo "$EOF" >> $GITHUB_OUTPUT
 
-      - name: Create Draft Release
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,4 +45,8 @@ jobs:
           body: |
             ${{ steps.generate_changelog.outputs.CHANGELOG }}
           files: build/libs/*.jar
-          draft: true
+
+      - name: Publish Modrinth Release
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: ./gradlew modrinth

@@ -1,7 +1,10 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import java.io.ByteArrayOutputStream
+
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.modrinth.minotaur") version "2.8.4"
     kotlin("jvm") version "1.9.10"
-    id("maven-publish")
 }
 
 group = "com.r4g3baby"
@@ -52,7 +55,7 @@ tasks {
     processResources {
         filteringCharset = "UTF-8"
         filesMatching("**plugin.yml") {
-            filter<org.apache.tools.ant.filters.ReplaceTokens>(
+            filter<ReplaceTokens>(
                 "tokens" to mapOf(
                     "name" to project.name,
                     "version" to project.version,
@@ -80,32 +83,48 @@ tasks {
         from(file("LICENSE"))
 
         dependencies {
-            exclude("META-INF/NOTICE")
-            exclude("META-INF/maven/**")
-            exclude("META-INF/versions/**")
-            exclude("META-INF/**.kotlin_module")
+            exclude("META-INF/**")
         }
 
         minimize()
     }
-}
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/r4g3baby/SimpleScore")
-            credentials {
-                username = project.findProperty("github.actor") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
+    modrinth {
+        token = findProperty("modrinth.token") as String? ?: System.getenv("MODRINTH_TOKEN")
+        projectId = findProperty("modrinth.project") as String? ?: System.getenv("MODRINTH_PROJECT")
+        uploadFile = shadowJar.get()
+        gameVersions = arrayListOf(
+            "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20"
+        )
+        loaders = arrayListOf("bukkit", "spigot", "paper")
+        changelog = run {
+            val tags = ByteArrayOutputStream().apply {
+                exec {
+                    commandLine("git", "tag", "--sort", "version:refname")
+                    standardOutput = this@apply
+                }
+            }.toString().trim().split("\n")
 
-    publications {
-        register<MavenPublication>("gpr") {
-            artifactId = project.name.lowercase()
-            from(components["kotlin"])
+            val tagsRange = if (tags.size > 1) {
+                "${tags[tags.size - 2]}...${tags[tags.size - 1]}"
+            } else if (tags.isNotEmpty()) tags[0] else "HEAD~1...HEAD"
+
+            val repoUrl = findProperty("github.repo") as String? ?: System.getenv("GITHUB_REPO_URL")
+            val changelog = ByteArrayOutputStream().apply {
+                write("### Commits:\n".toByteArray())
+
+                exec {
+                    commandLine("git", "log", tagsRange, "--pretty=format:- [%h]($repoUrl/commit/%H) %s", "--reverse")
+                    standardOutput = this@apply
+                }
+
+                write("\n\nCompare Changes: [$tagsRange]($repoUrl/compare/$tagsRange)".toByteArray())
+            }.toString()
+
+            return@run changelog
         }
+
+        syncBodyFrom = file("README.md").readText()
+        modrinth.get().dependsOn(modrinthSyncBody)
     }
 }
