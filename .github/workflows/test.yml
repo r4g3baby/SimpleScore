@@ -25,15 +25,10 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: temurin
 
-      - name: Cache Gradle
-        uses: actions/cache@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-jdk${{ matrix.java }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-jdk${{ matrix.java }}-gradle-
+          generate-job-summary: false
 
-      - name: Test with Gradle
-        run: ./gradlew test --no-daemon --build-cache
+      - name: Test with Gradle Wrapper
+        run: ./gradlew test --build-cache

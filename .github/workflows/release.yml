@@ -21,10 +21,14 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: gradle
 
-      - name: Build with Gradle
-        run: ./gradlew shadowJar --no-daemon --build-cache
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          generate-job-summary: false
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew shadowJar
 
       - name: Generate Changelog
         id: generate_changelog
