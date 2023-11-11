@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.modrinth.minotaur") version "2.8.4"
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.20"
 }
 
 group = "com.r4g3baby"
