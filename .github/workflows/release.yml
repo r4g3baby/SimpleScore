@@ -50,6 +50,11 @@ jobs:
             ${{ steps.generate_changelog.outputs.CHANGELOG }}
           files: build/libs/*.jar
 
+      - name: Publish Hangar Release
+        env:
+          HANGAR_TOKEN: ${{ secrets.HANGAR_TOKEN }}
+        run: ./gradlew publishPluginPublicationToHangar
+
       - name: Publish Modrinth Release
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}

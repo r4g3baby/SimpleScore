@@ -1,8 +1,10 @@
+import io.papermc.hangarpublishplugin.model.Platforms
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.io.ByteArrayOutputStream
 
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.papermc.hangar-publish-plugin") version "0.1.0"
     id("com.modrinth.minotaur") version "2.8.4"
     kotlin("jvm") version "1.9.20"
 }
@@ -89,42 +91,63 @@ tasks {
         minimize()
     }
 
+    hangarPublish {
+        publications.register("plugin") {
+            apiKey = findProperty("hangar.token") as String? ?: System.getenv("HANGAR_TOKEN")
+            id = findProperty("hangar.project") as String? ?: System.getenv("HANGAR_PROJECT")
+            version = project.version as String
+            channel = "Release"
+            changelog = generateChangelog()
+
+            platforms {
+                register(Platforms.PAPER) {
+                    jar.set(shadowJar.flatMap { it.archiveFile })
+                    platformVersions = mapVersions("hangar.versions")
+                }
+            }
+        }
+    }
+
     modrinth {
         token = findProperty("modrinth.token") as String? ?: System.getenv("MODRINTH_TOKEN")
         projectId = findProperty("modrinth.project") as String? ?: System.getenv("MODRINTH_PROJECT")
         uploadFile = shadowJar.get()
-        gameVersions = arrayListOf(
-            "1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20"
-        )
+        gameVersions = mapVersions("modrinth.versions")
         loaders = arrayListOf("bukkit", "spigot", "paper")
-        changelog = provider {
-            val tags = ByteArrayOutputStream().apply {
-                exec {
-                    commandLine("git", "tag", "--sort", "version:refname")
-                    standardOutput = this@apply
-                }
-            }.toString().trim().split("\n")
-
-            val tagsRange = if (tags.size > 1) {
-                "${tags[tags.size - 2]}...${tags[tags.size - 1]}"
-            } else if (tags.isNotEmpty()) tags[0] else "HEAD~1...HEAD"
-
-            val repoUrl = findProperty("github.repo") as String? ?: System.getenv("GITHUB_REPO_URL")
-            val changelog = ByteArrayOutputStream().apply {
-                write("### Commits:\n".toByteArray())
-
-                exec {
-                    commandLine("git", "log", tagsRange, "--pretty=format:- [%h]($repoUrl/commit/%H) %s", "--reverse")
-                    standardOutput = this@apply
-                }
-
-                write("\n\nCompare Changes: [$tagsRange]($repoUrl/compare/$tagsRange)".toByteArray())
-            }.toString()
-
-            return@provider changelog
-        }
+        changelog = generateChangelog()
 
         syncBodyFrom = file("README.md").readText()
         modrinth.get().dependsOn(modrinthSyncBody)
     }
+}
+
+fun mapVersions(propertyName: String): Provider<List<String>> = provider {
+    return@provider (property(propertyName) as String).split(",").map { it.trim() }
+}
+
+fun generateChangelog(): Provider<String> = provider {
+    val tags = ByteArrayOutputStream().apply {
+        exec {
+            commandLine("git", "tag", "--sort", "version:refname")
+            standardOutput = this@apply
+        }
+    }.toString(Charsets.UTF_8.name()).trim().split("\n")
+
+    val tagsRange = if (tags.size > 1) {
+        "${tags[tags.size - 2]}...${tags[tags.size - 1]}"
+    } else if (tags.isNotEmpty()) tags[0] else "HEAD~1...HEAD"
+
+    val repoUrl = findProperty("github.repo") as String? ?: System.getenv("GITHUB_REPO_URL")
+    val changelog = ByteArrayOutputStream().apply {
+        write("### Commits:\n".toByteArray())
+
+        exec {
+            commandLine("git", "log", tagsRange, "--pretty=format:- [%h]($repoUrl/commit/%H) %s", "--reverse")
+            standardOutput = this@apply
+        }
+
+        write("\n\nCompare Changes: [$tagsRange]($repoUrl/compare/$tagsRange)".toByteArray())
+    }.toString(Charsets.UTF_8.name())
+
+    return@provider changelog
 }
