@@ -10,9 +10,9 @@
 # Information
 [SimpleScore][GitHub] is a plugin for Minecraft servers that allows server owners to display various information to their players using Minecraft's built-in scoreboard system.
 
-Supports selecting and showing specific scoreboards to players based on their permissions, certain conditions, current world, or even the [WorldGuard][WorldGuard] region they are in with a very simple and intuitive configuration system.
+Supports selecting and showing specific scoreboards to players based on their permissions, certain conditions, the current world, or even the [WorldGuard][WorldGuard] region they are in with a very simple and intuitive configuration system.
 
-Also comes with support for both [PlaceholderAPI][PlaceholderAPI] and [MVdWPlaceholderAPI][MVdWPlaceholderAPI], allowing you to hook into thousands of other plugins to retrieve and display their information in real time, or create a set of conditions the player must meet to be able to see a particular scoreboard.
+Also comes with support for both [PlaceholderAPI][PlaceholderAPI] and [MVdWPlaceholderAPI][MVdWPlaceholderAPI], allowing you to hook into thousands of other plugins to retrieve and display their information in real time, or create a set of conditions that the player must meet to be able to see a particular scoreboard.
 
 ## Main Features
 - A lag-free, fully animated scoreboard with no flickering
@@ -21,7 +21,7 @@ Also comes with support for both [PlaceholderAPI][PlaceholderAPI] and [MVdWPlace
 - Can display scoreboards based on permissions, conditions, worlds and regions
 - No character limit on 1.13 servers or newer (limited to 32 characters on older versions)*
 - Fully compatible with [mcMMO][mcMMO] and other plugins that temporarily change the scoreboard*
-- Any message sent by the plugin can be changed either by the built-in translation system or by providing a custom message file
+- Any message sent by the plugin can be modified either by the built-in translation system or by providing a custom message file
 
 *This feature requires [ProtocolLib][ProtocolLib]. Adding [ProtocolLib][ProtocolLib] to your server will improve plugin compatibility and also reduce the number of packets sent to players, thus improving server/client performance and reducing network bandwidth usage.
 
@@ -35,7 +35,7 @@ Also comes with support for both [PlaceholderAPI][PlaceholderAPI] and [MVdWPlace
 [Discord][Discord] - [Issues](https://github.com/r4g3baby/SimpleScore/issues) - [Wiki](https://github.com/r4g3baby/SimpleScore/wiki) - [bStats][bStats]
 
 ## Support
-If you find [SimpleScore][GitHub] useful and would like to support its development, please consider following, leaving a review or rating the project on its respective platform, such as [SpigotMC][SpigotMC], [PaperMC][PaperMC] or [Modrinth][Modrinth].
+If you find [SimpleScore][GitHub] useful and would like to support its development, please consider following, rating or reviewing the project on its respective platform, such as [SpigotMC][SpigotMC], [PaperMC][PaperMC] or [Modrinth][Modrinth].
 
 Starring the project on [GitHub][GitHub] or [following me](https://github.com/r4g3baby) is an easy way to show your support. It helps increase the visibility of [SimpleScore][GitHub] and encourages others to check it out.
 
