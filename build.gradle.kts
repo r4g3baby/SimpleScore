@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.r4g3baby"
-version = "3.12.5"
+version = "3.12.6-dev"
 
 repositories {
     mavenCentral()
