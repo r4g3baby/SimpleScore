@@ -15,6 +15,7 @@ class BukkitScoreboard : ScoreboardHandler() {
         player.scoreboard = Bukkit.getScoreboardManager().newScoreboard.apply {
             registerNewObjective(getPlayerIdentifier(player), "dummy").apply {
                 displaySlot = DisplaySlot.SIDEBAR
+                displayName = ""
             }
         }
     }
@@ -27,6 +28,7 @@ class BukkitScoreboard : ScoreboardHandler() {
     override fun clearScoreboard(player: Player) {
         val objective = player.scoreboard?.getObjective(getPlayerIdentifier(player))
         if (objective != null && objective.isModifiable) {
+            objective.displayName = ""
             objective.scoreboard.entries.forEach { scoreName ->
                 objective.scoreboard.getTeam(scoreName)?.unregister()
                 objective.scoreboard.resetScores(scoreName)

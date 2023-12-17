@@ -1,6 +1,7 @@
 package com.r4g3baby.simplescore.scoreboard.tasks
 
 import com.r4g3baby.simplescore.SimpleScore
+import com.r4g3baby.simplescore.scoreboard.handlers.BukkitScoreboard
 import com.r4g3baby.simplescore.scoreboard.models.Scoreboard
 import com.r4g3baby.simplescore.scoreboard.placeholders.PlaceholderReplacer
 import com.r4g3baby.simplescore.scoreboard.placeholders.VariablesReplacer
@@ -65,7 +66,7 @@ class ScoreboardTask : BukkitRunnable() {
             }
         }
 
-        if (SimpleScore.config.asyncPlaceholders) {
+        if (SimpleScore.config.asyncPlaceholders && SimpleScore.manager.scoreboardHandler !is BukkitScoreboard) {
             val playerScoreboards = getPlayerScoreboards(possibleScoreboards)
             Bukkit.getScheduler().runTask(SimpleScore.plugin) {
                 updateScoreboards(playerScoreboards)

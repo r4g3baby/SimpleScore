@@ -21,6 +21,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
     private val afterAquaticUpdate = MinecraftVersion("1.13").atOrAbove()
     private val afterCavesAndCliffsUpdate = MinecraftVersion("1.17").atOrAbove()
     private val afterTrailsAndTailsDot2Update = MinecraftVersion("1.20.2").atOrAbove()
+    private val afterTrailsAndTailsDot4Update = MinecraftVersion("1.20.4").atOrAbove()
 
     private val playerBoards = ConcurrentHashMap(HashMap<UUID, PlayerBoard>())
 
@@ -31,8 +32,8 @@ class ProtocolScoreboard : ScoreboardHandler() {
             packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
             packet.integers.write(0, 0) // Mode 0: Created Scoreboard
             if (afterAquaticUpdate) {
-                packet.chatComponents.write(0, fromText(getPlayerIdentifier(player))) // Display Name
-            } else packet.strings.write(1, getPlayerIdentifier(player)) // Display Name
+                packet.chatComponents.write(0, fromText("")) // Display Name
+            } else packet.strings.write(1, "") // Display Name
             protocolManager.sendServerPacket(player, packet)
 
             packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE)
@@ -43,7 +44,7 @@ class ProtocolScoreboard : ScoreboardHandler() {
             packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
             protocolManager.sendServerPacket(player, packet)
 
-            return@computeIfAbsent PlayerBoard(getPlayerIdentifier(player), emptyMap())
+            return@computeIfAbsent PlayerBoard("", emptyMap())
         }
     }
 
@@ -69,6 +70,19 @@ class ProtocolScoreboard : ScoreboardHandler() {
 
     override fun clearScoreboard(player: Player) {
         playerBoards[player.uniqueId]?.also { playerBoard ->
+            if (afterTrailsAndTailsDot4Update) {
+                val packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_OBJECTIVE)
+                packet.modifier.writeDefaults()
+                packet.strings.write(0, getPlayerIdentifier(player)) // Objective Name
+                packet.integers.write(0, 2) // Mode 2: Update Display Name
+                if (afterAquaticUpdate) {
+                    packet.chatComponents.write(0, fromLegacyText("")) // Display Name
+                } else packet.strings.write(1, "") // Display Name
+                protocolManager.sendServerPacket(player, packet)
+
+                playerBoard.title = ""
+            }
+
             playerBoard.scores.forEach { (score, _) ->
                 val scoreName = scoreToName(score)
 
@@ -80,11 +94,23 @@ class ProtocolScoreboard : ScoreboardHandler() {
                 } else packet.integers.write(1, 1) // Mode - remove team
                 protocolManager.sendServerPacket(player, packet)
 
-                packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
-                packet.modifier.writeDefaults()
-                packet.strings.write(0, scoreName) // Score Name
-                packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
-                packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+                if (afterTrailsAndTailsDot4Update) {
+                    // todo: temporary 1.20.4 compatibility fix
+                    packet = PacketContainer(
+                        PacketType.findCurrent(
+                            PacketType.Protocol.PLAY, PacketType.Sender.SERVER, 0x42
+                        )
+                    )
+                    packet.modifier.writeDefaults()
+                    packet.strings.write(0, scoreName) // Score Name
+                    packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+                } else {
+                    packet = PacketContainer(PacketType.Play.Server.SCOREBOARD_SCORE)
+                    packet.modifier.writeDefaults()
+                    packet.strings.write(0, scoreName) // Score Name
+                    packet.scoreboardActions.write(0, EnumWrappers.ScoreboardAction.REMOVE) // Action
+                    packet.strings.write(1, getPlayerIdentifier(player)) // Objective Name
+                }
                 protocolManager.sendServerPacket(player, packet)
             }
             playerBoard.scores = emptyMap()
