@@ -1,8 +1,8 @@
 [versions]
 # Plugins
-kotlin = "2.3.20"
+kotlin = "2.4.10"
 dokka = "2.2.0"
-shadow = "9.4.1"
+shadow = "9.6.1"
 hangar = "0.1.4"
 minotaur = "2.9.0"
 

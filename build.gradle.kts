@@ -67,10 +67,7 @@ tasks {
         relocate("kotlin", "$libs.kotlin")
 
         from(file("LICENSE"))
-
-        dependencies {
-            exclude("META-INF/**")
-        }
+        exclude("META-INF/**")
 
         minimize()
     }
