@@ -6,6 +6,7 @@ import com.r4g3baby.simplescore.api.scoreboard.data.Priority
 import com.r4g3baby.simplescore.bukkit.command.MainCmd
 import com.r4g3baby.simplescore.bukkit.config.MainConfig
 import com.r4g3baby.simplescore.bukkit.hooks.PapiExpansion
+import com.r4g3baby.simplescore.bukkit.listener.LuckPermsListener
 import com.r4g3baby.simplescore.bukkit.listener.PlayerListener
 import com.r4g3baby.simplescore.bukkit.protocol.legacy.LegacyProtocolHandler
 import com.r4g3baby.simplescore.bukkit.protocol.modern.ModernProtocolHandler
@@ -38,6 +39,10 @@ class BukkitManager(private val plugin: BukkitPlugin) : BaseManager<Player, Yaml
 
         plugin.getCommand(plugin.name)?.executor = MainCmd(plugin)
         plugin.server.pluginManager.registerEvents(PlayerListener(this), plugin)
+
+        if (plugin.server.pluginManager.getPlugin("LuckPerms") != null) {
+            LuckPermsListener(plugin)
+        }
 
         if (varReplacer.usePlaceholderAPI) {
             PapiExpansion(plugin).register()
@@ -82,8 +87,8 @@ class BukkitManager(private val plugin: BukkitPlugin) : BaseManager<Player, Yaml
                 viewer.setScoreboard(scoreboard, plugin.provider, Priority.Highest)
             }
 
-            onViewerChangeWorld(viewer, player.world)
-            onViewerChangeLocation(viewer, player.location)
+            updateViewerWorldScoreboard(viewer, player.world)
+            updateViewerRegionScoreboard(viewer, player.location)
         }
     }
 
@@ -129,7 +134,7 @@ class BukkitManager(private val plugin: BukkitPlugin) : BaseManager<Player, Yaml
     }
 
     private val worldProvider = plugin.provider.withContext("world")
-    internal fun onViewerChangeWorld(viewer: Viewer, world: World) {
+    internal fun updateViewerWorldScoreboard(viewer: Viewer, world: World) {
         val player = viewer.reference.get() ?: return
         val scoreboards = getForWorld(world)
         if (scoreboards.isNotEmpty()) {
@@ -139,7 +144,7 @@ class BukkitManager(private val plugin: BukkitPlugin) : BaseManager<Player, Yaml
     }
 
     private val regionProvider = plugin.provider.withContext("region")
-    internal fun onViewerChangeLocation(viewer: Viewer, location: Location) {
+    internal fun updateViewerRegionScoreboard(viewer: Viewer, location: Location) {
         val player = viewer.reference.get() ?: return
         val scoreboards = WorldGuardAPI.getScoreboardFlag(player, location)
         if (scoreboards.isNotEmpty()) {

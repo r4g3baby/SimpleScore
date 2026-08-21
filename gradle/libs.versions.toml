@@ -10,6 +10,7 @@ minotaur = "2.9.0"
 bukkit = "1.8.8-R0.1-SNAPSHOT"
 netty = "4.1.97.Final"
 papi = "2.11.6"
+luckperms = "5.4"
 adventure = "4.25.0"
 worldguardV6 = "6.2"
 worldguardV7 = "7.0.0"
@@ -29,6 +30,7 @@ minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 bukkit = { module = "org.bukkit:bukkit", version.ref = "bukkit" }
 netty = { module = "io.netty:netty-transport", version.ref = "netty" }
 papi = { module = "me.clip:placeholderapi", version.ref = "papi" }
+luckperms = { module = "net.luckperms:api", version.ref = "luckperms" }
 
 # Adventure
 adventureMiniMessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }

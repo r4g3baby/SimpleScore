@@ -10,8 +10,8 @@ class PlayerListener(private val manager: BukkitManager) : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerJoin(e: PlayerJoinEvent) {
         val viewer = manager.getOrCreateViewer(e.player)
-        manager.onViewerChangeWorld(viewer, e.player.world)
-        manager.onViewerChangeLocation(viewer, e.player.location)
+        manager.updateViewerWorldScoreboard(viewer, e.player.world)
+        manager.updateViewerRegionScoreboard(viewer, e.player.location)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -27,7 +27,7 @@ class PlayerListener(private val manager: BukkitManager) : Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerChangedWorld(e: PlayerChangedWorldEvent) {
         manager.getViewer(e.player.uniqueId)?.let { viewer ->
-            manager.onViewerChangeWorld(viewer, e.player.world)
+            manager.updateViewerWorldScoreboard(viewer, e.player.world)
         }
     }
 
@@ -36,7 +36,8 @@ class PlayerListener(private val manager: BukkitManager) : Listener {
         if (e.from.blockX == e.to.blockX && e.from.blockY == e.to.blockY && e.from.blockZ == e.to.blockZ) return
 
         manager.getViewer(e.player.uniqueId)?.let { viewer ->
-            manager.onViewerChangeLocation(viewer, e.to)
+            manager.updateViewerWorldScoreboard(viewer, e.to.world)
+            manager.updateViewerRegionScoreboard(viewer, e.to)
         }
     }
 
@@ -44,9 +45,9 @@ class PlayerListener(private val manager: BukkitManager) : Listener {
     fun onPlayerTeleport(e: PlayerTeleportEvent) {
         manager.getViewer(e.player.uniqueId)?.let { viewer ->
             if (e.from.world != e.to.world) {
-                manager.onViewerChangeWorld(viewer, e.to.world)
+                manager.updateViewerWorldScoreboard(viewer, e.to.world)
             }
-            manager.onViewerChangeLocation(viewer, e.to)
+            manager.updateViewerRegionScoreboard(viewer, e.to)
         }
     }
 }

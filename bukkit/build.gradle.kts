@@ -11,6 +11,7 @@ dependencies {
     compileOnly(libs.bukkit)
     compileOnly(libs.netty)
     compileOnly(libs.papi)
+    compileOnly(libs.luckperms)
     compileOnly(libs.adventureMiniMessage)
     compileOnly(libs.adventureSerializer)
 

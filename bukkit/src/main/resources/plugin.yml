@@ -1,7 +1,7 @@
 name: @name@
 version: @version@
 main: @package@.BukkitPlugin
-softdepend: [WorldGuard, PlaceholderAPI]
+softdepend: [WorldGuard, PlaceholderAPI, LuckPerms]
 authors: [R4G3_BABY]
 description: "@description@"
 website: @website@
