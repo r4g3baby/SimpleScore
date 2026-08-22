@@ -26,7 +26,7 @@ Also comes with support for [PlaceholderAPI][PlaceholderAPI], allowing you to ho
 
 ## Requirements
 - **Java:** Java 8 or above.
-- **Server:** Spigot, Paper, or forks (MC 1.8.x - 26.1.x).
+- **Server:** Spigot, Paper, or forks (MC 1.8.x - 26.2.x).
 
 ## More Information
 ### Documentation
