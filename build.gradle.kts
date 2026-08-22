@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.r4g3baby.simplescore"
-version = "4.2.1-dev"
+version = "4.3.0"
 
 dependencies {
     api(project("bukkit"))
