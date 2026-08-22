@@ -34,12 +34,6 @@ public interface Viewer<V : Any> {
      * Holds a weak reference to a viewer object of type [V]. This reference allows
      * the viewer to be accessed while still allowing it to be garbage collected if
      * no strong references exist.
-     *
-     * This is particularly important in server environments where players can
-     * disconnect at any time. Using WeakReference ensures that:
-     * - Player objects can be properly garbage collected after disconnection
-     * - Memory leaks are prevented even if viewer instances aren't explicitly cleaned up
-     * - Server memory remains optimized during long-running sessions
      */
     public val reference: WeakReference<V>
 

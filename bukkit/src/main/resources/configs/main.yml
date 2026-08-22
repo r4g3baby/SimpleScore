@@ -8,7 +8,7 @@ version: 4
 # To use custom messages, refer to the plugin documentation.
 language: en
 
-# Enables automatic checks for plugin updates on startup.
+# Enables automatic checks for plugin updates on startup and when running the version command.
 checkForUpdates: true
 
 ## Worlds Configuration (Optional)
