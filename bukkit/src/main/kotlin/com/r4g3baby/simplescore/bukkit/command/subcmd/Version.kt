@@ -21,6 +21,6 @@ class Version(private val plugin: BukkitPlugin) : SubCmd(plugin, "version") {
                     } else sender.sendMessage(plugin.i18n.t("cmd.version.failed"))
                 })
             }
-        } else sender.sendMessage(plugin.i18n.t("cmd.version.current"))
+        } else sender.sendMessage(plugin.i18n.t("cmd.version.current", ProjectInfo.VERSION))
     }
 }
