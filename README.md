@@ -18,7 +18,7 @@ Also comes with support for [PlaceholderAPI][PlaceholderAPI], allowing you to ho
 - A lag-free, fully animated scoreboard with no flickering.
 - Support for newer features such as hiding score numbers.
 - Full RGB color support on 1.16 servers or newer.
-- Supports all major Minecraft versions from 1.8.x to 26.2.x.
+- Supports all major Minecraft versions from 1.8 to 26.2.
 - Can display scoreboards based on permissions, conditions, worlds and regions.
 - No character limit on 1.13 servers or newer (limited to 32 characters on older versions).
 - Designed to be compatible with any other plugins that temporarily modify the scoreboard.
@@ -26,7 +26,7 @@ Also comes with support for [PlaceholderAPI][PlaceholderAPI], allowing you to ho
 
 ## Requirements
 - **Java:** Java 8 or above.
-- **Server:** Spigot, Paper, or forks (MC 1.8.x - 26.2.x).
+- **Server:** Spigot, Paper, or forks (MC 1.8 - 26.2).
 
 ## More Information
 ### Documentation
